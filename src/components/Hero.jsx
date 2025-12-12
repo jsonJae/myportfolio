@@ -2,8 +2,8 @@ import heroPic from '../assets/HeroPic.png';
 function HeroHeaders({header, desc}){
     return(
         <div className = "max-w-[270px]">
-                <p className = "text-[64px] text-[#0824A9] font-black text-justify">{header}</p>
-                <p className = "text-[12px] text-[#000000] font-extralight text-justify"> {desc}</p>
+                <p className = "text-[64px] text-[#0824A9] font-hartwell text-justify">{header}</p>
+                <p className = "text-[12px] text-[#000000] font-ambulatoria text-justify"> {desc}</p>
         </div>
     )
 }
