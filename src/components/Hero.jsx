@@ -12,7 +12,7 @@ export default function Hero(){
     const designerDesc = "specializes in graphic design and UI/UX design, turning ideas into stunning visuals and smooth user journeys"
     const developerDesc = "full stack developer who writes clean and maintainable codes, with keen interests in ML and AI"
     return (
-        <div>
+        <div className = "flex flex-row">
             <HeroHeaders header = "designer" desc = {designerDesc} />
             <img src = {heroPic} />
             <HeroHeaders header = "developer" desc = {developerDesc} />

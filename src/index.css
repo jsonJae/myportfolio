@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: 'Hartwell-Black';
-  src: url('./fonts/Hartwell-Black.woff2') format('woff2');
+  src: url('./assets/fonts/Hartwell-Black.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -10,7 +10,7 @@
 
 @font-face {
   font-family: 'Ambulatoria-ExtraLight';
-  src: url('./fonts/ambulatoriaa-extralight.otf') format('opentype');
+  src: url('./assets/fonts/ambulatoriaa-extralight.otf') format('opentype');
   font-weight: 200;
   font-style: normal;
   font-display: swap;
