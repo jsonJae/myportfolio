@@ -3,7 +3,7 @@ import logo from '../assets/logoblack.png'
 
 export default function Navbar() {
     return (
-        <nav className="w-full fixed top-0 flex items-center justify-between py-6 px-10 z-50">
+        <nav className="w-full fixed flex items-center justify-between py-6 px-10 z-50">
         
             {/* Logo */}
             <div>
