@@ -29,7 +29,7 @@ export default function Hero() {
     return (
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden shadow-md">
             <DesHeader />
-            <img src={heroPic} alt="Hero" className= " absolute bottom-0 left-1/2 -translate-x-1/2 z-10 max-h-[90vh] object-contain" />
+            <img src={heroPic} alt="Hero" className= "absolute bottom-0 left-1/2 -translate-x-1/2 z-10 max-h-[90vh] object-contain " />
             <DevHeader />
         </section>
     );
