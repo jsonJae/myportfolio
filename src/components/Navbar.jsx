@@ -39,11 +39,11 @@ export default function Navbar() {
                     {navItems.map((item) => (
                         <li className='relative group cursor-pointer' key={item}>
                             {item}
-                            <span className='absolute left-0 -bottom-1 w-0 h-1 rounded-xl bg-gradient-to-r from-blue-500 to-blue-300 transition-all duration-300 group-hover:w-full'></span>
+                            <span className='absolute left-0 -bottom-1 w-0 h-1 rounded-xl bg-linear-to-r from-blue-500 to-blue-300 transition-all duration-300 group-hover:w-full'></span>
                         </li>
                     ))}
                 </ul>
-                <button className='bg-gradient-to-r from-blue-500 to-blue-300 py-1 px-6 rounded-3xl shadow-lg text-white text-sm font-bold hover:from-blue-600 hover:to-blue-400 hover:shadow-blue-200 transition-all duration-300'>
+                <button className='bg-linear-to-r from-blue-500 to-blue-300 py-1 px-6 rounded-3xl shadow-lg text-white text-sm font-bold hover:from-blue-600 hover:to-blue-400 hover:shadow-blue-200 transition-all duration-300'>
                     Contact
                 </button>
             </div>
