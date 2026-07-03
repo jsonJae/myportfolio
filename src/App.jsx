@@ -6,14 +6,13 @@ import Skills from './components/Skills';
 import Experiences from './components/Experiences';
 import Footer from './components/Footer';
 
-
 function App() {
   return (
-    <div className = "overflow-hidden max-w-screen">
+    <div className="overflow-hidden max-w-screen">
       <Navbar />
-      <Hero />
-      <About />
-      <Projects />
+      <section id="home" className="scroll-mt-20"><Hero /></section>
+      <section id="about" className="scroll-mt-20"><About /></section>
+      <section id="projects" className="scroll-mt-20"><Projects /></section>
       <Skills />
       <Experiences />
       <Footer />
