@@ -19,5 +19,22 @@
 @theme {
   --font-hartwell: 'Hartwell-Black', sans-serif;
   --font-ambulatoria: 'Ambulatoria-ExtraLight', sans-serif;
+
+  --color-surface: #EDF0F5;
+  --color-primary: #0824A9;
+
+  --shadow-neu: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  --shadow-neu-hover: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
+  --shadow-neu-inset: inset 6px 6px 10px rgba(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  --shadow-neu-inset-deep: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
+  --shadow-neu-small: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+  --shadow-neu-deep: 16px 16px 28px rgba(163, 177, 198, 0.7), -16px -16px 28px rgba(255, 255, 255, 0.6);
 }
 
+body {
+  background-color: #EDF0F5;
+}
+
+@utility text-glow {
+  text-shadow: 0 0 6px rgba(8, 36, 169, 0.5), 0 0 20px rgba(8, 36, 169, 0.25);
+}
