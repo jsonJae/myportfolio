@@ -1,27 +1,40 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Hartwell-Black';
-  src: url('./assets/fonts/Hartwell-Black.woff2') format('woff2');
-  font-weight: 900;
+  font-family: 'Fraunces';
+  src: url('./assets/fonts/Fraunces-Variable.woff2') format('woff2');
+  font-weight: 400 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Ambulatoria-ExtraLight';
-  src: url('./assets/fonts/ambulatoriaa-extralight.otf') format('opentype');
-  font-weight: 200;
+  font-family: 'Instrument Sans';
+  src: url('./assets/fonts/InstrumentSans-Variable.woff2') format('woff2');
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
 }
 
 @theme {
-  --font-hartwell: 'Hartwell-Black', sans-serif;
-  --font-ambulatoria: 'Ambulatoria-ExtraLight', sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-body: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
   --color-surface: #EDF0F5;
   --color-primary: #0824A9;
+  --color-primary-hover: #1D4ED8;
+  --color-ink: #000000;
+  --color-ink-soft: rgba(0, 0, 0, 0.7);
+  --color-muted: #6B7280;
+  --color-muted-quiet: #D1D5DB;
+  --color-shadow-tint: #A3B1C6;
+
+  --radius-well: 16px;
+  --radius-card: 24px;
+  --radius-label: 28px;
+  --radius-panel: 32px;
+
+  --ease-soft: cubic-bezier(0, 0, 0.2, 1);
 
   --shadow-neu: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
   --shadow-neu-hover: 12px 12px 20px rgba(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
@@ -31,10 +44,98 @@
   --shadow-neu-deep: 16px 16px 28px rgba(163, 177, 198, 0.7), -16px -16px 28px rgba(255, 255, 255, 0.6);
 }
 
-body {
-  background-color: #EDF0F5;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 1.5rem;
+    scroll-padding-bottom: 7rem;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-display {
+    font-optical-sizing: auto;
+    font-variation-settings: 'SOFT' 30, 'WONK' 1;
+  }
+
+  ::selection {
+    background-color: rgba(8, 36, 169, 0.16);
+    color: var(--color-primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-shadow-tint) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-shadow-tint);
+    border-radius: 9999px;
+    border: 3px solid var(--color-surface);
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
-@utility text-glow {
-  text-shadow: 0 0 6px rgba(8, 36, 169, 0.5), 0 0 20px rgba(8, 36, 169, 0.25);
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes ridge-drift {
+  from {
+    transform: translate3d(calc(var(--ridge-drift) * -1), 0, 0);
+  }
+  to {
+    transform: translate3d(var(--ridge-drift), 0, 0);
+  }
+}
+
+.ridge-layer {
+  animation: ridge-drift var(--ridge-duration) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ridge-layer {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+}
+
+@utility prose-measure {
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+@utility heading-balance {
+  text-wrap: balance;
 }
