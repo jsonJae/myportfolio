@@ -1,25 +1,20 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faUser, faLayerGroup, faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 const navItems = [
-    { label: 'Home', id: 'home' },
-    { label: 'About', id: 'about' },
-    { label: 'Projects', id: 'projects' },
-    { label: 'Experiences', id: null },
+    { label: 'Home', id: 'home', icon: faHouse },
+    { label: 'About', id: 'about', icon: faUser },
+    { label: 'Projects', id: 'projects', icon: faLayerGroup },
+    { label: 'Experiences', id: null, icon: faBriefcase },
 ];
 
 export default function Navbar() {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('home');
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-
-            const scrollPos = window.scrollY + 160;
+            const scrollPos = window.scrollY + window.innerHeight * 0.35;
 
             for (let i = navItems.length - 1; i >= 0; i--) {
                 const id = navItems[i].id;
@@ -31,7 +26,9 @@ export default function Navbar() {
                 }
             }
         };
-        window.addEventListener('scroll', handleScroll);
+
+        handleScroll();
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -39,101 +36,50 @@ export default function Navbar() {
         if (!id) return;
         const el = document.getElementById(id);
         if (!el) return;
-        const top = el.getBoundingClientRect().top + window.scrollY - 80;
+        const top = el.getBoundingClientRect().top + window.scrollY - 24;
         window.scrollTo({ top, behavior: 'smooth' });
-        setIsMobileOpen(false);
     };
 
     return (
-        <>
-            <nav
-                className={`fixed flex items-center justify-between top-5 left-1/2 -translate-x-1/2 z-50 rounded-full transition-all duration-700 ease-out
-                    ${isScrolled
-                        ? 'bg-surface shadow-neu-hover border border-white/50 py-2.5 px-4 md:px-6 scale-[0.96]'
-                        : 'bg-surface/80 backdrop-blur-md shadow-neu py-4 px-12 md:px-28 scale-100'
-                    }
-                `}
-            >
-                <ul className="hidden md:flex items-center text-sm font-bold gap-1">
-                    {navItems.map((item) => (
+        <nav
+            aria-label="Primary"
+            className="fixed inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50 flex justify-center px-4"
+        >
+            <ul className="flex items-center gap-1 rounded-full border border-white/60 bg-surface/85 p-1.5 shadow-neu backdrop-blur-md">
+                {navItems.map((item) => {
+                    const isActive = item.id && activeSection === item.id;
+                    const isDisabled = !item.id;
+
+                    return (
                         <li key={item.label}>
                             <button
+                                type="button"
                                 onClick={() => scrollTo(item.id)}
-                                disabled={!item.id}
-                                className={`relative px-4 py-2 rounded-full transition-all duration-300 ${
-                                    item.id
-                                        ? activeSection === item.id
-                                            ? 'shadow-neu-inset text-primary cursor-pointer'
-                                            : 'text-gray-500 hover:text-primary hover:shadow-neu-small cursor-pointer'
-                                        : 'text-gray-300 cursor-default'
+                                disabled={isDisabled}
+                                aria-current={isActive ? 'page' : undefined}
+                                aria-label={isDisabled ? `${item.label} (coming soon)` : item.label}
+                                title={isDisabled ? 'Coming soon' : undefined}
+                                className={`group flex items-center justify-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all duration-300 ease-soft md:px-5 ${
+                                    isDisabled
+                                        ? 'text-muted-quiet cursor-not-allowed'
+                                        : isActive
+                                          ? 'shadow-neu-inset text-primary cursor-pointer'
+                                          : 'text-muted hover:text-primary hover:shadow-neu-small hover:-translate-y-0.5 cursor-pointer'
                                 }`}
                             >
-                                {item.label}
+                                <FontAwesomeIcon
+                                    icon={item.icon}
+                                    aria-hidden="true"
+                                    className={`text-[15px] transition-transform duration-300 ease-soft ${
+                                        isDisabled ? '' : 'group-hover:scale-110'
+                                    }`}
+                                />
+                                <span className="hidden sm:inline">{item.label}</span>
                             </button>
                         </li>
-                    ))}
-                </ul>
-
-                <button
-                    className="md:hidden flex items-center justify-center w-10 h-10 rounded-full text-primary transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
-                    onClick={() => setIsMobileOpen(!isMobileOpen)}
-                    aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
-                >
-                    <span className="relative flex items-center justify-center w-5 h-5">
-                        <FontAwesomeIcon
-                            icon={faBars}
-                            className={`absolute transition-all duration-300 ease-out ${
-                                isMobileOpen ? 'rotate-90 opacity-0 scale-75' : 'rotate-0 opacity-100 scale-100'
-                            }`}
-                            size="lg"
-                        />
-                        <FontAwesomeIcon
-                            icon={faXmark}
-                            className={`absolute transition-all duration-300 ease-out ${
-                                isMobileOpen ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-75'
-                            }`}
-                            size="lg"
-                        />
-                    </span>
-                </button>
-            </nav>
-
-            <AnimatePresence>
-                {isMobileOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-surface/95 backdrop-blur-lg md:hidden"
-                    >
-                        <ul className="flex flex-col items-center gap-4">
-                            {navItems.map((item, i) => (
-                                <motion.li
-                                    key={item.label}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                >
-                                    <button
-                                        onClick={() => scrollTo(item.id)}
-                                        disabled={!item.id}
-                                        className={`px-8 py-3 rounded-2xl text-lg font-bold transition-all duration-300 ${
-                                            item.id
-                                                ? activeSection === item.id
-                                                    ? 'shadow-neu-inset text-primary cursor-pointer'
-                                                    : 'text-primary hover:shadow-neu-small hover:scale-105 cursor-pointer'
-                                                : 'text-gray-300 cursor-default'
-                                        }`}
-                                    >
-                                        {item.label}
-                                    </button>
-                                </motion.li>
-                            ))}
-                        </ul>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </>
+                    );
+                })}
+            </ul>
+        </nav>
     );
 }

@@ -1,64 +1,112 @@
+import { motion, useReducedMotion } from 'framer-motion';
+import Reveal from './Reveal';
+import TiltCard from './TiltCard';
+
 const projects = [
     {
-        title: "Project Alpha",
-        desc: "A full-stack web application built with React and Node.js, featuring real-time collaboration tools.",
-        tags: ["React", "Node.js", "Socket.io"],
+        title: 'YSEIS',
+        desc: "Leading the frontend team of YSES' Inventory System, a platform that digitizes how the organization tracks and manages its equipment and supplies.",
+        tags: ['Frontend Lead', 'Inventory System', 'YSES'],
+        role: 'Frontend Lead · YSES',
+        mark: 'YS',
     },
     {
-        title: "Project Beta",
-        desc: "UI/UX design system and component library for a fintech startup, built in Figma and shipped to engineering.",
-        tags: ["Figma", "Design System", "Prototyping"],
+        title: 'SPACES',
+        desc: "Co-developed a centralized student accommodation tracker for UPLB, replacing manual forms, spreadsheets, and email threads with one streamlined digital platform.",
+        tags: ['SvelteKit', 'PocketBase', 'Go'],
+        role: 'Frontend Developer · UPLB',
+        mark: 'SP',
     },
     {
-        title: "Project Gamma",
-        desc: "Machine learning pipeline for image classification, deployed via TensorFlow Serving on Kubernetes.",
-        tags: ["Python", "TensorFlow", "Kubernetes"],
+        title: 'SIPAT: Ang Resibo ng Bayan',
+        desc: "An offline-first, privacy-preserving mobile app that gamifies auditing government infrastructure, matching contract promises against geotagged community photos.",
+        tags: ['Flutter', 'Hive', 'Civic Tech'],
+        role: 'Hack the Flood · Most Innovative',
+        mark: 'SI',
     },
     {
-        title: "Project Delta",
-        desc: "Mobile-first landing page and marketing site for a creative agency, optimized for performance and accessibility.",
-        tags: ["Next.js", "Tailwind", "GSAP"],
+        title: 'QE 360 Event Platform',
+        desc: "Built full-stack features across attendee, judge, and admin views, integrated MUX video streaming, and shipped a RAG chatbot backed by Supabase.",
+        tags: ['Next.js', 'Supabase', 'MUX'],
+        role: 'Full-Stack Intern · QE 360',
+        mark: 'QE',
     },
 ];
 
-function ProjectCard({ title, desc, tags }) {
+const grid = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+};
+
+const item = {
+    hidden: { opacity: 0, y: 44, filter: 'blur(6px)' },
+    show: {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+    },
+};
+
+function ProjectCard({ title, desc, tags, role, mark }) {
     return (
-        <div className="shadow-neu rounded-[32px] bg-surface p-6 md:p-8 transition-all duration-300 ease-out hover:shadow-neu-hover hover:-translate-y-1 active:translate-y-0.5 cursor-pointer">
-            <div className="w-full h-44 md:h-48 rounded-2xl bg-surface shadow-neu-inset mb-6 flex items-center justify-center">
-                <span className="text-primary font-hartwell text-lg opacity-40">preview</span>
+        <>
+            <div className="relative w-full h-44 md:h-48 rounded-well bg-surface shadow-neu-inset mb-6 overflow-hidden flex items-center justify-center">
+                <span aria-hidden="true" className="text-primary/10 font-display font-black text-[64px] leading-none select-none">
+                    {mark}
+                </span>
+                <span className="absolute bottom-4 left-5 right-5 text-[10px] font-bold uppercase tracking-wider text-muted">
+                    {role}
+                </span>
             </div>
-            <h3 className="text-xl md:text-2xl text-primary font-hartwell leading-tight">{title}</h3>
-            <p className="text-[12px] text-black font-ambulatoria mt-3 leading-relaxed">{desc}</p>
+            <h3 className="text-2xl md:text-3xl text-primary font-display font-black leading-tight heading-balance">{title}</h3>
+            <p className="text-[13px] md:text-[14px] text-ink-soft font-body mt-3 leading-[1.75]">{desc}</p>
             <div className="flex flex-wrap gap-2 mt-4">
                 {tags.map((tag) => (
                     <span
                         key={tag}
-                        className="text-[10px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full shadow-neu-small text-gray-600"
+                        className="text-[10px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full shadow-neu-small text-muted"
                     >
                         {tag}
                     </span>
                 ))}
             </div>
-        </div>
+        </>
     );
 }
 
 export default function Projects() {
+    const reduced = useReducedMotion();
+
     return (
         <div className="flex flex-col min-h-screen px-4 md:px-0">
-            <p className="text-[40px] md:text-[64px] text-primary font-hartwell text-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] pt-15">
-                curated works.
-            </p>
-            <p className="text-[12px] text-black font-ambulatoria text-center -mt-5 max-w-xl mx-auto">
-                Showcasing a range of development and graphic design projects built through collaboration and genuine passion.
-            </p>
+            <Reveal from="up" duration={0.9}>
+                <p className="text-[40px] md:text-[64px] text-primary font-display font-black tracking-tight text-center heading-balance pt-15">
+                    curated works.
+                </p>
+            </Reveal>
+            <Reveal from="up" delay={0.08}>
+                <p className="text-[13px] md:text-[14px] text-ink-soft font-body text-center -mt-5 prose-measure mx-auto leading-[1.75]">
+                    Selected work across full-stack web, cross-platform mobile, and civic tech, built through internships, collaboration, and hackathons.
+                </p>
+            </Reveal>
 
             <div className="flex justify-center">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 my-16 md:my-20 max-w-5xl w-full">
+                <motion.div
+                    variants={reduced ? undefined : grid}
+                    initial={reduced ? false : 'hidden'}
+                    whileInView={reduced ? undefined : 'show'}
+                    viewport={{ once: true, margin: '-60px' }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 my-16 md:my-20 max-w-5xl w-full"
+                >
                     {projects.map((project) => (
-                        <ProjectCard key={project.title} {...project} />
+                        <motion.div key={project.title} variants={reduced ? undefined : item} className="h-full">
+                            <TiltCard className="h-full shadow-neu rounded-panel bg-surface p-6 md:p-8 transition-shadow duration-300 ease-soft hover:shadow-neu-hover">
+                                <ProjectCard {...project} />
+                            </TiltCard>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </div>
     );

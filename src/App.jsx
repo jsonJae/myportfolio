@@ -8,7 +8,7 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <div className="overflow-hidden max-w-screen">
+    <div className="overflow-hidden max-w-screen pb-24">
       <Navbar />
       <section id="home" className="scroll-mt-20"><Hero /></section>
       <section id="about" className="scroll-mt-20"><About /></section>
