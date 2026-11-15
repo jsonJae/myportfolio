@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { faSquareLinkedin } from '@fortawesome/free-brands-svg-icons'
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
+import { faEnvelope, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { motion, useReducedMotion } from 'framer-motion'
 
 import aboutMePic from '../assets/AboutMePic.png';
@@ -56,14 +55,14 @@ export default function About() {
     ]
 
     const links = [
-        { icon: faGithub, label: 'GitHub', onClick: () => window.open('https://github.com/jsonJae', '_blank', 'noopener,noreferrer') },
-        { icon: faSquareLinkedin, label: 'LinkedIn', onClick: () => window.open('https://www.linkedin.com/in/jason-gian-duran-4754a7355?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app', '_blank', 'noopener,noreferrer') },
-        { icon: faEnvelope, label: 'Email', onClick: () => window.open('mailto:jasongian28@gmail.com') },
+        { icon: faGithub, label: 'GitHub', href: 'https://github.com/jsonJae' },
+        { icon: faLinkedinIn, label: 'LinkedIn', href: 'https://www.linkedin.com/in/jason-gian-duran-4754a7355?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app' },
+        { icon: faEnvelope, label: 'Email', href: 'mailto:jasongian28@gmail.com' },
     ]
 
     return (
         <section aria-labelledby="about-title" className="flex min-h-screen items-center justify-center px-4 py-24 md:px-8">
-            <div className="grid w-full max-w-6xl grid-cols-1 items-center gap-14 md:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] md:gap-16">
+            <div className="grid w-full max-w-6xl grid-cols-1 items-center gap-14 md:grid-cols-[minmax(0,34rem)_minmax(0,1fr)] md:gap-16">
                 <motion.div
                     variants={reduced ? undefined : intro}
                     initial={initial}
@@ -90,31 +89,46 @@ export default function About() {
                         ))}
                     </h2>
 
-                    <div className="mt-7 max-w-[34rem] space-y-4">
+                    <div className="mt-7 max-w-[36rem] space-y-5">
                         {sentences.map((sentence) => (
                             <motion.p
                                 key={sentence}
                                 variants={reduced ? undefined : line}
-                                className="text-[13px] md:text-[14px] text-ink-soft font-body leading-[1.75]"
+                                className="text-[15px] md:text-[16px] text-ink-soft font-body leading-[1.8]"
                             >
                                 {sentence}
                             </motion.p>
                         ))}
                     </div>
 
-                    <div className="mt-8 flex gap-4">
-                        {links.map(({ icon, label, onClick }) => (
-                            <motion.button
-                                variants={reduced ? undefined : social}
-                                type="button"
-                                key={icon.iconName}
-                                aria-label={label}
-                                onClick={onClick}
-                                className="group w-12 h-12 rounded-full shadow-neu-inset flex items-center justify-center cursor-pointer transition-shadow duration-300 ease-soft hover:shadow-neu-small active:shadow-neu-inset"
-                            >
-                                <FontAwesomeIcon icon={icon} size="lg" className="text-primary transition-transform duration-300 ease-soft group-hover:scale-110 group-hover:text-primary-hover" />
-                            </motion.button>
-                        ))}
+                    <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+                        <motion.a
+                            variants={reduced ? undefined : line}
+                            href="/DURAN-RESUME.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download
+                            className="group inline-flex items-center gap-2.5 rounded-full border border-black/[0.06] bg-white px-5 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] transition-[transform,box-shadow,border-color] duration-300 ease-soft hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-[0_10px_24px_-10px_rgba(8,36,169,0.45)] active:translate-y-0"
+                        >
+                            <FontAwesomeIcon icon={faDownload} aria-hidden="true" className="text-[14px] transition-transform duration-300 ease-soft group-hover:translate-y-0.5" />
+                            Résumé
+                        </motion.a>
+
+                        <div className="flex items-center gap-1">
+                            {links.map((link) => (
+                                <motion.a
+                                    variants={reduced ? undefined : social}
+                                    key={link.label}
+                                    href={link.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={link.label}
+                                    className="group inline-flex h-11 w-11 items-center justify-center rounded-full text-ink/60 transition-[color,transform] duration-300 ease-soft hover:-translate-y-0.5 hover:text-primary"
+                                >
+                                    <FontAwesomeIcon icon={link.icon} aria-hidden="true" className="text-[21px] transition-transform duration-300 ease-soft group-hover:scale-105" />
+                                </motion.a>
+                            ))}
+                        </div>
                     </div>
                 </motion.div>
 
@@ -131,7 +145,7 @@ export default function About() {
                             src={aboutMePic}
                             alt="Jason Gian Duran at his desk with papers tossed in the air"
                             draggable="false"
-                            className="block h-auto w-full drop-shadow-[0_18px_30px_rgba(163,177,198,0.4)] transition-[filter] duration-500 ease-soft group-hover:drop-shadow-[0_26px_42px_rgba(163,177,198,0.55)]"
+                            className="block h-auto w-full drop-shadow-[0_18px_32px_rgba(15,23,42,0.16)] transition-[filter] duration-500 ease-soft group-hover:drop-shadow-[0_26px_44px_rgba(15,23,42,0.22)]"
                             style={{
                                 WebkitMaskImage: 'linear-gradient(to bottom, #000 88%, transparent 100%)',
                                 maskImage: 'linear-gradient(to bottom, #000 88%, transparent 100%)',
