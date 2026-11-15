@@ -12,48 +12,48 @@ colors:
   shadow-tint: "#A3B1C6"
 typography:
   display:
-    fontFamily: "Hartwell-Black, sans-serif"
+    fontFamily: "Moniqa, sans-serif"
     fontSize: "64px"
     fontWeight: 900
     lineHeight: 1
     letterSpacing: "-0.025em"
   display-small:
-    fontFamily: "Hartwell-Black, sans-serif"
+    fontFamily: "Moniqa, sans-serif"
     fontSize: "40px"
     fontWeight: 900
     lineHeight: 1.05
   headline:
-    fontFamily: "Hartwell-Black, sans-serif"
+    fontFamily: "Moniqa, sans-serif"
     fontSize: "54px"
     fontWeight: 900
     lineHeight: 0.9
   headline-small:
-    fontFamily: "Hartwell-Black, sans-serif"
+    fontFamily: "Moniqa, sans-serif"
     fontSize: "30px"
     fontWeight: 900
     lineHeight: 0.95
   title:
-    fontFamily: "Hartwell-Black, sans-serif"
+    fontFamily: "Moniqa, sans-serif"
     fontSize: "24px"
     fontWeight: 900
     lineHeight: 1.1
   body:
-    fontFamily: "Ambulatoria-ExtraLight, sans-serif"
+    fontFamily: "Instrument Sans, sans-serif"
     fontSize: "14px"
-    fontWeight: 200
+    fontWeight: 400
     lineHeight: 1.75
   body-small:
-    fontFamily: "Ambulatoria-ExtraLight, sans-serif"
+    fontFamily: "Instrument Sans, sans-serif"
     fontSize: "13px"
-    fontWeight: 200
+    fontWeight: 400
     lineHeight: 1.75
   label:
-    fontFamily: "Ambulatoria-ExtraLight, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "10px"
-    fontWeight: 700
-    letterSpacing: "0.025em"
+    fontWeight: 500
+    letterSpacing: "0.18em"
   hero-ambient:
-    fontFamily: "Hartwell-Black, sans-serif"
+    fontFamily: "Moniqa, sans-serif"
     fontSize: "18px"
     fontWeight: 900
     lineHeight: 1
@@ -136,22 +136,22 @@ A near-monochrome system: a cool light gray field with a single saturated blue, 
 
 ## Typography
 
-**Display Font:** Hartwell-Black (with sans-serif fallback)
-**Body Font:** Ambulatoria-ExtraLight (with sans-serif fallback)
-**Label Font:** The body face at small bold uppercase sizes, or the display face for nav and chips.
+**Display Font:** Moniqa (with sans-serif fallback)
+**Body Font:** Instrument Sans (with sans-serif fallback)
+**Label Font:** Geist Mono for uppercase labels, metadata, tags, and nav tooltips.
 
-**Character:** A hard, sculptural black display face set against a whisper-thin body face. The pairing is the system's emotional engine: confident statements, soft explanation. Display type is tight and often lowercase ("designer", "curated works."), giving headings a personal, handwritten-in-ink feel rather than corporate caps.
+**Character:** A high-contrast display sans, Moniqa Black, set against a neutral grotesque for prose and Geist Mono for mechanical detail. The pairing is the system's emotional engine: confident statements, quiet explanation, precise annotation. Display type is tight and often lowercase ("designer", "curated works."), with occasional Moniqa italic accents ("Jason", "curated") that give headings a personal, editorial feel rather than corporate caps.
 
 ### Hierarchy
-- **Display** (900, 64px desktop / 40px mobile, line-height 1): Section announcements ("Hey, I'm Jason", "curated works."). Always Ultramarine and centered in the section.
+- **Display** (900, 64px desktop / 40px mobile, line-height 0.95–1): Section announcements ("Hey, I'm Jason", "curated works."). Always Ultramarine and centered in the section, preceded by a Geist Mono eyebrow ("01 — About").
 - **Headline** (900, 54px desktop / 30–40px mobile, line-height 0.9): The "designer" and "developer" label cards in the hero. Tightest tracking, lowercase.
 - **Title** (900, 20–24px, line-height 1.1): Project card titles.
-- **Body** (200, 14px desktop / 13px mobile, line-height 1.75): Prose in About and Projects. Justified in the About card; centered for the Projects intro. Softened to 70% black.
-- **Label** (700, 10px, uppercase, wide tracking): Project tags. Nav items use the body face at 14px bold with no uppercase.
+- **Body** (400, 14px desktop / 13px mobile, line-height 1.75): Prose in About and Projects. Justified in the About card; centered for the Projects intro. Softened to 70% black.
+- **Label** (500, 10px, uppercase, wide tracking): Project tags, roles, and section eyebrows. Set in Geist Mono; nav tooltips use it at 11px.
 - **Hero ambient** (900, 11–26px, alphabetical word cloud): An intentional freeform scale, sized by word importance rather than a fixed step. This is the only place size is set by feel.
 
 ### Named Rules
-**The Weight Gap Rule.** Display and body type must never sit near the same weight. If a heading looks merely bold, it is wrong; it should look pressed into the paper. If body copy reads as anything heavier than extra-light, lighten it.
+**The Weight Gap Rule.** Display and body type must never sit near the same weight. If a heading looks merely bold, it is wrong; it should look pressed into the paper. Body copy stays at regular weight, and Moniqa italic is the only permitted accent inside a heading.
 
 ## Layout
 
@@ -212,9 +212,12 @@ Soft and rounded throughout; no sharp corners anywhere in the interface.
 - **Internal Padding:** `p-6 md:p-8` (24→32px).
 
 ### Navigation
-- **Style:** A floating pill fixed 20px from the top, horizontally centered. Unscrolled: 80% Fog Paper + backdrop blur, Standard shadow, wide padding (`px-12 md:px-28`). Scrolled: fully opaque, Hover shadow, tighter padding (`py-2.5 px-4 md:px-6`) and `scale-[0.96]`, over 700ms. The shrink-on-scroll is the nav's signature behavior.
-- **Typography:** 14px bold, Quiet Gray; active Ultramarine.
-- **Mobile:** The pill collapses to a hamburger button; opening reveals a full-screen Fog Paper/95 backdrop-blur overlay with large stacked pills that stagger in at 100ms apiece. The bars-to-X icon crossfades and rotates around its center.
+- **Style:** A clean floating dock fixed 20px from the bottom, horizontally centered. A light neutral-gray pill (`bg-neutral-100/80`) holds 46px white circular buttons with a faint hairline ring and a soft drop shadow; no neumorphic inset or paired extruded shadows.
+- **Motion:** macOS-style magnification. Pointer distance drives each button's size through a spring (46px → 66px, stiffness 220, damping 18), and the icon scales with it. Disabled and reduced-motion states stay at base size.
+- **Icons:** 19px Lucide line icons at a 1.7 stroke. Active item is Ultramarine; inactive icons are neutral gray and darken on hover. Disabled items are muted and non-interactive.
+- **Tooltip:** A small white pill above the hovered button, set in 10px Geist Mono uppercase with wide tracking; disabled buttons append "Soon".
+- **Typography:** Icon-only with `aria-label`; Geist Mono is used only in tooltips.
+- **Mobile:** The same four-button dock is used at every breakpoint; touch does not trigger magnification or tooltips.
 
 ### Signature: Hero Label Cards
 Two floating Fog Paper cards, "designer" and "developer", mirror-slide in from left and right. Each holds a 54px lowercase display word, a short 2px Ultramarine rule, and a 14px hairline description. They are the clearest expression of the whole system: heavy ink on a deep soft shadow, bordered by light.
@@ -234,5 +237,5 @@ Two floating Fog Paper cards, "designer" and "developer", mirror-slide in from l
 - **Don't** ship flat Material-style cards; if a surface has no paired shadow, it is not part of this system.
 - **Don't** use a single-offset shadow or a hard gray border in place of depth.
 - **Don't** fill a large area with Ultramarine; it stays an ink.
-- **Don't** mix in a third typeface or bump body copy above extra-light weight.
+- **Don't** set body copy in Geist Mono; mono is reserved for labels, metadata, and eyebrows.
 - **Don't** use sharp corners anywhere.
