@@ -55,7 +55,7 @@ function ProjectCard({ title, desc, tags, role, mark }) {
                 <span aria-hidden="true" className="text-primary/10 font-display font-black text-[64px] leading-none select-none">
                     {mark}
                 </span>
-                <span className="absolute bottom-4 left-5 right-5 text-[10px] font-bold uppercase tracking-wider text-muted">
+                <span className="absolute bottom-4 left-5 right-5 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-muted">
                     {role}
                 </span>
             </div>
@@ -65,7 +65,7 @@ function ProjectCard({ title, desc, tags, role, mark }) {
                 {tags.map((tag) => (
                     <span
                         key={tag}
-                        className="text-[10px] font-bold tracking-wide uppercase px-3 py-1.5 rounded-full shadow-neu-small text-muted"
+                        className="font-mono text-[10px] font-medium tracking-[0.08em] uppercase px-3 py-1.5 rounded-full shadow-neu-small text-muted"
                     >
                         {tag}
                     </span>
@@ -81,12 +81,17 @@ export default function Projects() {
     return (
         <div className="flex flex-col min-h-screen px-4 md:px-0">
             <Reveal from="up" duration={0.9}>
-                <p className="text-[40px] md:text-[64px] text-primary font-display font-black tracking-tight text-center heading-balance pt-15">
-                    curated works.
-                </p>
+                <div className="text-center pt-15">
+                    <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-primary/60">
+                        02 — Selected Work
+                    </span>
+                    <p className="text-[40px] md:text-[64px] text-primary font-display font-black tracking-tight leading-[0.95] mt-3 heading-balance">
+                        <span className="font-normal italic">curated</span> works.
+                    </p>
+                </div>
             </Reveal>
             <Reveal from="up" delay={0.08}>
-                <p className="text-[13px] md:text-[14px] text-ink-soft font-body text-center -mt-5 prose-measure mx-auto leading-[1.75]">
+                <p className="text-[13px] md:text-[14px] text-ink-soft font-body text-center mt-6 prose-measure mx-auto leading-[1.75]">
                     Selected work across full-stack web, cross-platform mobile, and civic tech, built through internships, collaboration, and hackathons.
                 </p>
             </Reveal>

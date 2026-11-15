@@ -1,10 +1,18 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Fraunces';
-  src: url('./assets/fonts/Fraunces-Variable.woff2') format('woff2');
-  font-weight: 400 900;
+  font-family: 'Moniqa';
+  src: url('./assets/fonts/Moniqa-BlackDisplay.otf') format('opentype');
+  font-weight: 900;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moniqa';
+  src: url('./assets/fonts/Moniqa-ItalicDisplay.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
   font-display: swap;
 }
 
@@ -16,9 +24,18 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('./assets/fonts/GeistMono-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-display: 'Moniqa', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --color-surface: #EDF0F5;
   --color-primary: #0824A9;
@@ -61,7 +78,7 @@
 
   .font-display {
     font-optical-sizing: auto;
-    font-variation-settings: 'SOFT' 30, 'WONK' 1;
+    font-feature-settings: 'dlig' 1;
   }
 
   ::selection {
