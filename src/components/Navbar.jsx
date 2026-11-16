@@ -1,16 +1,28 @@
 ﻿import { useState, useEffect } from 'react';
-import { Home, UserRound, LayoutGrid, Briefcase } from 'lucide-react';
+import { Home, UserRound, Briefcase, Layers, LayoutGrid, Sparkles, Mail } from 'lucide-react';
 import { MagnificationDock } from './MagnificationDock';
 
 const navItems = [
     { label: 'Home', id: 'home', Icon: Home },
     { label: 'About', id: 'about', Icon: UserRound },
+    { label: 'Experience', id: 'experiences', Icon: Briefcase },
+    { label: 'Stack', id: 'stack', Icon: Layers },
     { label: 'Projects', id: 'projects', Icon: LayoutGrid },
-    { label: 'Experiences', id: null, Icon: Briefcase },
+    { label: 'Beyond', id: 'beyond', Icon: Sparkles },
+    { label: 'Contact', id: 'contact', Icon: Mail },
 ];
 
 export default function Navbar() {
     const [activeSection, setActiveSection] = useState('home');
+    const [compact, setCompact] = useState(false);
+
+    useEffect(() => {
+        const query = window.matchMedia('(max-width: 420px)');
+        const update = () => setCompact(query.matches);
+        update();
+        query.addEventListener('change', update);
+        return () => query.removeEventListener('change', update);
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -45,7 +57,6 @@ export default function Navbar() {
         label: item.label,
         onClick: () => scrollTo(item.id),
         active: Boolean(item.id) && activeSection === item.id,
-        disabled: !item.id,
     }));
 
     return (
@@ -53,7 +64,7 @@ export default function Navbar() {
             aria-label="Primary"
             className="fixed inset-x-0 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-50 flex justify-center px-4"
         >
-            <MagnificationDock items={dockItems} />
+            <MagnificationDock items={dockItems} baseItemSize={compact ? 42 : 46} />
         </nav>
     );
 }
