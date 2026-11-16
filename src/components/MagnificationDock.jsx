@@ -63,10 +63,18 @@ function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring,
             style={{ width: size, height: size }}
             className={`relative flex shrink-0 items-center justify-center rounded-full border outline-offset-4 transition-[color,background-color,border-color,box-shadow] duration-300 ease-soft ${stateClasses} ${item.className ?? ''}`}
         >
+            <span
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-transform duration-300 ease-soft ${
+                    hovered && !isDisabled ? 'scale-x-100' : 'scale-x-0'
+                }`}
+            />
             <motion.span
                 aria-hidden="true"
                 style={{ scale: iconScale }}
-                className="pointer-events-none flex items-center justify-center"
+                className={`pointer-events-none relative z-10 flex items-center justify-center transition-colors duration-300 ${
+                    hovered && !isDisabled ? 'text-white' : ''
+                }`}
             >
                 {item.icon}
             </motion.span>
