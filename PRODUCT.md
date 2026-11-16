@@ -25,16 +25,16 @@ A hybrid designer-developer: graphic and UI/UX design paired with full-stack imp
 
 - Visitors arrive by link (LinkedIn, GitHub, resume, direct sharing) and evaluate a single scrolling page.
 - The resume PDF (`DURAN-RESUME.pdf`) is an available artifact and a likely evaluation path.
-- Contact happens off-site through email, GitHub, and LinkedIn links, not an in-page form.
+- Contact happens through an in-page form that opens the visitor's email app with the message prefilled, plus direct email, GitHub, and LinkedIn links.
 - Evaluation happens on desktop and mobile; the mobile navbar is a first-class surface.
 
 ## Capabilities and Constraints
 
-- Single-page React 19 + Vite 7 + Tailwind CSS 4 app, built with Framer Motion; sections are anchor targets (Home, About, Projects) with smooth scrolling.
-- No backend, CMS, contact form, or analytics are present; contact links are external.
-- `Skills`, `Experiences`, and `Footer` are empty component shells. Confirmed decision: keep the shells, low priority; do not ship empty sections as if they held content.
-- The Projects section currently renders four placeholder cards (Project Alpha–Delta) with invented descriptions and tags. These are not real work and must not be treated or presented as claims.
-- Not yet decided: which specific public GitHub repositories should be featured, and what real experience/skills content should eventually replace the shells.
+- Single-page React 19 + Vite 7 + Tailwind CSS 4 app, built with Framer Motion; sections are anchor targets (Home, About, Experience, Stack, Projects, Beyond, Contact) with smooth scrolling.
+- No backend, CMS, or analytics. The contact form is client-side and hands off to the visitor's email app via `mailto:`.
+- `Experiences` and `Skills` are populated from the resume PDF; `Beyond` uses confirmed facets of design, community, and AI curiosity; `Contact` replaces the former empty `Footer` shell.
+- The Projects section presents four real projects from the resume: YSEIS, SPACES, SIPAT, and QE 360.
+- Not yet decided: which specific public GitHub repositories should be featured.
 
 ## Brand Commitments
 

@@ -3,6 +3,7 @@ name: Jason Gian Duran Portfolio
 description: A tactile, neumorphic portfolio where soft extruded surfaces carry one deep ultramarine ink.
 colors:
   surface: "#EDF0F5"
+  surface-deep: "#E3E8EF"
   primary: "#0824A9"
   ink: "#000000"
   ink-soft: "rgba(0, 0, 0, 0.7)"
@@ -12,38 +13,72 @@ colors:
   shadow-tint: "#A3B1C6"
 typography:
   display:
-    fontFamily: "Moniqa, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "64px"
     fontWeight: 900
     lineHeight: 1
     letterSpacing: "-0.025em"
   display-small:
-    fontFamily: "Moniqa, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "40px"
     fontWeight: 900
     lineHeight: 1.05
+  display-intro:
+    fontFamily: "Geist Mono, monospace"
+    fontSize: "30px"
+    fontWeight: 900
+    lineHeight: 1
+    letterSpacing: "-0.02em"
+  display-intro-small:
+    fontFamily: "Geist Mono, monospace"
+    fontSize: "22px"
+    fontWeight: 900
+    lineHeight: 1
+    letterSpacing: "-0.02em"
+  display-name:
+    fontFamily: "Geist Mono, monospace"
+    fontSize: "80px"
+    fontWeight: 900
+    lineHeight: 0.9
+    letterSpacing: "-0.03em"
+  display-name-small:
+    fontFamily: "Geist Mono, monospace"
+    fontSize: "48px"
+    fontWeight: 900
+    lineHeight: 0.9
+    letterSpacing: "-0.03em"
   headline:
-    fontFamily: "Moniqa, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "54px"
     fontWeight: 900
     lineHeight: 0.9
   headline-small:
-    fontFamily: "Moniqa, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "30px"
     fontWeight: 900
     lineHeight: 0.95
   title:
-    fontFamily: "Moniqa, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "24px"
     fontWeight: 900
     lineHeight: 1.1
   body:
-    fontFamily: "Instrument Sans, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.75
+  body-about:
+    fontFamily: "Geist Mono, monospace"
+    fontSize: "17px"
+    fontWeight: 400
+    lineHeight: 1.75
+  body-about-small:
+    fontFamily: "Geist Mono, monospace"
+    fontSize: "15px"
+    fontWeight: 400
+    lineHeight: 1.75
   body-small:
-    fontFamily: "Instrument Sans, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "13px"
     fontWeight: 400
     lineHeight: 1.75
@@ -53,7 +88,7 @@ typography:
     fontWeight: 500
     letterSpacing: "0.18em"
   hero-ambient:
-    fontFamily: "Moniqa, sans-serif"
+    fontFamily: "Geist Mono, monospace"
     fontSize: "18px"
     fontWeight: 900
     lineHeight: 1
@@ -123,6 +158,7 @@ A near-monochrome system: a cool light gray field with a single saturated blue, 
 
 ### Neutral
 - **Fog Paper** (#EDF0F5): The universal background and the color every extruded surface shares. Cards, nav shell, chips, and wells are all Fog Paper; separation comes only from shadow, never from a different fill.
+- **Deep Fog Paper** (#E3E8EF): The one tonal step below Fog Paper, used only for the alternating section sheets from Experience onward. It is a full-bleed section band, never a card or control fill; cards inside it stay Fog Paper and read as lighter paper laid on a deeper sheet.
 - **Shadow Tint** (#A3B1C6): The cool gray baked into every drop shadow's dark side. It is what makes the paper read as cool rather than dirty.
 - **Paper White** (`rgba(255,255,255,0.5–0.6)`): The highlight side of every shadow and the hairline border on labels and the scrolled nav. Never a solid white fill.
 - **Ink Black** (#000000, and 70% for softened prose): Body copy inside cards. Plain black, not gray, for primary reading text.
@@ -132,36 +168,46 @@ A near-monochrome system: a cool light gray field with a single saturated blue, 
 ### Named Rules
 **The One Ink Rule.** Ultramarine is ink, not paint. It appears on type, glyphs, and state indicators only; no component uses it as a large background fill. Its rarity is what makes it read as intentional.
 
-**The Single Paper Rule.** Every raised surface is the same Fog Paper as the page behind it. If a surface needs a different background to be legible, the shadow is wrong, not the color.
+**The Single Paper Rule.** Every raised surface is the same Fog Paper as the page behind it. If a surface needs a different background to be legible, the shadow is wrong, not the color. The only exception is the section sheet: a full-bleed band may use Deep Fog Paper to mark a new section, and cards inside it still use Fog Paper.
 
 ## Typography
 
-**Display Font:** Moniqa (with sans-serif fallback)
-**Body Font:** Instrument Sans (with sans-serif fallback)
-**Label Font:** Geist Mono for uppercase labels, metadata, tags, and nav tooltips.
+**Display Font:** Geist Mono, used for all text: headings, prose, labels, metadata, and controls.
+**Body Font:** Geist Mono (same family, regular weight).
+**Label Font:** Geist Mono at 500 for uppercase labels, metadata, tags, and nav tooltips.
 
-**Character:** A high-contrast display sans, Moniqa Black, set against a neutral grotesque for prose and Geist Mono for mechanical detail. The pairing is the system's emotional engine: confident statements, quiet explanation, precise annotation. Display type is tight and often lowercase ("designer", "curated works."), with occasional Moniqa italic accents ("Jason", "curated") that give headings a personal, editorial feel rather than corporate caps.
+**Character:** One typeface, one voice. Geist Mono carries the whole system: heavy 900 for statements and names, 400 for prose, 500 for labels. Because monospace fixes every glyph to the same width, hierarchy comes from size, weight, and ink rather than a face change; headings are tight and often lowercase ("curated works.", "beyond the code."). Italic display words are synthesised from Geist Mono and used sparingly as the only typographic flourish.
 
 ### Hierarchy
-- **Display** (900, 64px desktop / 40px mobile, line-height 0.95–1): Section announcements ("Hey, I'm Jason", "curated works."). Always Ultramarine and centered in the section, preceded by a Geist Mono eyebrow ("01 — About").
-- **Headline** (900, 54px desktop / 30–40px mobile, line-height 0.9): The "designer" and "developer" label cards in the hero. Tightest tracking, lowercase.
-- **Title** (900, 20–24px, line-height 1.1): Project card titles.
-- **Body** (400, 14px desktop / 13px mobile, line-height 1.75): Prose in About and Projects. Justified in the About card; centered for the Projects intro. Softened to 70% black.
-- **Label** (500, 10px, uppercase, wide tracking): Project tags, roles, and section eyebrows. Set in Geist Mono; nav tooltips use it at 11px.
-- **Hero ambient** (900, 11–26px, alphabetical word cloud): An intentional freeform scale, sized by word importance rather than a fixed step. This is the only place size is set by feel.
+- **Display** (Geist Mono 900, 64px desktop / 40px mobile, line-height 0.95–1): Section announcements ("curated works."). Always Ultramarine and centered in the section.
+- **About heading** (Geist Mono 900): one inline line. "hey, i'm" is 30px desktop / 22px mobile; "Jason" is 80px desktop / 48px mobile, tight tracking, same Ultramarine. "Jason" is always the larger, louder word, and its letters rise in a 55ms stagger.
+- **Headline** (Geist Mono 900, 54px desktop / 30–40px mobile, line-height 0.9): The "designer" and "developer" label cards in the hero. Tightest tracking, lowercase.
+- **Title** (Geist Mono 900, 20–24px, line-height 1.1): Project card titles.
+- **About body** (Geist Mono 400, 17px desktop / 15px mobile, line-height 1.75): Both About paragraphs share the same size and weight. The location, "Muntinlupa, Philippines", follows "Los Baños" in the first paragraph, set in 600 ink-black inline. "where AI is headed" is bolded the same way in the second. No markers or underlines.
+- **Body** (Geist Mono 400, 14px desktop / 13px mobile, line-height 1.75): Prose in Projects, Experience, Beyond, and Contact. Softened to 70% black.
+- **Label** (Geist Mono 500, 10px, uppercase, wide tracking): Project tags, roles, and metadata; nav tooltips use it at 11px.
+- **Hero ambient** (Geist Mono 900, 11–26px, alphabetical word cloud): An intentional freeform scale, sized by word importance rather than a fixed step. This is the only place size is set by feel.
 
 ### Named Rules
-**The Weight Gap Rule.** Display and body type must never sit near the same weight. If a heading looks merely bold, it is wrong; it should look pressed into the paper. Body copy stays at regular weight, and Moniqa italic is the only permitted accent inside a heading.
+**The Weight Gap Rule.** Display and body type must never sit near the same weight. If a heading looks merely bold, it is wrong; it should look pressed into the paper. Body copy stays at regular weight.
+
+**The Mono About Rule.** The About section is the one place where Geist Mono carries prose. Do not use colored inline words, serif accents, underlines, or marker highlights there; emphasis comes from scale, ink weight, and the single name reveal.
 
 ## Layout
 
 Single scrolling page, full-viewport sections, no visible grid lines. Content is centered with generous outer margins rather than a boxed container.
 
+**Section sheets.** From Experience onward, each section is its own full-bleed sheet of paper laid over the previous one. Alternate sheets take the Deep Fog Paper band; the others stay Fog Paper. Every sheet carries a 32px rounded top, a cool hairline seam with an inset white highlight, and an upward soft shadow so the next section reads as resting on top of the last. Where the browser supports scroll-driven animation, each sheet settles in (translate 30px, scale 0.992 → 1) over the first 30% of its entry; reduced-motion users get the sheet with no settle. Home and About stay directly on the page surface and are not sheeted.
+
 - **Hero:** full `min-h-screen`, absolutely composed. A centered portrait anchors the bottom; two label cards float at the sides (desktop: ~38% from top, inset 80px); a word cloud orbits the portrait; a soft gradient fades the portrait base into the paper.
-- **About:** two columns on desktop (text card + portrait), stacked on mobile. Text card capped near `max-w-110` (~440px) so body lines stay short; social row sits directly beneath.
+- **About:** two columns on desktop (Geist Mono copy column + portrait), stacked on mobile. The heading is one inline line ("hey, i'm Jason") with the name at 80/48px; body copy is uniform 17/15px mono with the location set inline. A résumé pill (Fog Paper at rest, Ultramarine wipe on hover) and three plain social icons close the column. The portrait sits on a soft drop shadow with its bottom edge fading into the paper.
+- **Experience:** centered heading and intro, then a plain two-column list capped at `max-w-4xl`: period and company on the left, role, context, and bullets on the right. No cards or timeline rail; entries rise in on scroll.
+- **Tools & Stack:** plain labeled rows on the paper (Tech Stacks, Languages, Databases, Tools, Design); items are separated by slashes with no chips or panel. Rows stagger in on scroll.
 - **Projects:** centered heading and intro, then a 1- or 2-column card grid capped at `max-w-5xl`, with generous `my-16`/`my-20` vertical breathing room.
+- **Beyond:** centered heading and a plain 3-column text grid capped at `max-w-5xl`; each column pairs a Lucide glyph and index with a short first-person facet. No cards.
+- **Contact:** two columns on desktop: an intro with four direct-link rows (email, LinkedIn, GitHub, résumé) beside underline form fields on the paper. No form card. The form opens the visitor's email app with the subject and body prefilled; no backend.
 - **Density:** spacious. Sections resolve to one idea each; whitespace is a material, not filler.
-- **Breakpoint:** a single behavioral breakpoint at `md` (768px). Below it, nav collapses to a hamburger overlay and multi-column layouts stack.
+- **Breakpoint:** a single behavioral breakpoint at `md` (768px). Below it, multi-column layouts stack and the dock compacts to 42px buttons under 420px.
 
 ## Elevation & Depth
 
@@ -196,9 +242,10 @@ Soft and rounded throughout; no sharp corners anywhere in the interface.
 
 ### Buttons
 - **Shape:** Full pill (`9999px`).
-- **Primary (nav item):** Quiet Gray text, transparent at rest, `px-4 py-2`. On hover, text shifts to Ultramarine and a chip-level outward shadow appears. The active item becomes Ultramarine on a Recess inset shadow.
-- **Hover / Focus:** Lift on hover, recess on active/selected, 300ms transition. Tap feedback on cards uses `translateY` and scale (1.03 up, 0.97 down).
-- **Icon (social):** 48px circle, Recess shadow at rest, Ultramarine glyph. Hover: swaps to a raised Chip shadow and scales to 1.10; glyph scales 1.10 and lightens to Ultramarine Hover. Active scales to 0.95.
+- **Résumé (primary):** Fog Paper pill with Ultramarine 10px Geist Mono uppercase label and a download glyph at rest. On hover a solid Ultramarine fill wipes in from the left, the label and icon turn white, and the pill lifts 2px; it presses with a slight scale on active.
+- **Primary (nav item):** Replaced by the clean magnification dock; see Navigation.
+- **Hover / Focus:** Lift on hover, press on active, 300ms transition. Tap feedback on cards uses `translateY` and scale (1.03 up, 0.97 down).
+- **Icon (social):** Plain 21px Ultramarine-free glyph in a 44px hit area, no circle or shadow. Color shifts from 60% ink to Ultramarine on hover with a 2px lift.
 
 ### Chips
 - **Style:** Ultramarine-free at rest: Quiet Gray 10px uppercase bold on Fog Paper with a Chip shadow. No border.
@@ -212,12 +259,12 @@ Soft and rounded throughout; no sharp corners anywhere in the interface.
 - **Internal Padding:** `p-6 md:p-8` (24→32px).
 
 ### Navigation
-- **Style:** A clean floating dock fixed 20px from the bottom, horizontally centered. A light neutral-gray pill (`bg-neutral-100/80`) holds 46px white circular buttons with a faint hairline ring and a soft drop shadow; no neumorphic inset or paired extruded shadows.
-- **Motion:** macOS-style magnification. Pointer distance drives each button's size through a spring (46px → 66px, stiffness 220, damping 18), and the icon scales with it. Disabled and reduced-motion states stay at base size.
-- **Icons:** 19px Lucide line icons at a 1.7 stroke. Active item is Ultramarine; inactive icons are neutral gray and darken on hover. Disabled items are muted and non-interactive.
+- **Style:** A clean floating dock fixed 20px from the bottom, horizontally centered. A light neutral-gray pill (`bg-neutral-100/80`) holds 46px white circular buttons with a faint hairline ring and a soft drop shadow; no neumorphic inset or paired extruded shadows. The dock carries seven sections: Home, About, Experience, Stack, Projects, Beyond, Contact.
+- **Motion:** macOS-style magnification. Pointer distance drives each button's size through a spring (46px → 66px, stiffness 220, damping 18), and the icon scales with it. On hover an Ultramarine fill wipes across the button from the left and the icon turns white. Disabled and reduced-motion states stay at base size.
+- **Icons:** 19px Lucide line icons at a 1.7 stroke. Active item is Ultramarine; inactive icons are neutral gray. Disabled items are muted and non-interactive.
 - **Tooltip:** A small white pill above the hovered button, set in 10px Geist Mono uppercase with wide tracking; disabled buttons append "Soon".
 - **Typography:** Icon-only with `aria-label`; Geist Mono is used only in tooltips.
-- **Mobile:** The same four-button dock is used at every breakpoint; touch does not trigger magnification or tooltips.
+- **Mobile:** Buttons compact to 42px under 420px so all seven fit; touch does not trigger magnification or tooltips.
 
 ### Signature: Hero Label Cards
 Two floating Fog Paper cards, "designer" and "developer", mirror-slide in from left and right. Each holds a 54px lowercase display word, a short 2px Ultramarine rule, and a 14px hairline description. They are the clearest expression of the whole system: heavy ink on a deep soft shadow, bordered by light.
@@ -237,5 +284,5 @@ Two floating Fog Paper cards, "designer" and "developer", mirror-slide in from l
 - **Don't** ship flat Material-style cards; if a surface has no paired shadow, it is not part of this system.
 - **Don't** use a single-offset shadow or a hard gray border in place of depth.
 - **Don't** fill a large area with Ultramarine; it stays an ink.
-- **Don't** set body copy in Geist Mono; mono is reserved for labels, metadata, and eyebrows.
+- **Don't** use Geist Mono for Projects prose; the About section is the intentional mono exception.
 - **Don't** use sharp corners anywhere.

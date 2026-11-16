@@ -55,17 +55,17 @@ function ProjectCard({ title, desc, tags, role, mark }) {
                 <span aria-hidden="true" className="text-primary/10 font-display font-black text-[64px] leading-none select-none">
                     {mark}
                 </span>
-                <span className="absolute bottom-4 left-5 right-5 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-muted">
-                    {role}
-                </span>
             </div>
-            <h3 className="text-2xl md:text-3xl text-primary font-display font-black leading-tight heading-balance">{title}</h3>
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 className="text-2xl md:text-3xl text-primary font-display font-black leading-tight heading-balance">{title}</h3>
+                <span className="font-mono text-[12px] text-muted">{role}</span>
+            </div>
             <p className="text-[13px] md:text-[14px] text-ink-soft font-body mt-3 leading-[1.75]">{desc}</p>
             <div className="flex flex-wrap gap-2 mt-4">
                 {tags.map((tag) => (
                     <span
                         key={tag}
-                        className="font-mono text-[10px] font-medium tracking-[0.08em] uppercase px-3 py-1.5 rounded-full shadow-neu-small text-muted"
+                        className="font-mono text-[11px] font-medium px-3 py-1 rounded-full shadow-neu-small text-ink-soft bg-surface"
                     >
                         {tag}
                     </span>
@@ -82,12 +82,9 @@ export default function Projects() {
         <div className="flex flex-col min-h-screen px-4 md:px-0">
             <Reveal from="up" duration={0.9}>
                 <div className="text-center pt-15">
-                    <span className="font-mono text-[10px] font-medium uppercase tracking-[0.32em] text-primary/60">
-                        02 — Selected Work
-                    </span>
-                    <p className="text-[40px] md:text-[64px] text-primary font-display font-black tracking-tight leading-[0.95] mt-3 heading-balance">
+                    <h2 id="projects-title" className="text-[40px] md:text-[64px] text-primary font-display font-black tracking-tight leading-[0.95] heading-balance">
                         <span className="font-normal italic">curated</span> works.
-                    </p>
+                    </h2>
                 </div>
             </Reveal>
             <Reveal from="up" delay={0.08}>
