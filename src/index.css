@@ -1,30 +1,6 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Moniqa';
-  src: url('./assets/fonts/Moniqa-BlackDisplay.otf') format('opentype');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Moniqa';
-  src: url('./assets/fonts/Moniqa-ItalicDisplay.otf') format('opentype');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Instrument Sans';
-  src: url('./assets/fonts/InstrumentSans-Variable.woff2') format('woff2');
-  font-weight: 400 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'Geist Mono';
   src: url('./assets/fonts/GeistMono-Variable.woff2') format('woff2');
   font-weight: 100 900;
@@ -33,11 +9,12 @@
 }
 
 @theme {
-  --font-display: 'Moniqa', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-body: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-body: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --color-surface: #EDF0F5;
+  --color-surface-deep: #E3E8EF;
   --color-primary: #0824A9;
   --color-primary-hover: #1D4ED8;
   --color-ink: #000000;
