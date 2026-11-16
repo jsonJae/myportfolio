@@ -276,7 +276,7 @@ export default function About() {
                             </span>
                         </motion.a>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2.5">
                             {links.map((link) => (
                                 <motion.a
                                     variants={reduced ? undefined : social}
@@ -285,9 +285,19 @@ export default function About() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label={link.label}
-                                    className="group inline-flex h-11 w-11 items-center justify-center rounded-full text-ink/60 transition-[color,transform] duration-300 ease-soft hover:-translate-y-0.5 hover:text-primary"
+                                    title={link.label}
+                                    className="group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-black/[0.08] bg-surface text-ink/75 shadow-[4px_4px_10px_rgba(163,177,198,0.5),-4px_-4px_10px_rgba(255,255,255,0.7)] transition-all duration-300 ease-soft hover:-translate-y-1 hover:border-primary/40 hover:text-primary hover:shadow-[6px_8px_16px_rgba(8,36,169,0.22),-4px_-4px_10px_rgba(255,255,255,0.8)] active:translate-y-0 active:scale-95 active:shadow-[inset_2px_2px_5px_rgba(163,177,198,0.6),inset_-2px_-2px_5px_rgba(255,255,255,0.7)]"
                                 >
-                                    <FontAwesomeIcon icon={link.icon} aria-hidden="true" className="text-[21px] transition-transform duration-300 ease-soft group-hover:scale-105" />
+                                    {/* Tactile micro-wipe hover layer */}
+                                    <span
+                                        aria-hidden="true"
+                                        className="pointer-events-none absolute inset-0 origin-bottom scale-y-0 rounded-full bg-primary/10 transition-transform duration-300 ease-soft group-hover:scale-y-100"
+                                    />
+                                    <FontAwesomeIcon
+                                        icon={link.icon}
+                                        aria-hidden="true"
+                                        className="relative z-10 text-[18px] transition-transform duration-300 ease-soft group-hover:scale-110 group-hover:text-primary"
+                                    />
                                 </motion.a>
                             ))}
                         </div>

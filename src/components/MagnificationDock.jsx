@@ -14,6 +14,7 @@ function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring,
     const ref = useRef(null);
     const [hovered, setHovered] = useState(false);
     const isDisabled = Boolean(item.disabled);
+    const isActive = Boolean(item.active);
     const maxSize = isDisabled || reduceMotion ? baseItemSize : magnification;
 
     const mouseDistance = useTransform(mouseX, (value) => {
@@ -34,11 +35,13 @@ function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring,
         [1, 1.15],
     );
 
+    const isWiped = (hovered || isActive) && !isDisabled;
+
     const label = typeof item.label === 'string' ? item.label : item.ariaLabel ?? '';
     const stateClasses = isDisabled
         ? 'cursor-not-allowed border-black/5 bg-white/50 text-neutral-300'
-        : item.active
-          ? 'border-primary/15 bg-white text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)]'
+        : isActive
+          ? 'border-primary bg-primary text-white shadow-[0_4px_16px_-4px_rgba(8,36,169,0.45)]'
           : 'border-black/[0.05] bg-white text-neutral-600 shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:text-neutral-950 hover:shadow-[0_4px_14px_-4px_rgba(15,23,42,0.2)]';
 
     return (
@@ -49,7 +52,7 @@ function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring,
                 if (!isDisabled) item.onClick?.();
             }}
             aria-label={isDisabled ? `${label} (coming soon)` : label}
-            aria-current={item.active ? 'location' : undefined}
+            aria-current={isActive ? 'location' : undefined}
             aria-disabled={isDisabled || undefined}
             tabIndex={isDisabled ? -1 : undefined}
             onPointerEnter={(event) => {
@@ -61,19 +64,19 @@ function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring,
             }}
             onBlur={() => setHovered(false)}
             style={{ width: size, height: size }}
-            className={`relative flex shrink-0 items-center justify-center rounded-full border outline-offset-4 transition-[color,background-color,border-color,box-shadow] duration-300 ease-soft ${stateClasses} ${item.className ?? ''}`}
+            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border outline-offset-4 transition-[color,background-color,border-color,box-shadow] duration-300 ease-soft ${stateClasses} ${item.className ?? ''}`}
         >
             <span
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-transform duration-300 ease-soft ${
-                    hovered && !isDisabled ? 'scale-x-100' : 'scale-x-0'
+                    isWiped ? 'scale-x-100' : 'scale-x-0'
                 }`}
             />
             <motion.span
                 aria-hidden="true"
                 style={{ scale: iconScale }}
                 className={`pointer-events-none relative z-10 flex items-center justify-center transition-colors duration-300 ${
-                    hovered && !isDisabled ? 'text-white' : ''
+                    isWiped ? 'text-white' : ''
                 }`}
             >
                 {item.icon}
@@ -121,16 +124,16 @@ export function MagnificationDock({
 
     return (
         <motion.div
-            onPointerMove={(event) => {
-                if (event.pointerType !== 'touch') mouseX.set(event.clientX);
-            }}
-            onPointerLeave={() => mouseX.set(Infinity)}
+            onMouseMove={(e) => mouseX.set(e.pageX)}
+            onMouseLeave={() => mouseX.set(Infinity)}
             style={{ height: panelHeight }}
-            className={`flex w-fit items-end gap-1.5 rounded-full border border-black/[0.04] bg-neutral-100/80 px-2 py-2 shadow-[0_16px_40px_-16px_rgba(15,23,42,0.35)] ring-1 ring-black/[0.02] backdrop-blur-xl md:gap-2 ${className}`}
+            className={`inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-surface/80 p-2 shadow-[0_12px_36px_-8px_rgba(15,23,42,0.18)] backdrop-blur-md ${className}`}
+            role="toolbar"
+            aria-orientation="horizontal"
         >
-            {items.map((item, index) => (
+            {items.map((item, idx) => (
                 <DockItem
-                    key={index}
+                    key={item.label || idx}
                     item={item}
                     mouseX={mouseX}
                     distance={safeDistance}
@@ -143,5 +146,3 @@ export function MagnificationDock({
         </motion.div>
     );
 }
-
-export default MagnificationDock;
