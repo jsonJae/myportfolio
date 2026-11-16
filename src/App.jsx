@@ -1,10 +1,11 @@
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
-import Projects from './components/Projects';
-import Skills from './components/Skills';
 import Experiences from './components/Experiences';
-import Footer from './components/Footer';
+import Skills from './components/Skills';
+import Projects from './components/Projects';
+import Beyond from './components/Beyond';
+import Contact from './components/Contact';
 
 function App() {
   return (
@@ -12,10 +13,11 @@ function App() {
       <Navbar />
       <section id="home" className="scroll-mt-20"><Hero /></section>
       <section id="about" className="scroll-mt-20"><About /></section>
-      <section id="projects" className="scroll-mt-20"><Projects /></section>
-      <Skills />
-      <Experiences />
-      <Footer />
+      <section id="experiences" aria-labelledby="experiences-title" className="scroll-mt-20"><Experiences /></section>
+      <section id="stack" aria-labelledby="stack-title" className="scroll-mt-20"><Skills /></section>
+      <section id="projects" aria-labelledby="projects-title" className="scroll-mt-20"><Projects /></section>
+      <section id="beyond" aria-labelledby="beyond-title" className="scroll-mt-20"><Beyond /></section>
+      <section id="contact" aria-labelledby="contact-title" className="scroll-mt-20"><Contact /></section>
     </div>
   );
 }
