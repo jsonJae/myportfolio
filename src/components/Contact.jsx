@@ -26,7 +26,7 @@ const links = [
     },
     {
         icon: faFilePdf,
-        label: 'Résumé',
+        label: 'Resume',
         value: 'PDF · download',
         href: '/DURAN-RESUME.pdf',
         download: true,
@@ -175,7 +175,7 @@ export default function Contact() {
             </div>
 
             <p className="mt-16 text-center font-mono text-[11px] text-muted/80">
-                © {new Date().getFullYear()} Jason Gian Duran · Muntinlupa, Philippines
+                © {new Date().getFullYear()} Jason Gian Duran · Muntinlupa, Metro Manila, Philippines
             </p>
         </div>
     );
