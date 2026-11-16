@@ -54,10 +54,10 @@ function DockItem({
     const stateClasses = isDisabled
         ? 'cursor-not-allowed border-black/5 bg-white/50 text-neutral-300'
         : isActive
-            ? isDimmed
-                ? 'border-primary/30 bg-primary/40 text-white/80 shadow-[0_2px_6px_-2px_rgba(8,36,169,0.2)]'
-                : 'border-primary bg-primary text-white shadow-[0_4px_16px_-4px_rgba(8,36,169,0.45)]'
-            : 'border-black/[0.05] bg-white text-neutral-600 shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:text-neutral-950 hover:shadow-[0_4px_14px_-4px_rgba(15,23,42,0.2)]';
+          ? isDimmed
+              ? 'border-primary/30 bg-primary/40 text-white/80 shadow-[0_2px_6px_-2px_rgba(8,36,169,0.2)]'
+              : 'border-primary bg-primary text-white shadow-[0_4px_16px_-4px_rgba(8,36,169,0.45)]'
+          : 'border-black/[0.05] bg-white text-neutral-600 shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:text-neutral-950 hover:shadow-[0_4px_14px_-4px_rgba(15,23,42,0.2)]';
 
     return (
         <div className="relative flex items-center justify-center">
@@ -109,14 +109,16 @@ function DockItem({
             >
                 <span
                     aria-hidden="true"
-                    className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-all duration-300 ease-soft ${isWiped ? 'scale-x-100' : 'scale-x-0'
-                        } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+                    className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-all duration-300 ease-soft ${
+                        isWiped ? 'scale-x-100' : 'scale-x-0'
+                    } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
                 />
                 <motion.span
                     aria-hidden="true"
                     style={{ scale: iconScale }}
-                    className={`pointer-events-none relative z-10 flex items-center justify-center transition-colors duration-300 ${isWiped ? (isDimmed ? 'text-white/80' : 'text-white') : ''
-                        }`}
+                    className={`pointer-events-none relative z-10 flex items-center justify-center transition-colors duration-300 ${
+                        isWiped ? (isDimmed ? 'text-white/80' : 'text-white') : ''
+                    }`}
                 >
                     {item.icon}
                 </motion.span>

@@ -19,56 +19,18 @@ const intro = {
     show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } },
 }
 
-// Kinetic greeting variants
-const heyVariant = {
-    hidden: { opacity: 0, y: 22, rotate: -8, filter: 'blur(6px)' },
+// Kinetic title variants for "About Me"
+const titleWordVariant = {
+    hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
     show: {
         opacity: 1,
         y: 0,
-        rotate: 0,
         filter: 'blur(0px)',
         transition: {
             type: 'spring',
-            stiffness: 260,
+            stiffness: 280,
             damping: 18,
             mass: 0.8,
-        },
-    },
-}
-
-const imVariant = {
-    hidden: { opacity: 0, y: 18, filter: 'blur(5px)' },
-    show: {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        transition: {
-            type: 'spring',
-            stiffness: 260,
-            damping: 20,
-            mass: 0.8,
-            delay: 0.06,
-        },
-    },
-}
-
-const nameGroup = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.055, delayChildren: 0.16 } },
-}
-
-const letterEntrance = {
-    hidden: { opacity: 0, y: 32, scale: 0.85, filter: 'blur(6px)' },
-    show: {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        filter: 'blur(0px)',
-        transition: {
-            type: 'spring',
-            stiffness: 320,
-            damping: 16,
-            mass: 0.75,
         },
     },
 }
@@ -95,16 +57,10 @@ const social = {
     show: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 320, damping: 18 } },
 }
 
-const letterTilts = [-5, 4, -4, 5, -3];
-
 export default function About() {
     const reduced = useReducedMotion();
     const animate = reduced ? undefined : 'show';
     const initial = reduced ? false : 'hidden';
-
-    // Interactive ripple wave counter for "Jason"
-    const [waveId, setWaveId] = useState(0);
-    const triggerWave = () => setWaveId((v) => v + 1);
 
     // Active tooltip state for social icon buttons
     const [activeTooltip, setActiveTooltip] = useState(null);
@@ -148,112 +104,15 @@ export default function About() {
                 >
                     <h2
                         id="about-title"
-                        aria-label="hey, I’m Jason"
-                        className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-primary select-none"
+                        className="font-display text-[42px] font-black leading-[0.95] tracking-tight text-primary heading-balance select-none sm:text-[52px] md:text-[68px]"
                     >
-                        {/* Friendly animated greeting */}
-                        <span className="inline-flex items-baseline gap-x-2 overflow-visible">
-                            <motion.span
-                                variants={reduced ? undefined : heyVariant}
-                                className="inline-block overflow-visible"
-                            >
-                                <motion.span
-                                    whileHover={
-                                        reduced
-                                            ? undefined
-                                            : {
-                                                  rotate: [0, -10, 10, -5, 5, 0],
-                                                  scale: 1.08,
-                                                  transition: { duration: 0.55, ease: 'easeInOut' },
-                                              }
-                                    }
-                                    whileTap={reduced ? undefined : { scale: 0.94 }}
-                                    className="inline-block cursor-pointer font-display text-[30px] font-medium italic leading-normal tracking-[-0.02em] text-primary/80 will-change-transform md:text-[44px]"
-                                    title="Say hey!"
-                                >
-                                    hey,
-                                </motion.span>
-                            </motion.span>
-
-                            <motion.span
-                                variants={reduced ? undefined : imVariant}
-                                className="inline-block overflow-visible"
-                            >
-                                <motion.span
-                                    whileHover={
-                                        reduced
-                                            ? undefined
-                                            : {
-                                                  y: -4,
-                                                  scale: 1.06,
-                                                  transition: { type: 'spring', stiffness: 400, damping: 15 },
-                                              }
-                                    }
-                                    className="inline-block font-display text-[30px] font-medium italic leading-normal tracking-[-0.02em] text-primary/80 will-change-transform md:text-[44px]"
-                                >
-                                    I’m
-                                </motion.span>
-                            </motion.span>
-                        </span>
-
-                        {/* Interactive kinetic name with tactile spring physics and click ripple */}
-                        <span className="inline-block overflow-visible">
-                            <motion.span
-                                variants={reduced ? undefined : nameGroup}
-                                onClick={triggerWave}
-                                title="Click for ripple wave"
-                                className="inline-flex cursor-pointer font-display text-[56px] font-black leading-normal tracking-[-0.045em] text-primary md:text-[88px]"
-                            >
-                                {['J', 'a', 's', 'o', 'n'].map((char, index) => (
-                                    <motion.span
-                                        key={`${char}-${index}`}
-                                        variants={reduced ? undefined : letterEntrance}
-                                        className="inline-block overflow-visible"
-                                    >
-                                        <motion.span
-                                            whileHover={
-                                                reduced
-                                                    ? undefined
-                                                    : {
-                                                          y: -16,
-                                                          scale: 1.15,
-                                                          rotate: letterTilts[index],
-                                                          filter: 'drop-shadow(0 14px 22px rgba(8,36,169,0.35))',
-                                                          transition: { type: 'spring', stiffness: 450, damping: 14 },
-                                                      }
-                                            }
-                                            whileTap={
-                                                reduced
-                                                    ? undefined
-                                                    : {
-                                                          y: 3,
-                                                          scale: 0.93,
-                                                          filter: 'drop-shadow(0 2px 4px rgba(8,36,169,0.18))',
-                                                          transition: { type: 'spring', stiffness: 600, damping: 20 },
-                                                      }
-                                            }
-                                            animate={
-                                                waveId > 0 && !reduced
-                                                    ? {
-                                                          y: [0, -22, 0],
-                                                          rotate: [0, letterTilts[index] * 1.8, 0],
-                                                          scale: [1, 1.15, 1],
-                                                          transition: {
-                                                              duration: 0.5,
-                                                              delay: index * 0.055,
-                                                              ease: [0.34, 1.56, 0.64, 1],
-                                                          },
-                                                      }
-                                                    : undefined
-                                            }
-                                            className="inline-block transition-[color] will-change-transform"
-                                        >
-                                            {char}
-                                        </motion.span>
-                                    </motion.span>
-                                ))}
-                            </motion.span>
-                        </span>
+                        <motion.span
+                            variants={reduced ? undefined : titleWordVariant}
+                            className="inline-block overflow-visible"
+                        >
+                            <span className="font-normal italic">About</span>{' '}
+                            <span>Me.</span>
+                        </motion.span>
                     </h2>
 
                     <div className="mt-8 max-w-[40rem]">
