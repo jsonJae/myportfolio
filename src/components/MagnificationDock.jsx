@@ -10,9 +10,20 @@ import {
 
 const DEFAULT_SPRING = { mass: 0.1, stiffness: 220, damping: 18 };
 
-function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring, reduceMotion }) {
+function DockItem({
+    item,
+    mouseX,
+    distance,
+    baseItemSize,
+    magnification,
+    spring,
+    reduceMotion,
+    isHovered,
+    isAnyHovered,
+    onHoverStart,
+    onHoverEnd,
+}) {
     const ref = useRef(null);
-    const [hovered, setHovered] = useState(false);
     const isDisabled = Boolean(item.disabled);
     const isActive = Boolean(item.active);
     const maxSize = isDisabled || reduceMotion ? baseItemSize : magnification;
@@ -35,13 +46,17 @@ function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring,
         [1, 1.15],
     );
 
-    const isWiped = (hovered || isActive) && !isDisabled;
+    // If another item is hovered while this item is the active section, dim it slightly as an anchor reference
+    const isDimmed = isActive && isAnyHovered && !isHovered;
+    const isWiped = (isHovered || isActive) && !isDisabled;
 
     const label = typeof item.label === 'string' ? item.label : item.ariaLabel ?? '';
     const stateClasses = isDisabled
         ? 'cursor-not-allowed border-black/5 bg-white/50 text-neutral-300'
         : isActive
-          ? 'border-primary bg-primary text-white shadow-[0_4px_16px_-4px_rgba(8,36,169,0.45)]'
+          ? isDimmed
+              ? 'border-primary/30 bg-primary/40 text-white/80 shadow-[0_2px_6px_-2px_rgba(8,36,169,0.2)]'
+              : 'border-primary bg-primary text-white shadow-[0_4px_16px_-4px_rgba(8,36,169,0.45)]'
           : 'border-black/[0.05] bg-white text-neutral-600 shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:text-neutral-950 hover:shadow-[0_4px_14px_-4px_rgba(15,23,42,0.2)]';
 
     return (
@@ -56,34 +71,34 @@ function DockItem({ item, mouseX, distance, baseItemSize, magnification, spring,
             aria-disabled={isDisabled || undefined}
             tabIndex={isDisabled ? -1 : undefined}
             onPointerEnter={(event) => {
-                if (event.pointerType !== 'touch') setHovered(true);
+                if (event.pointerType !== 'touch') onHoverStart();
             }}
-            onPointerLeave={() => setHovered(false)}
+            onPointerLeave={onHoverEnd}
             onFocus={(event) => {
-                if (event.target.matches(':focus-visible')) setHovered(true);
+                if (event.target.matches(':focus-visible')) onHoverStart();
             }}
-            onBlur={() => setHovered(false)}
+            onBlur={onHoverEnd}
             style={{ width: size, height: size }}
-            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border outline-offset-4 transition-[color,background-color,border-color,box-shadow] duration-300 ease-soft ${stateClasses} ${item.className ?? ''}`}
+            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border outline-offset-4 transition-[color,background-color,border-color,box-shadow,opacity] duration-300 ease-soft ${stateClasses} ${item.className ?? ''}`}
         >
             <span
                 aria-hidden="true"
-                className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-transform duration-300 ease-soft ${
+                className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-all duration-300 ease-soft ${
                     isWiped ? 'scale-x-100' : 'scale-x-0'
-                }`}
+                } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
             />
             <motion.span
                 aria-hidden="true"
                 style={{ scale: iconScale }}
                 className={`pointer-events-none relative z-10 flex items-center justify-center transition-colors duration-300 ${
-                    isWiped ? 'text-white' : ''
+                    isWiped ? (isDimmed ? 'text-white/80' : 'text-white') : ''
                 }`}
             >
                 {item.icon}
             </motion.span>
 
             <AnimatePresence>
-                {hovered && (
+                {isHovered && (
                     <motion.span
                         role="tooltip"
                         initial={{ opacity: 0, y: 4 }}
@@ -121,11 +136,15 @@ export function MagnificationDock({
     const mouseX = useMotionValue(Infinity);
     const reduceMotion = Boolean(useReducedMotion());
     const safeDistance = Math.max(distance, 1);
+    const [hoveredIdx, setHoveredIdx] = useState(null);
 
     return (
         <motion.div
             onMouseMove={(e) => mouseX.set(e.pageX)}
-            onMouseLeave={() => mouseX.set(Infinity)}
+            onMouseLeave={() => {
+                mouseX.set(Infinity);
+                setHoveredIdx(null);
+            }}
             style={{ height: panelHeight }}
             className={`inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-surface/80 p-2 shadow-[0_12px_36px_-8px_rgba(15,23,42,0.18)] backdrop-blur-md ${className}`}
             role="toolbar"
@@ -141,6 +160,10 @@ export function MagnificationDock({
                     magnification={magnification}
                     spring={spring}
                     reduceMotion={reduceMotion}
+                    isHovered={hoveredIdx === idx}
+                    isAnyHovered={hoveredIdx !== null}
+                    onHoverStart={() => setHoveredIdx(idx)}
+                    onHoverEnd={() => setHoveredIdx(null)}
                 />
             ))}
         </motion.div>

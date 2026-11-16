@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { ArrowDownToLine } from 'lucide-react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 
 import aboutMePic from '../assets/AboutMePic.png';
 
@@ -106,11 +106,35 @@ export default function About() {
     const [waveId, setWaveId] = useState(0);
     const triggerWave = () => setWaveId((v) => v + 1);
 
+    // Active tooltip state for social icon buttons
+    const [activeTooltip, setActiveTooltip] = useState(null);
+
     const links = [
-        { icon: faGithub, label: 'GitHub', href: 'https://github.com/jsonJae' },
-        { icon: faLinkedinIn, label: 'LinkedIn', href: 'https://www.linkedin.com/in/jason-gian-duran-4754a7355?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app' },
-        { icon: faEnvelope, label: 'Email', href: 'mailto:jasongian28@gmail.com' },
-    ]
+        {
+            icon: faGithub,
+            label: 'GitHub',
+            ariaLabel: 'GitHub profile',
+            href: 'https://github.com/jsonJae',
+            isExternal: true,
+            iconClass: 'text-[17px]', // GitHub normalized optical scale
+        },
+        {
+            icon: faLinkedinIn,
+            label: 'LinkedIn',
+            ariaLabel: 'LinkedIn profile',
+            href: 'https://www.linkedin.com/in/jason-gian-duran-4754a7355?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app',
+            isExternal: true,
+            iconClass: 'text-[16px]', // LinkedIn normalized optical scale
+        },
+        {
+            icon: faEnvelope,
+            label: 'Email',
+            ariaLabel: 'Send email',
+            href: 'mailto:jasongian28@gmail.com',
+            isExternal: false,
+            iconClass: 'text-[14.5px]', // Envelope normalized optical weight to prevent looking heavy
+        },
+    ];
 
     return (
         <section aria-labelledby="about-title" className="flex min-h-screen items-center justify-center px-4 py-24 md:px-8">
@@ -251,21 +275,21 @@ export default function About() {
                         </motion.p>
                     </div>
 
-                    <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                    <div className="mt-8 flex flex-wrap items-center gap-3.5 sm:gap-4">
                         <motion.a
                             variants={reduced ? undefined : line}
                             href="/DURAN-RESUME.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
                             download
-                            className="group relative inline-flex items-center overflow-hidden rounded-full border border-primary/35 bg-transparent px-6 py-3 font-display text-[13px] font-bold tracking-[0.03em] text-primary transition-all duration-300 ease-soft hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_14px_28px_-10px_rgba(8,36,169,0.45)] active:translate-y-0 active:scale-[0.98] md:text-[14px]"
+                            className="group relative inline-flex h-11 items-center overflow-hidden rounded-full border border-primary/35 bg-surface/50 px-5 font-display text-[13px] font-bold tracking-[0.03em] text-primary shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-soft hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_12px_24px_-8px_rgba(8,36,169,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:translate-y-0 active:scale-[0.98] active:shadow-[inset_0_2px_4px_rgba(8,36,169,0.15)] md:text-[14px]"
                         >
                             {/* Wipe backdrop fill matching navbar dock */}
                             <span
                                 aria-hidden="true"
                                 className="pointer-events-none absolute inset-0 origin-left scale-x-0 rounded-full bg-primary transition-transform duration-300 ease-soft group-hover:scale-x-100"
                             />
-                            <span className="relative z-10 inline-flex items-center gap-2.5 transition-colors duration-300 group-hover:text-white">
+                            <span className="relative z-10 inline-flex items-center gap-2 transition-colors duration-300 group-hover:text-white">
                                 <ArrowDownToLine
                                     size={15}
                                     strokeWidth={2}
@@ -276,30 +300,57 @@ export default function About() {
                             </span>
                         </motion.a>
 
-                        <div className="flex items-center gap-2.5">
-                            {links.map((link) => (
-                                <motion.a
-                                    variants={reduced ? undefined : social}
-                                    key={link.label}
-                                    href={link.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label={link.label}
-                                    title={link.label}
-                                    className="group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-black/[0.08] bg-surface text-ink/75 shadow-[4px_4px_10px_rgba(163,177,198,0.5),-4px_-4px_10px_rgba(255,255,255,0.7)] transition-all duration-300 ease-soft hover:-translate-y-1 hover:border-primary/40 hover:text-primary hover:shadow-[6px_8px_16px_rgba(8,36,169,0.22),-4px_-4px_10px_rgba(255,255,255,0.8)] active:translate-y-0 active:scale-95 active:shadow-[inset_2px_2px_5px_rgba(163,177,198,0.6),inset_-2px_-2px_5px_rgba(255,255,255,0.7)]"
-                                >
-                                    {/* Tactile micro-wipe hover layer */}
-                                    <span
-                                        aria-hidden="true"
-                                        className="pointer-events-none absolute inset-0 origin-bottom scale-y-0 rounded-full bg-primary/10 transition-transform duration-300 ease-soft group-hover:scale-y-100"
-                                    />
-                                    <FontAwesomeIcon
-                                        icon={link.icon}
-                                        aria-hidden="true"
-                                        className="relative z-10 text-[18px] transition-transform duration-300 ease-soft group-hover:scale-110 group-hover:text-primary"
-                                    />
-                                </motion.a>
-                            ))}
+                        <div className="flex items-center gap-3">
+                            {links.map((link) => {
+                                const isHovered = activeTooltip === link.label;
+                                return (
+                                    <div key={link.label} className="relative flex items-center justify-center">
+                                        <motion.a
+                                            variants={reduced ? undefined : social}
+                                            href={link.href}
+                                            {...(link.isExternal
+                                                ? { target: '_blank', rel: 'noopener noreferrer' }
+                                                : {})}
+                                            aria-label={link.ariaLabel}
+                                            onMouseEnter={() => setActiveTooltip(link.label)}
+                                            onMouseLeave={() => setActiveTooltip(null)}
+                                            onFocus={() => setActiveTooltip(link.label)}
+                                            onBlur={() => setActiveTooltip(null)}
+                                            className="group relative flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center overflow-hidden rounded-full border border-primary/25 bg-surface text-ink/75 shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-all duration-300 ease-soft hover:-translate-y-0.5 hover:border-primary hover:text-primary hover:shadow-[0_10px_22px_-6px_rgba(8,36,169,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:translate-y-0 active:scale-95 active:shadow-[inset_0_2px_4px_rgba(8,36,169,0.15)]"
+                                        >
+                                            {/* Tactile micro-wipe hover layer */}
+                                            <span
+                                                aria-hidden="true"
+                                                className="pointer-events-none absolute inset-0 origin-bottom scale-y-0 rounded-full bg-primary/10 transition-transform duration-300 ease-soft group-hover:scale-y-100"
+                                            />
+                                            <FontAwesomeIcon
+                                                icon={link.icon}
+                                                aria-hidden="true"
+                                                className={`relative z-10 ${link.iconClass} transition-transform duration-300 ease-soft group-hover:scale-110 group-hover:text-primary`}
+                                            />
+                                        </motion.a>
+
+                                        {/* Accessible non-clipping tooltip */}
+                                        <AnimatePresence>
+                                            {isHovered && (
+                                                <motion.span
+                                                    role="tooltip"
+                                                    initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, y: 4, scale: 0.96 }}
+                                                    transition={{
+                                                        duration: reduced ? 0 : 0.16,
+                                                        ease: [0.16, 1, 0.3, 1],
+                                                    }}
+                                                    className="pointer-events-none absolute -top-8.5 z-30 whitespace-nowrap rounded-md border border-black/[0.08] bg-surface px-2 py-0.5 font-mono text-[10px] font-medium tracking-[0.04em] text-ink shadow-[0_4px_12px_rgba(15,23,42,0.12)]"
+                                                >
+                                                    {link.label}
+                                                </motion.span>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </motion.div>
