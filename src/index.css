@@ -1,6 +1,22 @@
 @import "tailwindcss";
 
 @font-face {
+  font-family: 'Fraunces';
+  src: url('./assets/fonts/Fraunces-Variable.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('./assets/fonts/Fraunces-Variable.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Geist Mono';
   src: url('./assets/fonts/GeistMono-Variable.woff2') format('woff2');
   font-weight: 100 900;
@@ -9,7 +25,7 @@
 }
 
 @theme {
-  --font-display: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
   --font-body: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 

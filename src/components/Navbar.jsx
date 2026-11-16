@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, UserRound, Briefcase, Layers, LayoutGrid, Sparkles, Mail } from 'lucide-react';
 import { MagnificationDock } from './MagnificationDock';
 
@@ -12,7 +12,7 @@ const navItems = [
     { label: 'Contact', id: 'contact', Icon: Mail },
 ];
 
-export default function Navbar() {
+export default function Navbar({ onNavigate }) {
     const [activeSection, setActiveSection] = useState('home');
     const [compact, setCompact] = useState(false);
 
@@ -46,10 +46,14 @@ export default function Navbar() {
 
     const scrollTo = (id) => {
         if (!id) return;
-        const el = document.getElementById(id);
-        if (!el) return;
-        const top = el.getBoundingClientRect().top + window.scrollY - 24;
-        window.scrollTo({ top, behavior: 'smooth' });
+        if (onNavigate) {
+            onNavigate(id);
+        } else {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const top = el.getBoundingClientRect().top + window.scrollY - 24;
+            window.scrollTo({ top, behavior: 'smooth' });
+        }
     };
 
     const dockItems = navItems.map((item) => ({
