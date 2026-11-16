@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
-import { faEnvelope, faDownload } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { ArrowDownToLine } from 'lucide-react'
 import { motion, useReducedMotion } from 'framer-motion'
 
 import aboutMePic from '../assets/AboutMePic.png';
@@ -20,6 +21,16 @@ const intro = {
 const word = {
     hidden: { y: '112%' },
     show: { y: '0%', transition: { duration: 1.05, ease } },
+}
+
+const nameGroup = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.055, delayChildren: 0.12 } },
+}
+
+const letter = {
+    hidden: { y: '118%' },
+    show: { y: '0%', transition: { duration: 0.85, ease } },
 }
 
 const line = {
@@ -49,11 +60,6 @@ export default function About() {
     const animate = reduced ? undefined : 'show';
     const initial = reduced ? false : 'hidden';
 
-    const sentences = [
-        "I'm a Computer Science senior at the University of the Philippines Los Baños who builds full-stack web and cross-platform mobile products end to end.",
-        "Design and engineering stay side by side in my work, and right now I'm most curious about where AI is headed.",
-    ]
-
     const links = [
         { icon: faGithub, label: 'GitHub', href: 'https://github.com/jsonJae' },
         { icon: faLinkedinIn, label: 'LinkedIn', href: 'https://www.linkedin.com/in/jason-gian-duran-4754a7355?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app' },
@@ -70,48 +76,75 @@ export default function About() {
                     viewport={{ once: true, margin: '-100px' }}
                     className="flex flex-col items-center text-center md:items-start md:text-left"
                 >
-                    <h2
-                        id="about-title"
-                        className="text-[40px] md:text-[64px] text-primary font-display font-black tracking-tight leading-[0.95] heading-balance"
-                    >
-                        {['Hey,', "I'm", 'Jason'].map((text, index) => (
-                            <span
-                                key={text}
-                                className={`inline-block overflow-hidden align-bottom pb-[0.14em] -mb-[0.14em]${index < 2 ? ' mr-[0.22em]' : ''}`}
+                    <h2 id="about-title" className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1 text-primary">
+                        <span className="inline-block overflow-hidden pb-[0.22em] -mb-[0.22em]">
+                            <motion.span
+                                variants={reduced ? undefined : word}
+                                className="inline-block font-display text-[30px] font-medium italic leading-none tracking-[-0.02em] text-primary/80 md:text-[44px]"
                             >
-                                <motion.span
-                                    variants={reduced ? undefined : word}
-                                    className={`inline-block${index === 2 ? ' font-normal italic' : ''}`}
-                                >
-                                    {text}
-                                </motion.span>
-                            </span>
-                        ))}
+                                hey, I’m
+                            </motion.span>
+                        </span>
+                        <span className="inline-block overflow-hidden pb-[0.18em] -mb-[0.18em]">
+                            <motion.span
+                                variants={reduced ? undefined : nameGroup}
+                                className="inline-flex font-display text-[56px] font-black leading-[0.92] tracking-[-0.045em] text-primary md:text-[88px]"
+                            >
+                                {['J', 'a', 's', 'o', 'n'].map((char) => (
+                                    <motion.span
+                                        key={char}
+                                        variants={reduced ? undefined : letter}
+                                        className="inline-block"
+                                    >
+                                        {char}
+                                    </motion.span>
+                                ))}
+                            </motion.span>
+                        </span>
                     </h2>
 
-                    <div className="mt-7 max-w-[36rem] space-y-5">
-                        {sentences.map((sentence) => (
-                            <motion.p
-                                key={sentence}
-                                variants={reduced ? undefined : line}
-                                className="text-[15px] md:text-[16px] text-ink-soft font-body leading-[1.8]"
-                            >
-                                {sentence}
-                            </motion.p>
-                        ))}
+                    <div className="mt-8 max-w-[40rem]">
+                        <motion.p
+                            variants={reduced ? undefined : line}
+                            className="text-pretty font-mono text-[15px] leading-[1.75] text-ink-soft md:text-[17px]"
+                        >
+                            I’m a Computer Science senior at the University of the Philippines Los Baños, based in{' '}
+                            <strong className="font-semibold text-ink">Muntinlupa, Philippines</strong>. I build
+                            full-stack web and cross-platform mobile products end to end.
+                        </motion.p>
+
+                        <motion.p
+                            variants={reduced ? undefined : line}
+                            className="mt-5 font-mono text-[15px] leading-[1.75] text-ink-soft md:text-[17px]"
+                        >
+                            Design and engineering stay side by side in my work, and right now I’m most curious about{' '}
+                            <strong className="font-semibold text-ink">where AI is headed</strong>.
+                        </motion.p>
                     </div>
 
-                    <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+                    <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
                         <motion.a
                             variants={reduced ? undefined : line}
                             href="/DURAN-RESUME.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
                             download
-                            className="group inline-flex items-center gap-2.5 rounded-full border border-black/[0.06] bg-white px-5 py-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] transition-[transform,box-shadow,border-color] duration-300 ease-soft hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-[0_10px_24px_-10px_rgba(8,36,169,0.45)] active:translate-y-0"
+                            className="group relative inline-flex items-center overflow-hidden rounded-full border border-primary/35 bg-transparent px-6 py-3 font-display text-[13px] font-bold tracking-[0.03em] text-primary transition-all duration-300 ease-soft hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_14px_28px_-10px_rgba(8,36,169,0.45)] active:translate-y-0 active:scale-[0.98] md:text-[14px]"
                         >
-                            <FontAwesomeIcon icon={faDownload} aria-hidden="true" className="text-[14px] transition-transform duration-300 ease-soft group-hover:translate-y-0.5" />
-                            Résumé
+                            {/* Wipe backdrop fill matching navbar dock */}
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-0 origin-left scale-x-0 rounded-full bg-primary transition-transform duration-300 ease-soft group-hover:scale-x-100"
+                            />
+                            <span className="relative z-10 inline-flex items-center gap-2.5 transition-colors duration-300 group-hover:text-white">
+                                <ArrowDownToLine
+                                    size={15}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                    className="transition-transform duration-300 ease-soft group-hover:translate-y-0.5"
+                                />
+                                <span>Résumé</span>
+                            </span>
                         </motion.a>
 
                         <div className="flex items-center gap-1">
