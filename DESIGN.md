@@ -1,288 +1,171 @@
 ---
 name: Jason Gian Duran Portfolio
-description: A tactile, neumorphic portfolio where soft extruded surfaces carry one deep ultramarine ink.
+description: A clean, tactile editorial portfolio with crisp typography, refined pill controls, subtle ambient depth, and deep Ultramarine ink.
 colors:
   surface: "#EDF0F5"
-  surface-deep: "#E3E8EF"
+  surface-card: "#FFFFFF"
   primary: "#0824A9"
+  primary-hover: "#1D4ED8"
   ink: "#000000"
   ink-soft: "rgba(0, 0, 0, 0.7)"
   muted: "#6B7280"
   muted-quiet: "#D1D5DB"
-  border-highlight: "rgba(255, 255, 255, 0.6)"
-  shadow-tint: "#A3B1C6"
+  border-subtle: "rgba(0, 0, 0, 0.08)"
+  border-primary: "rgba(8, 36, 169, 0.35)"
 typography:
-  display:
+  display-large:
     fontFamily: "Geist Mono, monospace"
-    fontSize: "64px"
+    fontSize: "88px"
+    fontWeight: 900
+    lineHeight: 0.92
+    letterSpacing: "-0.045em"
+  display-heading:
+    fontFamily: "Geist Mono, monospace"
+    fontSize: "56px"
     fontWeight: 900
     lineHeight: 1
-    letterSpacing: "-0.025em"
-  display-small:
+    letterSpacing: "-0.04em"
+  display-italic:
     fontFamily: "Geist Mono, monospace"
-    fontSize: "40px"
-    fontWeight: 900
-    lineHeight: 1.05
-  display-intro:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "30px"
-    fontWeight: 900
-    lineHeight: 1
+    fontSize: "30px - 44px"
+    fontWeight: 500
+    fontStyle: "italic"
     letterSpacing: "-0.02em"
-  display-intro-small:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "22px"
-    fontWeight: 900
-    lineHeight: 1
-    letterSpacing: "-0.02em"
-  display-name:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "80px"
-    fontWeight: 900
-    lineHeight: 0.9
-    letterSpacing: "-0.03em"
-  display-name-small:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "48px"
-    fontWeight: 900
-    lineHeight: 0.9
-    letterSpacing: "-0.03em"
-  headline:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "54px"
-    fontWeight: 900
-    lineHeight: 0.9
-  headline-small:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "30px"
-    fontWeight: 900
-    lineHeight: 0.95
-  title:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "24px"
-    fontWeight: 900
-    lineHeight: 1.1
   body:
     fontFamily: "Geist Mono, monospace"
-    fontSize: "14px"
+    fontSize: "15px - 17px"
     fontWeight: 400
     lineHeight: 1.75
-  body-about:
+  button:
     fontFamily: "Geist Mono, monospace"
-    fontSize: "17px"
-    fontWeight: 400
-    lineHeight: 1.75
-  body-about-small:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "15px"
-    fontWeight: 400
-    lineHeight: 1.75
-  body-small:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "13px"
-    fontWeight: 400
-    lineHeight: 1.75
-  label:
+    fontSize: "13px - 14px"
+    fontWeight: 700
+    letterSpacing: "0.03em"
+  tooltip:
     fontFamily: "Geist Mono, monospace"
     fontSize: "10px"
     fontWeight: 500
-    letterSpacing: "0.18em"
-  hero-ambient:
-    fontFamily: "Geist Mono, monospace"
-    fontSize: "18px"
-    fontWeight: 900
-    lineHeight: 1
-    letterSpacing: "0"
+    letterSpacing: "0.16em"
 rounded:
-  well: "16px"
+  pill: "9999px"
   card: "24px"
-  label: "28px"
   panel: "32px"
-  full: "9999px"
-spacing:
-  sm: "8px"
-  md: "16px"
-  lg: "24px"
-  xl: "32px"
-  2xl: "48px"
-components:
-  button-nav:
-    textColor: "{colors.muted}"
-    rounded: "{rounded.full}"
-    padding: "8px 16px"
-  button-nav-active:
-    textColor: "{colors.primary}"
-    rounded: "{rounded.full}"
-    padding: "8px 16px"
-  button-icon:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.primary}"
-    rounded: "{rounded.full}"
-    size: "48px"
-  card:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.panel}"
-    padding: "24px 32px"
-  chip:
-    textColor: "{colors.muted}"
-    rounded: "{rounded.full}"
-    padding: "6px 12px"
 ---
 
 # Design System: Jason Gian Duran Portfolio
 
-## Overview
+## Creative North Star: "Precision Editorial & Tactile Micro-Interactions"
 
-**Creative North Star: "The Tactile Sketchbook"**
+The portfolio is rooted in a refined, minimalist aesthetic: calm, light Fog Paper backgrounds (`#EDF0F5`), crisp monospaced typography (Geist Mono), elegant rounded pill geometry, and deep Ultramarine ink (`#0824A9`). 
 
-The portfolio behaves like a physical design notebook: every surface is a sheet of matte, slightly cool paper, and every control is something the hand could press. Depth is not decoration here, it is the primary affordance language. Elements are extruded from the same Fog Paper background at rest, recess into it when selected, and lift further when hovered. The only ink is Ultramarine, used for type, icons, and active states, never as a large fill.
+**What this design system is:**
+- Crisp, modern, clean, and intentional.
+- Tactile through deliberate micro-interactions: horizontal wipe hover fills, elastic spring physics, smooth magnification, and subtle ambient lifts.
+- Grounded in high-contrast typography: heavy 900 weights contrasted with delicate italic flourishes.
 
-The interface is calm and low-chroma so the work and the portrait carry the color. Type is deliberately split: a heavy, high-contrast display face (Hartwell-Black) announces sections and labels, while a hairline extra-light body face (Ambulatoria) handles reading. That contrast, heavy ink against faint gray prose, is the system's signature rhythm.
+**What this design system is NOT (Confirmed Anti-References):**
+- **No heavy neumorphism**: No deep extruded mud-shadows, no paired dual-tints (`#A3B1C6`), and no synthetic plastic recesses.
+- **No neon accents or loud gradient blobs**: Color is applied as intentional ink, never as gaudy rainbow fills.
+- **No rigid section sheet dividers**: The page scrolls fluidly as one seamless canvas.
 
-The result should feel handcrafted and precise at once: soft forms with confident, decisive press-and-lift states. Confirmed anti-reference: neon accents, glassy gradient blobs, and flat Material-style cards are rejected; depth must stay soft and physical, never glossy or synthetic.
+---
 
-**Key Characteristics:**
-- One background, one ink. Fog Paper `#EDF0F5` carries everything; Ultramarine `#0824A9` is the sole accent.
-- Depth is tactile and dual: paired light/shadow on every raised or recessed surface.
-- Large radii and pill navigation keep the material soft and pressable.
-- Heavy display type against hairline body type; the weight gap is the hierarchy.
-- Motion is slow, looping, and ambient in the hero, crisp and short on interaction.
+## Colors & Surface Palette
 
-## Colors
+A focused, restrained palette where Fog Paper carries the page and Ultramarine carries intent.
 
-A near-monochrome system: a cool light gray field with a single saturated blue, plus black for body reading.
+### Primary Ink
+- **Ultramarine Ink** (`#0824A9`): Primary accent, prominent headings, active button states, hover fills, focus rings, and selection indicators.
+- **Ultramarine Hover** (`#1D4ED8`): Lightened state for interactive highlights and hover glows.
+- **Ultramarine Wash** (`rgba(8, 36, 169, 0.10)` to `rgba(8, 36, 169, 0.40)`): Used for subtle micro-wipes, tooltips, and active dock background tints.
 
-### Primary
-- **Ultramarine Ink** (#0824A9): All display type, section headings, active navigation, social and icon glyphs, chip hover text, and the hero word cloud. Used as ink on the paper, not as a background fill.
-- **Ultramarine Hover** (`blue-700` / #1D4ED8): The only hover tint, used on social icons; a slight lightening of the ink on interaction.
+### Background & Neutrals
+- **Fog Paper** (`#EDF0F5`): The primary background color across the entire portfolio.
+- **Card / Control White** (`#FFFFFF` or `bg-surface/80` with backdrop blur): Clean, crisp surfaces for interactive buttons, the floating navbar shell, and tooltip badges.
+- **Ink Black** (`#000000`): Pure black for key emphasis and high-contrast text.
+- **Ink Soft** (`rgba(0, 0, 0, 0.7)`): Reading text with balanced contrast and optical softness.
+- **Muted Gray** (`#6B7280`): Secondary descriptions, inactive states, and tooltips.
+- **Border Subtle** (`rgba(0, 0, 0, 0.06 - 0.08)`): Hairline structural borders that give pill controls definition without heavy lines.
+- **Border Primary Accent** (`rgba(8, 36, 169, 0.25 - 0.35)`): Hairline brand accent borders on buttons and interactive pills.
 
-### Neutral
-- **Fog Paper** (#EDF0F5): The universal background and the color every extruded surface shares. Cards, nav shell, chips, and wells are all Fog Paper; separation comes only from shadow, never from a different fill.
-- **Deep Fog Paper** (#E3E8EF): The one tonal step below Fog Paper, used only for the alternating section sheets from Experience onward. It is a full-bleed section band, never a card or control fill; cards inside it stay Fog Paper and read as lighter paper laid on a deeper sheet.
-- **Shadow Tint** (#A3B1C6): The cool gray baked into every drop shadow's dark side. It is what makes the paper read as cool rather than dirty.
-- **Paper White** (`rgba(255,255,255,0.5–0.6)`): The highlight side of every shadow and the hairline border on labels and the scrolled nav. Never a solid white fill.
-- **Ink Black** (#000000, and 70% for softened prose): Body copy inside cards. Plain black, not gray, for primary reading text.
-- **Quiet Gray** (#6B7280 / `gray-500`): Inactive nav items and chip text.
-- **Disabled Gray** (#D1D5DB / `gray-300`): Nav items without a destination. Deliberately low contrast; they are non-interactive.
-
-### Named Rules
-**The One Ink Rule.** Ultramarine is ink, not paint. It appears on type, glyphs, and state indicators only; no component uses it as a large background fill. Its rarity is what makes it read as intentional.
-
-**The Single Paper Rule.** Every raised surface is the same Fog Paper as the page behind it. If a surface needs a different background to be legible, the shadow is wrong, not the color. The only exception is the section sheet: a full-bleed band may use Deep Fog Paper to mark a new section, and cards inside it still use Fog Paper.
+---
 
 ## Typography
 
-**Display Font:** Geist Mono, used for all text: headings, prose, labels, metadata, and controls.
-**Body Font:** Geist Mono (same family, regular weight).
-**Label Font:** Geist Mono at 500 for uppercase labels, metadata, tags, and nav tooltips.
-
-**Character:** One typeface, one voice. Geist Mono carries the whole system: heavy 900 for statements and names, 400 for prose, 500 for labels. Because monospace fixes every glyph to the same width, hierarchy comes from size, weight, and ink rather than a face change; headings are tight and often lowercase ("curated works.", "beyond the code."). Italic display words are synthesised from Geist Mono and used sparingly as the only typographic flourish.
+**Single Typeface: Geist Mono** across all viewports and hierarchies. Monospace typography provides editorial structure, while deliberate variations in scale, weight, and italic phrasing introduce personality and delight.
 
 ### Hierarchy
-- **Display** (Geist Mono 900, 64px desktop / 40px mobile, line-height 0.95–1): Section announcements ("curated works."). Always Ultramarine and centered in the section.
-- **About heading** (Geist Mono 900): one inline line. "hey, i'm" is 30px desktop / 22px mobile; "Jason" is 80px desktop / 48px mobile, tight tracking, same Ultramarine. "Jason" is always the larger, louder word, and its letters rise in a 55ms stagger.
-- **Headline** (Geist Mono 900, 54px desktop / 30–40px mobile, line-height 0.9): The "designer" and "developer" label cards in the hero. Tightest tracking, lowercase.
-- **Title** (Geist Mono 900, 20–24px, line-height 1.1): Project card titles.
-- **About body** (Geist Mono 400, 17px desktop / 15px mobile, line-height 1.75): Both About paragraphs share the same size and weight. The location, "Muntinlupa, Philippines", follows "Los Baños" in the first paragraph, set in 600 ink-black inline. "where AI is headed" is bolded the same way in the second. No markers or underlines.
-- **Body** (Geist Mono 400, 14px desktop / 13px mobile, line-height 1.75): Prose in Projects, Experience, Beyond, and Contact. Softened to 70% black.
-- **Label** (Geist Mono 500, 10px, uppercase, wide tracking): Project tags, roles, and metadata; nav tooltips use it at 11px.
-- **Hero ambient** (Geist Mono 900, 11–26px, alphabetical word cloud): An intentional freeform scale, sized by word importance rather than a fixed step. This is the only place size is set by feel.
+1. **Hero & Name Display** (Geist Mono 900, 56px–88px+ mobile/desktop, tight tracking `-0.045em`, leading ~0.92):
+   - Solid Ultramarine ink.
+   - Interactive letter-level physics: spring bounce on hover, kinetic wave cascading on tap/click.
+2. **Greeting Flourish** (Geist Mono 500 italic, 30px–44px, tracking `-0.02em`):
+   - Lowercase conversational opening ("hey, I’m", "hi, I'm").
+   - Paired on the same optical baseline as the display name.
+3. **Editorial Prose** (Geist Mono 400, 15px mobile / 17px desktop, leading 1.75):
+   - High legibility, generous line height, `text-pretty`.
+   - Key location and interest anchors set in `font-semibold text-ink`.
+4. **Interactive Labels & Controls** (Geist Mono 700, 13px–14px, tracking `0.03em`):
+   - Pill buttons, CTA actions, and download links.
+5. **Metadata & Tooltips** (Geist Mono 500, 10px, uppercase, tracking `0.16em`):
+   - Floating dock tooltips, project tags, and category labels.
 
-### Named Rules
-**The Weight Gap Rule.** Display and body type must never sit near the same weight. If a heading looks merely bold, it is wrong; it should look pressed into the paper. Body copy stays at regular weight.
+---
 
-**The Mono About Rule.** The About section is the one place where Geist Mono carries prose. Do not use colored inline words, serif accents, underlines, or marker highlights there; emphasis comes from scale, ink weight, and the single name reveal.
+## Signature Interactive Patterns
 
-## Layout
+### 1. The Horizontal Wipe Fill
+Used across the **Navigation Dock**, the **Resume Button**, and primary action controls:
+- **Rest State**: An outlined pill container with transparent or crisp white/surface fill, hairline border (`border-primary/35`), and Ultramarine text/icon.
+- **Hover Action**: An inner absolute span wipes horizontally across the pill (`origin-left scale-x-0 group-hover:scale-x-100 bg-primary duration-300 ease-soft`).
+- **Foreground Transition**: Text and icons smoothly shift from Ultramarine to pure crisp white (`text-white`).
 
-Single scrolling page, full-viewport sections, no visible grid lines. Content is centered with generous outer margins rather than a boxed container.
+### 2. Floating Magnification Dock
+The signature global navigation:
+- **Pill Shell**: Centered at the viewport bottom (`bottom-[calc(1.25rem+env(safe-area-inset-bottom))]`), frosted backdrop blur (`bg-surface/80 backdrop-blur-md`), with a delicate border (`border-black/[0.08]`) and soft ambient shadow (`shadow-[0_12px_36px_-8px_rgba(15,23,42,0.18)]`).
+- **Magnification Physics**: Spring-driven size expansion (46px base to 66px peak, `stiffness: 220, damping: 18`) following pointer proximity.
+- **Active Section State**: The current active section is rendered in its **fully wiped** Ultramarine state.
+- **Dynamic Context Dimming**: When the cursor hovers over a *different* section, the current active section dims to **40% opacity** as a reference anchor, while the prospective destination receives full 100% solid Ultramarine contrast.
+- **Compact View**: Compresses to 42px icons on narrow screens (<420px) to guarantee zero horizontal overflow.
 
-**Section sheets.** From Experience onward, each section is its own full-bleed sheet of paper laid over the previous one. Alternate sheets take the Deep Fog Paper band; the others stay Fog Paper. Every sheet carries a 32px rounded top, a cool hairline seam with an inset white highlight, and an upward soft shadow so the next section reads as resting on top of the last. Where the browser supports scroll-driven animation, each sheet settles in (translate 30px, scale 0.992 → 1) over the first 30% of its entry; reduced-motion users get the sheet with no settle. Home and About stay directly on the page surface and are not sheeted.
+### 3. Tactile Pill Controls & Social Icon Buttons
+- **Shape & Targets**: Pure circular and pill geometry with minimum `44×44px` tap targets for accessibility.
+- **Subtle Surface Depth**: Clean light background (`bg-surface`), delicate brand border (`border-primary/25`), and a light ambient shadow (`shadow-[0_1px_3px_rgba(15,23,42,0.06)]`).
+- **Interactive States**:
+  - **Hover**: 2px lift (`-translate-y-0.5`), brand blue glow (`shadow-[0_10px_22px_-6px_rgba(8,36,169,0.3)]`), and icon scale `1.10`.
+  - **Press / Active**: Tactile spring settle (`scale: 0.95`, `translate-y-0`, `shadow-[inset_0_2px_4px_rgba(8,36,169,0.15)]`).
+  - **Keyboard Focus**: Prominent, accessible ring (`focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`).
 
-- **Hero:** full `min-h-screen`, absolutely composed. A centered portrait anchors the bottom; two label cards float at the sides (desktop: ~38% from top, inset 80px); a word cloud orbits the portrait; a soft gradient fades the portrait base into the paper.
-- **About:** two columns on desktop (Geist Mono copy column + portrait), stacked on mobile. The heading is one inline line ("hey, i'm Jason") with the name at 80/48px; body copy is uniform 17/15px mono with the location set inline. A résumé pill (Fog Paper at rest, Ultramarine wipe on hover) and three plain social icons close the column. The portrait sits on a soft drop shadow with its bottom edge fading into the paper.
-- **Experience:** centered heading and intro, then a plain two-column list capped at `max-w-4xl`: period and company on the left, role, context, and bullets on the right. No cards or timeline rail; entries rise in on scroll.
-- **Tools & Stack:** plain labeled rows on the paper (Tech Stacks, Languages, Databases, Tools, Design); items are separated by slashes with no chips or panel. Rows stagger in on scroll.
-- **Projects:** centered heading and intro, then a 1- or 2-column card grid capped at `max-w-5xl`, with generous `my-16`/`my-20` vertical breathing room.
-- **Beyond:** centered heading and a plain 3-column text grid capped at `max-w-5xl`; each column pairs a Lucide glyph and index with a short first-person facet. No cards.
-- **Contact:** two columns on desktop: an intro with four direct-link rows (email, LinkedIn, GitHub, résumé) beside underline form fields on the paper. No form card. The form opens the visitor's email app with the subject and body prefilled; no backend.
-- **Density:** spacious. Sections resolve to one idea each; whitespace is a material, not filler.
-- **Breakpoint:** a single behavioral breakpoint at `md` (768px). Below it, multi-column layouts stack and the dock compacts to 42px buttons under 420px.
+### 4. Kinetic Typography Delight
+- Headline elements enter with spring physics (`cubic-bezier(0.22, 1, 0.36, 1)` or Framer Motion springs).
+- Interactive letters spring up with alternating micro-tilts (`-4°` to `+4°`) and soft ink drop-shadows on hover, allowing users to playfully scrub across typography.
 
-## Elevation & Depth
+---
 
-Depth is the system's core material, expressed as paired neumorphic shadows: a cool Shadow Tint below-right and a Paper White highlight above-left. Nothing is flat. Raised surfaces (cards, labels, nav shell) use outward shadows; recesses (active nav pills, social buttons, project preview wells) use inset shadows. Increased intensity maps to increased importance or interaction: a small shadow for chips, the standard pair for cards, the deep pair for the hero labels, and hover shadows that both grow and offset further.
+## Motion & Accessibility Standards
 
-### Shadow Vocabulary
-- **Chip** (`5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255,0.5)`): Tags and the smallest raised elements.
-- **Standard** (`9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255,0.5)`): Cards, the About panel, the unscrolled nav.
-- **Hover** (`12px 12px 20px rgba(163,177,198,0.7), -12px -12px 20px rgba(255,255,255,0.6)`): Raised card/nav hover; deeper blur and stronger tint.
-- **Deep** (`16px 16px 28px rgba(163,177,198,0.7), -16px -16px 28px rgba(255,255,255,0.6)`): The floating hero label cards only.
-- **Recess** (`inset 6px 6px 10px rgba(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255,0.5)`): Social icon buttons, active nav pills, preview wells.
-- **Recess Deep** (`inset 10px 10px 20px rgba(163,177,198,0.7), inset -10px -10px 20px rgba(255,255,255,0.6)`): The hero's inner glow disc and any large selected well.
+- **Easing Curves**: Use soft cubic easing `cubic-bezier(0, 0, 0.2, 1)` or `cubic-bezier(0.22, 1, 0.36, 1)`.
+- **Performance**: Animate exclusively `transform` and `opacity`. Use `will-change` judiciously during active transitions only.
+- **Reduced Motion (`prefers-reduced-motion`)**:
+  - Always respect user system preferences.
+  - Bypass multi-step entrance animations and spring loops; immediately render full rest states.
+  - Retain color shifts and border transitions since they do not cause motion sickness.
+- **Screen Reader Readiness**:
+  - Provide explicit, descriptive `aria-label` attributes (`"GitHub profile"`, `"Send email"`, `"Resume"`).
+  - When text lines dynamically cycle, maintain a visually hidden screen-reader list (`sr-only`) and mark the animated container `aria-hidden="true"`.
 
-### Named Rules
-**The Paired Shadow Rule.** Never a single shadow. Every raised surface carries both the tint and the white, in mirror offsets. A surface with one shadow reads flat and breaks the material.
-
-**The Lift/Recess Rule.** Interaction always changes depth, not color. Hover lifts (larger outward shadow, slight rise); press or selection recesses (inset shadow). Color changes are reserved for text state only.
-
-## Shapes
-
-Soft and rounded throughout; no sharp corners anywhere in the interface.
-
-- **Pill (`9999px`):** Nav shell, nav items, social buttons, chips, and the About social row. The dominant interactive silhouette.
-- **Panel (`32px`):** Project cards.
-- **Label (`24–28px`):** Hero designer/developer cards (`24px` mobile, `28px` desktop).
-- **Card (`24px`):** About text panel (`rounded-3xl`).
-- **Well (`16px`):** Project preview image placeholder (`rounded-2xl`).
-- **Hairline accent:** A short 2px Ultramarine/30% rule under each hero label heading acts as a tiny divider.
-- **Borders:** Only on raised surfaces that overlay content (hero labels, unscrolled nav): a `white/50–60` hairline that catches the light edge. Cards that sit in normal flow get no border.
-
-## Components
-
-### Buttons
-- **Shape:** Full pill (`9999px`).
-- **Résumé (primary):** Fog Paper pill with Ultramarine 10px Geist Mono uppercase label and a download glyph at rest. On hover a solid Ultramarine fill wipes in from the left, the label and icon turn white, and the pill lifts 2px; it presses with a slight scale on active.
-- **Primary (nav item):** Replaced by the clean magnification dock; see Navigation.
-- **Hover / Focus:** Lift on hover, press on active, 300ms transition. Tap feedback on cards uses `translateY` and scale (1.03 up, 0.97 down).
-- **Icon (social):** Plain 21px Ultramarine-free glyph in a 44px hit area, no circle or shadow. Color shifts from 60% ink to Ultramarine on hover with a 2px lift.
-
-### Chips
-- **Style:** Ultramarine-free at rest: Quiet Gray 10px uppercase bold on Fog Paper with a Chip shadow. No border.
-- **State:** Hover deepens the shadow. They are labels, not filters; no selected state exists.
-
-### Cards / Containers
-- **Corner Style:** Panel `32px` for project cards; Label `24–28px` for hero labels; Card `24px` for the About panel.
-- **Background:** Always Fog Paper; never a tint.
-- **Shadow Strategy:** Standard at rest, Hover on hover with a `-translate-y-1` lift, `translate-y-0.5` on active press. Hero labels use Deep and scale gently on hover.
-- **Border:** None in flow; `white/60` hairline only when a card floats over imagery.
-- **Internal Padding:** `p-6 md:p-8` (24→32px).
-
-### Navigation
-- **Style:** A clean floating dock fixed 20px from the bottom, horizontally centered. A light neutral-gray pill (`bg-neutral-100/80`) holds 46px white circular buttons with a faint hairline ring and a soft drop shadow; no neumorphic inset or paired extruded shadows. The dock carries seven sections: Home, About, Experience, Stack, Projects, Beyond, Contact.
-- **Motion:** macOS-style magnification. Pointer distance drives each button's size through a spring (46px → 66px, stiffness 220, damping 18), and the icon scales with it. On hover an Ultramarine fill wipes across the button from the left and the icon turns white. Disabled and reduced-motion states stay at base size.
-- **Icons:** 19px Lucide line icons at a 1.7 stroke. Active item is Ultramarine; inactive icons are neutral gray. Disabled items are muted and non-interactive.
-- **Tooltip:** A small white pill above the hovered button, set in 10px Geist Mono uppercase with wide tracking; disabled buttons append "Soon".
-- **Typography:** Icon-only with `aria-label`; Geist Mono is used only in tooltips.
-- **Mobile:** Buttons compact to 42px under 420px so all seven fit; touch does not trigger magnification or tooltips.
-
-### Signature: Hero Label Cards
-Two floating Fog Paper cards, "designer" and "developer", mirror-slide in from left and right. Each holds a 54px lowercase display word, a short 2px Ultramarine rule, and a 14px hairline description. They are the clearest expression of the whole system: heavy ink on a deep soft shadow, bordered by light.
+---
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use Fog Paper `#EDF0F5` as the background of every raised surface; separate with shadow, not fill.
-- **Do** pair the Shadow Tint with the Paper White highlight on every extruded or recessed element.
-- **Do** keep Ultramarine `#0824A9` for type, glyphs, and state; keep fills neutral.
-- **Do** change depth (lift outward, recess inward) to signal interaction, with 300ms transitions.
-- **Do** let display type be heavy and tight, and body type hairline and soft; preserve the weight gap.
-- **Do** prefer large radii: pills for controls, 32px panels for cards, 16px wells for embeds.
+- **Do** keep surfaces clean, light, and minimal (`#EDF0F5` background, `#FFFFFF` / `bg-surface` pills).
+- **Do** use the horizontal wipe hover effect for interactive pills and primary CTA buttons.
+- **Do** maintain a strict 44×44px minimum tap target for all circular and icon buttons.
+- **Do** use Ultramarine `#0824A9` as the singular brand voice for typography, active states, and focal contrast.
+- **Do** vertically center aligned button rows (such as Resume and social icons) on a shared axis with uniform height.
 
 ### Don't:
-- **Don't** introduce neon accents, saturated gradients, or glassmorphism; confirmed anti-reference.
-- **Don't** ship flat Material-style cards; if a surface has no paired shadow, it is not part of this system.
-- **Don't** use a single-offset shadow or a hard gray border in place of depth.
-- **Don't** fill a large area with Ultramarine; it stays an ink.
-- **Don't** use Geist Mono for Projects prose; the About section is the intentional mono exception.
-- **Don't** use sharp corners anywhere.
+- **Don't** use heavy neumorphic dual-shadows, sunken clay insets, or extruded mud effects.
+- **Don't** use hard sheet dividers that chop the scroll experience into disjointed cards.
+- **Don't** mix different body fonts — Geist Mono defines the entire portfolio voice.
+- **Don't** clip text ascenders/descenders by applying tight `overflow-hidden` wrappers without generous padding.

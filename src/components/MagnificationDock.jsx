@@ -54,62 +54,27 @@ function DockItem({
     const stateClasses = isDisabled
         ? 'cursor-not-allowed border-black/5 bg-white/50 text-neutral-300'
         : isActive
-          ? isDimmed
-              ? 'border-primary/30 bg-primary/40 text-white/80 shadow-[0_2px_6px_-2px_rgba(8,36,169,0.2)]'
-              : 'border-primary bg-primary text-white shadow-[0_4px_16px_-4px_rgba(8,36,169,0.45)]'
-          : 'border-black/[0.05] bg-white text-neutral-600 shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:text-neutral-950 hover:shadow-[0_4px_14px_-4px_rgba(15,23,42,0.2)]';
+            ? isDimmed
+                ? 'border-primary/30 bg-primary/40 text-white/80 shadow-[0_2px_6px_-2px_rgba(8,36,169,0.2)]'
+                : 'border-primary bg-primary text-white shadow-[0_4px_16px_-4px_rgba(8,36,169,0.45)]'
+            : 'border-black/[0.05] bg-white text-neutral-600 shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:text-neutral-950 hover:shadow-[0_4px_14px_-4px_rgba(15,23,42,0.2)]';
 
     return (
-        <motion.button
-            ref={ref}
-            type="button"
-            onClick={() => {
-                if (!isDisabled) item.onClick?.();
-            }}
-            aria-label={isDisabled ? `${label} (coming soon)` : label}
-            aria-current={isActive ? 'location' : undefined}
-            aria-disabled={isDisabled || undefined}
-            tabIndex={isDisabled ? -1 : undefined}
-            onPointerEnter={(event) => {
-                if (event.pointerType !== 'touch') onHoverStart();
-            }}
-            onPointerLeave={onHoverEnd}
-            onFocus={(event) => {
-                if (event.target.matches(':focus-visible')) onHoverStart();
-            }}
-            onBlur={onHoverEnd}
-            style={{ width: size, height: size }}
-            className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border outline-offset-4 transition-[color,background-color,border-color,box-shadow,opacity] duration-300 ease-soft ${stateClasses} ${item.className ?? ''}`}
-        >
-            <span
-                aria-hidden="true"
-                className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-all duration-300 ease-soft ${
-                    isWiped ? 'scale-x-100' : 'scale-x-0'
-                } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
-            />
-            <motion.span
-                aria-hidden="true"
-                style={{ scale: iconScale }}
-                className={`pointer-events-none relative z-10 flex items-center justify-center transition-colors duration-300 ${
-                    isWiped ? (isDimmed ? 'text-white/80' : 'text-white') : ''
-                }`}
-            >
-                {item.icon}
-            </motion.span>
-
+        <div className="relative flex items-center justify-center">
+            {/* Tooltip badge above button - rendered outside the button to avoid overflow-hidden clipping */}
             <AnimatePresence>
                 {isHovered && (
                     <motion.span
                         role="tooltip"
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 4 }}
+                        initial={{ opacity: 0, y: 6, scale: 0.94 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 4, scale: 0.94 }}
                         transition={{
-                            duration: reduceMotion ? 0 : 0.18,
-                            ease: [0, 0, 0.2, 1],
+                            duration: reduceMotion ? 0 : 0.16,
+                            ease: [0.16, 1, 0.3, 1],
                         }}
                         style={{ x: '-50%' }}
-                        className="pointer-events-none absolute -top-9 left-1/2 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-black/[0.06] bg-white px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-neutral-700 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.35)]"
+                        className="pointer-events-none absolute -top-10 left-1/2 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-full border border-black/[0.08] bg-white px-3 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-neutral-800 shadow-[0_8px_24px_-10px_rgba(15,23,42,0.35)]"
                     >
                         {item.label}
                         {isDisabled && (
@@ -120,7 +85,43 @@ function DockItem({
                     </motion.span>
                 )}
             </AnimatePresence>
-        </motion.button>
+
+            <motion.button
+                ref={ref}
+                type="button"
+                onClick={() => {
+                    if (!isDisabled) item.onClick?.();
+                }}
+                aria-label={isDisabled ? `${label} (coming soon)` : label}
+                aria-current={isActive ? 'location' : undefined}
+                aria-disabled={isDisabled || undefined}
+                tabIndex={isDisabled ? -1 : undefined}
+                onPointerEnter={(event) => {
+                    if (event.pointerType !== 'touch') onHoverStart();
+                }}
+                onPointerLeave={onHoverEnd}
+                onFocus={(event) => {
+                    if (event.target.matches(':focus-visible')) onHoverStart();
+                }}
+                onBlur={onHoverEnd}
+                style={{ width: size, height: size }}
+                className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border outline-offset-4 transition-[color,background-color,border-color,box-shadow,opacity] duration-300 ease-soft ${stateClasses} ${item.className ?? ''}`}
+            >
+                <span
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute inset-0 origin-left rounded-full bg-primary transition-all duration-300 ease-soft ${isWiped ? 'scale-x-100' : 'scale-x-0'
+                        } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+                />
+                <motion.span
+                    aria-hidden="true"
+                    style={{ scale: iconScale }}
+                    className={`pointer-events-none relative z-10 flex items-center justify-center transition-colors duration-300 ${isWiped ? (isDimmed ? 'text-white/80' : 'text-white') : ''
+                        }`}
+                >
+                    {item.icon}
+                </motion.span>
+            </motion.button>
+        </div>
     );
 }
 
