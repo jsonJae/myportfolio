@@ -27,6 +27,13 @@ const sweepMask = {
     maskRepeat: 'no-repeat',
 };
 
+const outlineMask = {
+    WebkitMaskImage: `url(${heroCutout})`,
+    maskImage: `url(${heroCutout})`,
+    WebkitMaskRepeat: 'no-repeat',
+    maskRepeat: 'no-repeat',
+};
+
 export default function Hero() {
     const rootRef = useRef(null);
     const depthRef = useRef(null);
@@ -34,15 +41,40 @@ export default function Hero() {
     const parallaxRefs = useRef([]);
     const floatRefs = useRef([]);
     const sweepRef = useRef(null);
-    const headlineScrollRef = useRef(null);
-    const headlineDriftRef = useRef(null);
-    const greetingRefs = useRef([]);
-    const nameRefs = useRef([]);
+    const cutoutRef = useRef(null);
+    const outlineRef = useRef(null);
+    // Two copies of the headline: [0] filled ink behind Jason, [1] outline in front of him.
+    const headlineScrollRefs = useRef([]);
+    const headlineDriftRefs = useRef([]);
+    const greetingRefs = useRef([[], []]);
+    const nameRefs = useRef([[], []]);
     const maskRefs = useRef([]);
 
     useLayoutEffect(() => {
         const root = rootRef.current;
         const mm = gsap.matchMedia();
+        const greeting = greetingRefs.current.flat();
+        const name = nameRefs.current.flat();
+        const staggerBy = (step, count) => (i) => (i % count) * step;
+
+        // Keep the outline layer masked to Jason's silhouette wherever the cutout
+        // has moved to (intro, float, parallax, scroll), so the outline only
+        // appears over the parts of the name he covers.
+        const outline = outlineRef.current;
+        const cutout = cutoutRef.current;
+        const syncMask = () => {
+            const frame = outline.getBoundingClientRect();
+            if (frame.bottom < 0) return;
+            const shape = cutout.getBoundingClientRect();
+            const position = `${shape.left - frame.left}px ${shape.top - frame.top}px`;
+            const size = `${shape.width}px ${shape.height}px`;
+            outline.style.webkitMaskPosition = position;
+            outline.style.maskPosition = position;
+            outline.style.webkitMaskSize = size;
+            outline.style.maskSize = size;
+        };
+        syncMask();
+        gsap.ticker.add(syncMask);
 
         mm.add('(prefers-reduced-motion: no-preference)', () => {
             const plates = parallaxRefs.current;
@@ -56,8 +88,9 @@ export default function Hero() {
             // Clip each line only while its letters rise; the generous side and
             // bottom margins keep the italic overhangs and the J's tail intact.
             gsap.set(masks, { clipPath: 'inset(-0.4em -0.5em -0.2em -0.5em)' });
-            gsap.set(greetingRefs.current, { yPercent: 120, rotate: 4 });
-            gsap.set(nameRefs.current, { yPercent: 115, rotate: 7, transformOrigin: '0% 100%' });
+            gsap.set(greeting, { yPercent: 120, rotate: 4 });
+            gsap.set(name, { yPercent: 115, rotate: 7, transformOrigin: '0% 100%' });
+            gsap.set(outline, { opacity: 0 });
 
             gsap.timeline({ defaults: { ease: 'power3.out' } })
                 .to(
@@ -73,16 +106,30 @@ export default function Hero() {
                 )
                 .to(breath, { scale: 1, duration: 1.5, ease: 'power3.out' }, 0)
                 .to(
-                    greetingRefs.current,
-                    { yPercent: 0, rotate: 0, duration: 1, ease: 'expo.out', stagger: 0.09 },
+                    greeting,
+                    {
+                        yPercent: 0,
+                        rotate: 0,
+                        duration: 1,
+                        ease: 'expo.out',
+                        stagger: staggerBy(0.09, GREETING.length),
+                    },
                     0.45,
                 )
                 .to(
-                    nameRefs.current,
-                    { yPercent: 0, rotate: 0, duration: 1.3, ease: 'expo.out', stagger: 0.065 },
+                    name,
+                    {
+                        yPercent: 0,
+                        rotate: 0,
+                        duration: 1.3,
+                        ease: 'expo.out',
+                        stagger: staggerBy(0.065, NAME.length),
+                    },
                     0.62,
                 )
                 .set(masks, { clipPath: 'none' })
+                // Once Jason has fully risen in front of the name, trace what he hides.
+                .to(outline, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 1.25)
                 .to(
                     sweep,
                     { xPercent: 140, opacity: 0.55, duration: 1.6, ease: 'power2.inOut' },
@@ -112,7 +159,7 @@ export default function Hero() {
             gsap.to(depthRef.current, { opacity: 0.55, ease: 'none', scrollTrigger: scrub });
 
             // The name lifts away faster than the portrait sinks, splitting the planes.
-            gsap.to(headlineScrollRef.current, {
+            gsap.to(headlineScrollRefs.current, {
                 y: () => -window.innerHeight * 0.32,
                 opacity: 0,
                 ease: 'none',
@@ -127,10 +174,15 @@ export default function Hero() {
             const plateY = parallaxRefs.current.map((el) =>
                 gsap.quickTo(el, 'y', { duration: 1.1, ease: 'power3.out' }),
             );
-            const typeX = gsap.quickTo(headlineDriftRef.current, 'x', { duration: 1.4, ease: 'power3.out' });
-            const typeY = gsap.quickTo(headlineDriftRef.current, 'y', { duration: 1.4, ease: 'power3.out' });
+            const typeX = headlineDriftRefs.current.map((el) =>
+                gsap.quickTo(el, 'x', { duration: 1.4, ease: 'power3.out' }),
+            );
+            const typeY = headlineDriftRefs.current.map((el) =>
+                gsap.quickTo(el, 'y', { duration: 1.4, ease: 'power3.out' }),
+            );
 
-            const letters = nameRefs.current;
+            // Weight is measured on the filled letters and mirrored onto the outline.
+            const [letters, outlineLetters] = nameRefs.current;
             const current = letters.map(() => WEIGHT_REST);
             const target = letters.map(() => WEIGHT_REST);
             let frame = 0;
@@ -141,7 +193,9 @@ export default function Hero() {
                     const next = current[i] + (target[i] - current[i]) * 0.14;
                     if (Math.abs(target[i] - next) > 0.5) moving = true;
                     current[i] = Math.abs(target[i] - next) > 0.5 ? next : target[i];
-                    el.style.fontWeight = String(Math.round(current[i]));
+                    const weight = String(Math.round(current[i]));
+                    el.style.fontWeight = weight;
+                    outlineLetters[i].style.fontWeight = weight;
                 });
                 frame = moving ? requestAnimationFrame(tick) : 0;
             };
@@ -152,8 +206,8 @@ export default function Hero() {
             const move = (nx, ny) => {
                 plateX.forEach((to) => to(nx * -12));
                 plateY.forEach((to) => to(ny * -8));
-                typeX(nx * 18);
-                typeY(ny * 10);
+                typeX.forEach((to) => to(nx * 18));
+                typeY.forEach((to) => to(ny * 10));
             };
 
             const reset = () => {
@@ -186,7 +240,7 @@ export default function Hero() {
 
             return () => {
                 cancelAnimationFrame(frame);
-                letters.forEach((el) => {
+                name.forEach((el) => {
                     el.style.fontWeight = '';
                 });
                 root.removeEventListener('pointermove', onPointerMove);
@@ -194,7 +248,10 @@ export default function Hero() {
             };
         });
 
-        return () => mm.revert();
+        return () => {
+            gsap.ticker.remove(syncMask);
+            mm.revert();
+        };
     }, []);
 
     const plate = (index, children) => (
@@ -211,6 +268,52 @@ export default function Hero() {
             </div>
         </div>
     );
+
+    const headline = (layer) => {
+        const front = layer === 1;
+        return (
+            <div
+                ref={(el) => (headlineScrollRefs.current[layer] = el)}
+                className="absolute inset-x-0 top-[var(--hero-type-top)] flex justify-center px-4 [--hero-type-top:18vh] sm:[--hero-type-top:6vh] md:[--hero-type-top:4vh]"
+            >
+                <div
+                    ref={(el) => (headlineDriftRefs.current[layer] = el)}
+                    className="flex flex-col items-center text-center"
+                >
+                    <span
+                        ref={(el) => (maskRefs.current[layer * 2] = el)}
+                        className={`block font-display text-[clamp(1.6rem,4.4vw,3.75rem)] font-normal leading-[1.1] tracking-[-0.01em] ${front ? 'hero-outline' : 'text-ink/80'}`}
+                    >
+                        {GREETING.map((word, i) => (
+                            <span key={word} className="inline-block">
+                                <span
+                                    ref={(el) => (greetingRefs.current[layer][i] = el)}
+                                    className="inline-block"
+                                >
+                                    {word}
+                                </span>
+                                {i < GREETING.length - 1 ? '\u00a0' : null}
+                            </span>
+                        ))}
+                    </span>
+                    <span
+                        ref={(el) => (maskRefs.current[layer * 2 + 1] = el)}
+                        className={`-mt-[0.06em] block whitespace-nowrap font-display text-[clamp(6rem,27vw,21rem)] font-semibold italic leading-[0.86] tracking-[-0.035em] ${front ? 'hero-outline' : 'text-primary'}`}
+                    >
+                        {NAME.map((char, i) => (
+                            <span
+                                key={i}
+                                ref={(el) => (nameRefs.current[layer][i] = el)}
+                                className="inline-block will-change-transform"
+                            >
+                                {char}
+                            </span>
+                        ))}
+                    </span>
+                </div>
+            </div>
+        );
+    };
 
     const photoClass =
         'block h-auto w-auto max-h-[96vh] max-w-none object-contain select-none md:max-h-[104vh]';
@@ -240,40 +343,8 @@ export default function Hero() {
                 )}
 
                 {/* The greeting lives between the backdrop and Jason himself. */}
-                <div
-                    ref={headlineScrollRef}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-[var(--hero-type-top)] z-20 flex justify-center px-4 [--hero-type-top:18vh] sm:[--hero-type-top:6vh] md:[--hero-type-top:4vh]"
-                >
-                    <div ref={headlineDriftRef} className="flex flex-col items-center text-center">
-                        <span
-                            ref={(el) => (maskRefs.current[0] = el)}
-                            className="block font-display text-[clamp(1.6rem,4.4vw,3.75rem)] font-normal leading-[1.1] tracking-[-0.01em] text-ink/80"
-                        >
-                            {GREETING.map((word, i) => (
-                                <span key={word} className="inline-block">
-                                    <span ref={(el) => (greetingRefs.current[i] = el)} className="inline-block">
-                                        {word}
-                                    </span>
-                                    {i < GREETING.length - 1 ? ' ' : null}
-                                </span>
-                            ))}
-                        </span>
-                        <span
-                            ref={(el) => (maskRefs.current[1] = el)}
-                            className="-mt-[0.06em] block whitespace-nowrap font-display text-[clamp(6rem,27vw,21rem)] font-semibold italic leading-[0.86] tracking-[-0.035em] text-primary"
-                        >
-                            {NAME.map((char, i) => (
-                                <span
-                                    key={i}
-                                    ref={(el) => (nameRefs.current[i] = el)}
-                                    className="inline-block will-change-transform"
-                                >
-                                    {char}
-                                </span>
-                            ))}
-                        </span>
-                    </div>
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20">
+                    {headline(0)}
                 </div>
 
                 {/* Front plate: Jason cut from the backdrop, so the name sits behind him. */}
@@ -282,6 +353,7 @@ export default function Hero() {
                     <>
                         <img src={heroPic} alt="" className={`${photoClass} invisible`} draggable="false" />
                         <img
+                            ref={cutoutRef}
                             src={heroCutout}
                             alt=""
                             className="absolute inset-x-0 top-0 block w-full select-none"
@@ -297,6 +369,16 @@ export default function Hero() {
                         </div>
                     </>,
                 )}
+
+                {/* Outline of the name, clipped to Jason, tracing the letters he covers. */}
+                <div
+                    ref={outlineRef}
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 z-[35] mix-blend-difference"
+                    style={outlineMask}
+                >
+                    {headline(1)}
+                </div>
             </div>
 
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-40 bg-gradient-to-t from-surface to-transparent" />
