@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
-import { Calendar, Briefcase } from 'lucide-react';
+import { CodeXml, LayoutTemplate, UsersRound } from 'lucide-react';
 import Reveal from './Reveal';
 import Contours from './Contours';
 
@@ -10,8 +10,8 @@ const experiences = [
         role: 'Freelance WordPress Developer',
         company: 'Komo Developments',
         period: 'Aug 2026 — Oct 2026',
-        badge: 'Freelance Contract',
-        context: 'Client work · Bricks Builder',
+        type: 'Freelance contract',
+        icon: LayoutTemplate,
         tags: ['WordPress', 'Bricks Builder', 'Custom CSS', 'Brand Systems'],
         points: [
             'Translated client requirements into website designs alongside the client-facing team, building responsive custom layouts in Bricks Builder.',
@@ -23,8 +23,8 @@ const experiences = [
         role: 'Full-Stack Software Engineer Intern',
         company: 'QE 360',
         period: 'May 2026 — Aug 2026',
-        badge: 'Internship',
-        context: 'Live event platform · Full-stack',
+        type: 'Internship',
+        icon: CodeXml,
         tags: ['Next.js', 'Supabase', 'MUX Video', 'OpenAI API', 'RAG Chatbot'],
         points: [
             'Shipped full-stack features for a live event platform across attendee, judge, and admin views.',
@@ -38,14 +38,87 @@ const experiences = [
         role: 'Human Resources Department Member',
         company: "Young Software Engineers' Society",
         period: 'Sep 2024 — Present',
-        badge: 'Student Organization',
-        context: 'HR department · Onboarding & events',
+        type: 'Student organization',
+        icon: UsersRound,
         tags: ['Leadership', 'Event Operations', 'Mentorship', 'Community'],
         points: [
             'Help the HR department run member engagement activities, onboarding, and internal events for the organization.',
         ],
     },
 ];
+
+// Soft spotlight that follows the cursor inside a card. Writes two CSS
+// variables on the card itself, so only that one card repaints.
+function trackSpotlight(event) {
+    const card = event.currentTarget;
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${event.clientX - rect.left}px`);
+    card.style.setProperty('--my', `${event.clientY - rect.top}px`);
+}
+
+function ExperienceCard({ exp, active }) {
+    const Icon = exp.icon;
+
+    return (
+        <article
+            data-active={active}
+            onPointerMove={trackSpotlight}
+            className="group/card relative overflow-hidden rounded-card border border-black/[0.06] bg-white/85 p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,border-color,box-shadow] duration-500 ease-soft hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_22px_44px_-26px_rgba(8,36,169,0.45)] data-[active=true]:border-primary/20 data-[active=true]:shadow-[0_18px_40px_-28px_rgba(8,36,169,0.4)] sm:p-7 md:p-8"
+        >
+            <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-soft group-hover/card:opacity-100 [background:radial-gradient(420px_circle_at_var(--mx,50%)_var(--my,0%),rgba(8,36,169,0.07),transparent_70%)]"
+            />
+
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:gap-5">
+                <span
+                    aria-hidden="true"
+                    className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-[14px] border border-primary/20 bg-surface text-primary transition-[color,border-color] duration-500 ease-soft group-hover/card:border-primary group-hover/card:text-white group-data-[active=true]/card:border-primary group-data-[active=true]/card:text-white"
+                >
+                    <span className="absolute inset-0 origin-left scale-x-0 bg-primary transition-transform duration-500 ease-soft group-hover/card:scale-x-100 group-data-[active=true]/card:scale-x-100" />
+                    <Icon size={20} strokeWidth={1.75} className="relative" />
+                </span>
+
+                <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
+                        <p>
+                            <span className="font-semibold text-primary">{exp.company}</span>
+                            <span aria-hidden="true" className="px-1.5 text-black/25">
+                                ·
+                            </span>
+                            {exp.type}
+                        </p>
+                        <p className="tabular-nums">{exp.period}</p>
+                    </div>
+
+                    <h3 className="mt-1.5 font-display text-[24px] font-semibold leading-[1.15] text-primary heading-balance sm:text-[28px]">
+                        {exp.role}
+                    </h3>
+
+                    <ul className="mt-4 space-y-2">
+                        {exp.points.map((point) => (
+                            <li
+                                key={point}
+                                className="flex gap-3 font-body text-[13px] leading-[1.75] text-ink-soft text-pretty md:text-[14px]"
+                            >
+                                <span
+                                    aria-hidden="true"
+                                    className="mt-[0.75em] h-1 w-1 shrink-0 rounded-full bg-primary/60"
+                                />
+                                <span>{point}</span>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <p className="mt-5 font-mono text-[11px] leading-[1.7] text-muted transition-colors duration-500 ease-soft group-hover/card:text-primary group-data-[active=true]/card:text-primary">
+                        <span className="sr-only">Stack: </span>
+                        {exp.tags.join(' / ')}
+                    </p>
+                </div>
+            </div>
+        </article>
+    );
+}
 
 export default function Experiences() {
     const reduced = useReducedMotion();
@@ -206,64 +279,8 @@ export default function Experiences() {
                                         }`}
                                     />
 
-                                    <Reveal from="up" delay={reduced ? 0 : index * 0.06}>
-                                        <article className="rounded-card border border-black/[0.06] bg-white/90 p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-7 md:p-8">
-                                            <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-                                                <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[11px] font-semibold text-primary">
-                                                    <Briefcase size={13} className="shrink-0" />
-                                                    <span>{exp.company}</span>
-                                                    <span aria-hidden="true" className="text-black/25">
-                                                        ·
-                                                    </span>
-                                                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-primary">
-                                                        {exp.badge}
-                                                    </span>
-                                                </div>
-
-                                                <div className="w-full sm:w-auto sm:shrink-0">
-                                                    <div className="flex w-fit items-center gap-1.5 rounded-full border border-black/[0.06] bg-surface/80 px-3 py-1 font-mono text-[11px] font-medium text-muted">
-                                                        <Calendar size={12} className="shrink-0" />
-                                                        <span>{exp.period}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <h3 className="mt-2 font-display text-[22px] font-black leading-snug text-primary heading-balance sm:text-2xl md:text-[26px]">
-                                                {exp.role}
-                                            </h3>
-
-                                            <p className="mt-1.5 font-mono text-[12px] text-muted">
-                                                {exp.context}
-                                            </p>
-
-                                            <div className="mt-5 border-t border-black/[0.06] pt-5">
-                                                <div className="flex flex-wrap gap-1.5">
-                                                    {exp.tags.map((tag) => (
-                                                        <span
-                                                            key={tag}
-                                                            className="inline-flex items-center rounded-full border border-black/[0.05] bg-surface px-2.5 py-1 font-mono text-[10px] font-medium text-ink-soft"
-                                                        >
-                                                            {tag}
-                                                        </span>
-                                                    ))}
-                                                </div>
-
-                                                <ul className="mt-4 space-y-2.5">
-                                                    {exp.points.map((point) => (
-                                                        <li
-                                                            key={point}
-                                                            className="flex gap-3 font-body text-[13px] leading-[1.75] text-ink-soft text-pretty md:text-[14px]"
-                                                        >
-                                                            <span
-                                                                aria-hidden="true"
-                                                                className="mt-[0.65em] h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
-                                                            />
-                                                            <span>{point}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </article>
+                                    <Reveal from="up" blur={0} delay={reduced ? 0 : index * 0.06}>
+                                        <ExperienceCard exp={exp} active={activeIndex === index} />
                                     </Reveal>
                                 </li>
                             ))}
