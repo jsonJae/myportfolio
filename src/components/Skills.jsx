@@ -203,9 +203,11 @@ export default function Skills() {
                     ref={panelRef}
                     className="group/panel relative overflow-hidden rounded-panel border border-primary/15 bg-white/55 px-3 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_24px_60px_-40px_rgba(8,36,169,0.45)] sm:px-6 md:px-8 md:py-10"
                 >
+                    {/* Dot grid, plus a brighter copy of it revealed around the cursor. */}
+                    <span aria-hidden="true" className="stack-dots pointer-events-none absolute inset-0" />
                     <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-soft group-hover/panel:opacity-100 [background:radial-gradient(360px_circle_at_var(--mx,50%)_var(--my,50%),rgba(8,36,169,0.08),transparent_70%)]"
+                        className="stack-dots-lit pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-soft group-hover/panel:opacity-100"
                     />
 
                     <ul
