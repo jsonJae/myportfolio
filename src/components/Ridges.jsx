@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 const WIDTH = 1440;
 const HEIGHT = 900;
@@ -67,7 +67,7 @@ function buildLayer({ baseY, amp, seed }) {
     return { line, area };
 }
 
-export default function Ridges() {
+export default memo(function Ridges() {
     const shapes = useMemo(() => layers.map((layer) => ({ ...layer, ...buildLayer(layer) })), []);
 
     return (
@@ -100,4 +100,4 @@ export default function Ridges() {
             </svg>
         </div>
     );
-}
+});

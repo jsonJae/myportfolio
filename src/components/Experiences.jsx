@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
-import { Calendar, Briefcase, ChevronRight, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion, useScroll, useSpring } from 'framer-motion';
+import { Calendar, Briefcase } from 'lucide-react';
 import Reveal from './Reveal';
-import Ridges from './Ridges';
+import Contours from './Contours';
 
 const experiences = [
     {
@@ -10,7 +10,7 @@ const experiences = [
         role: 'Freelance WordPress Developer',
         company: 'Komo Developments',
         period: 'Aug 2026 — Oct 2026',
-        badge: 'Recent Contract',
+        badge: 'Freelance Contract',
         context: 'Client work · Bricks Builder',
         tags: ['WordPress', 'Bricks Builder', 'Custom CSS', 'Brand Systems'],
         points: [
@@ -23,8 +23,8 @@ const experiences = [
         role: 'Full-Stack Software Engineer Intern',
         company: 'QE 360',
         period: 'May 2026 — Aug 2026',
-        badge: 'Engineering Internship',
-        context: 'Next.js · Supabase · MUX · OpenAI',
+        badge: 'Internship',
+        context: 'Live event platform · Full-stack',
         tags: ['Next.js', 'Supabase', 'MUX Video', 'OpenAI API', 'RAG Chatbot'],
         points: [
             'Shipped full-stack features for a live event platform across attendee, judge, and admin views.',
@@ -38,8 +38,8 @@ const experiences = [
         role: 'Human Resources Department Member',
         company: "Young Software Engineers' Society",
         period: 'Sep 2024 — Present',
-        badge: 'Current Community Org',
-        context: 'Community · Onboarding · Events',
+        badge: 'Student Organization',
+        context: 'HR department · Onboarding & events',
         tags: ['Leadership', 'Event Operations', 'Mentorship', 'Community'],
         points: [
             'Help the HR department run member engagement activities, onboarding, and internal events for the organization.',
@@ -49,87 +49,112 @@ const experiences = [
 
 export default function Experiences() {
     const reduced = useReducedMotion();
-    const [selectedExpId, setSelectedExpId] = useState(experiences[0].id);
-    const [scrollProgress, setScrollProgress] = useState(0);
 
-    const timelineContainerRef = useRef(null);
-    const cardRefs = useRef({});
-    const isManualScrolling = useRef(false);
+    const trackRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: trackRef,
+        offset: ['start 0.45', 'end 0.45'],
+    });
+    const smoothedProgress = useSpring(scrollYProgress, {
+        stiffness: 170,
+        damping: 30,
+        mass: 0.35,
+    });
+    const progress = reduced ? scrollYProgress : smoothedProgress;
 
-    // Scroll listener:
-    // 1. Advances the glowing visual progress indicator on the vertical timeline track.
-    // 2. Automatically expands the experience closest to the active viewport focus (unless user just clicked one).
+    const sectionRef = useRef(null);
+    const cardRefs = useRef([]);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [bandFractions, setBandFractions] = useState(null);
+
+    // Map each role's card to a vertical slice of the contour map, then track
+    // which card sits nearest the reading line so the glow can follow it.
     useEffect(() => {
-        const handleScroll = () => {
-            const container = timelineContainerRef.current;
-            if (!container) return;
+        let frame = 0;
 
-            const rect = container.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
+        const measureBands = () => {
+            const section = sectionRef.current;
+            if (!section) return;
 
-            // Track progress through timeline bounds (0 to 1)
-            const totalScrollableDistance = rect.height;
-            const currentPosition = viewportHeight * 0.45 - rect.top;
-            const progress = Math.max(0, Math.min(1, currentPosition / totalScrollableDistance));
-            setScrollProgress(progress);
+            const sectionRect = section.getBoundingClientRect();
+            const sectionHeight = sectionRect.height || 1;
+            const next = cardRefs.current
+                .filter(Boolean)
+                .map((card) => {
+                    const rect = card.getBoundingClientRect();
+                    return (rect.top + rect.height / 2 - sectionRect.top) / sectionHeight;
+                });
 
-            // Skip auto-detecting while a smooth click scroll is currently animating
-            if (isManualScrolling.current) return;
+            if (!next.length) return;
 
-            const focalPoint = viewportHeight * 0.45;
-            let closestId = null;
-            let closestDistance = Infinity;
+            setBandFractions((prev) =>
+                prev &&
+                prev.length === next.length &&
+                prev.every((value, index) => Math.abs(value - next[index]) < 0.004)
+                    ? prev
+                    : next,
+            );
+        };
 
-            experiences.forEach((exp) => {
-                const el = cardRefs.current[exp.id];
-                if (el) {
-                    const cardRect = el.getBoundingClientRect();
-                    const cardCenter = cardRect.top + cardRect.height * 0.35;
-                    const distance = Math.abs(cardCenter - focalPoint);
+        const measureActive = () => {
+            frame = 0;
+            const focusLine = window.innerHeight * 0.45;
+            let nextIndex = 0;
+            let closest = Infinity;
 
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestId = exp.id;
-                    }
+            cardRefs.current.forEach((card, index) => {
+                if (!card) return;
+                const rect = card.getBoundingClientRect();
+                const distance = Math.abs(rect.top + rect.height / 2 - focusLine);
+                if (distance < closest) {
+                    closest = distance;
+                    nextIndex = index;
                 }
             });
 
-            if (closestId && closestId !== selectedExpId) {
-                setSelectedExpId(closestId);
-            }
+            setActiveIndex((prev) => (prev === nextIndex ? prev : nextIndex));
         };
 
+        const handleScroll = () => {
+            if (frame) return;
+            frame = requestAnimationFrame(measureActive);
+        };
+
+        const handleResize = () => {
+            measureBands();
+            handleScroll();
+        };
+
+        measureBands();
+        measureActive();
+
+        const observer =
+            typeof ResizeObserver !== 'undefined'
+                ? new ResizeObserver(() => measureBands())
+                : null;
+        if (observer && sectionRef.current) observer.observe(sectionRef.current);
+
         window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // Initial evaluate
+        window.addEventListener('resize', handleResize);
 
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [selectedExpId]);
-
-    // When an experience is clicked: automatically smooth scroll to it and expand it
-    const handleExperienceClick = (id) => {
-        setSelectedExpId(id);
-        isManualScrolling.current = true;
-
-        const el = cardRefs.current[id];
-        if (el) {
-            // Smoothly center the clicked experience card in view
-            const elRect = el.getBoundingClientRect();
-            const absoluteElTop = elRect.top + window.scrollY;
-            const targetY = absoluteElTop - window.innerHeight * 0.28;
-            window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
-        }
-
-        // Re-enable auto-scroll observer after smooth scroll completes
-        setTimeout(() => {
-            isManualScrolling.current = false;
-        }, 700);
-    };
+        return () => {
+            if (frame) cancelAnimationFrame(frame);
+            if (observer) observer.disconnect();
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return (
-        <div className="relative flex min-h-screen flex-col justify-center px-4 py-24 md:px-8 overflow-hidden">
-            {/* Ambient Ridges Background inside Experience Section */}
-            <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-40">
-                <Ridges />
+        <div
+            ref={sectionRef}
+            className="relative flex min-h-screen flex-col justify-center px-4 py-24 md:px-8 overflow-hidden"
+        >
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <Contours
+                    activeIndex={activeIndex}
+                    bandFractions={bandFractions ?? undefined}
+                />
             </div>
 
             <div className="relative z-10">
@@ -145,168 +170,104 @@ export default function Experiences() {
                 </Reveal>
                 <Reveal from="up" delay={0.08}>
                     <p className="prose-measure mx-auto mt-6 text-center font-body text-[13px] leading-[1.75] text-ink-soft md:text-[14px]">
-                        Internships, freelance work, and org leadership building real systems with people.
+                        Internships, freelance projects, and student-org roles — building real systems with people.
                     </p>
                 </Reveal>
 
-                {/* Interactive Timeline Container */}
-                <div ref={timelineContainerRef} className="mx-auto mt-14 w-full max-w-4xl">
-                    {/* Timeline Stem & Milestone Entries */}
+                <div className="mx-auto mt-14 w-full max-w-4xl">
                     <div className="relative pl-6 sm:pl-8 md:pl-10">
-                        {/* Background Connecting Track Line */}
                         <div
+                            ref={trackRef}
                             aria-hidden="true"
-                            className="pointer-events-none absolute left-[11px] sm:left-[15px] md:left-[19px] top-4 bottom-6 w-[2px] bg-black/[0.08]"
-                        />
-
-                        {/* Active Gradient Fill Line that advances with scroll */}
-                        <div
-                            aria-hidden="true"
-                            style={{
-                                height: `${scrollProgress * 100}%`,
-                            }}
-                            className="pointer-events-none absolute left-[11px] sm:left-[15px] md:left-[19px] top-4 max-h-[calc(100%-2.5rem)] w-[2px] bg-gradient-to-b from-primary via-primary to-primary-hover shadow-[0_0_8px_rgba(8,36,169,0.5)] transition-[height] duration-150 ease-out"
-                        />
-
-                        {/* Visual Glowing Indicator Dot that glides down the line on scroll */}
-                        <div
-                            aria-hidden="true"
-                            style={{
-                                top: `calc(1rem + ${scrollProgress * 100}% * 0.88)`,
-                            }}
-                            className="pointer-events-none absolute left-[8px] sm:left-[12px] md:left-[16px] z-20 h-2 w-2 -translate-x-[0.5px] rounded-full bg-primary shadow-[0_0_12px_rgba(8,36,169,0.8),0_0_4px_rgba(8,36,169,1)] transition-[top] duration-150 ease-out"
+                            className="pointer-events-none absolute bottom-8 left-[12px] top-8 w-[2px] sm:left-[16px] md:left-[20px]"
                         >
-                            <span className="absolute -inset-1 rounded-full bg-primary/30 animate-ping" />
+                            <div className="absolute inset-0 rounded-full bg-black/[0.08]" />
+                            <motion.div
+                                style={{ scaleY: progress }}
+                                className="absolute inset-0 origin-top rounded-full bg-gradient-to-b from-primary via-primary to-primary-hover shadow-[0_0_8px_rgba(8,36,169,0.45)]"
+                            />
                         </div>
 
-                        <div className="space-y-8">
-                            {experiences.map((exp) => {
-                                const isSelected = selectedExpId === exp.id;
+                        <ol className="space-y-8">
+                            {experiences.map((exp, index) => (
+                                <li
+                                    key={exp.id}
+                                    ref={(node) => {
+                                        cardRefs.current[index] = node;
+                                    }}
+                                    className="relative"
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className={`absolute -left-[16px] top-7 z-10 h-2.5 w-2.5 rounded-full border-2 border-primary bg-primary ring-[3px] ring-surface transition-[box-shadow,transform] duration-500 ease-soft sm:-left-[20px] md:-left-[24px] md:top-8 ${
+                                            activeIndex === index
+                                                ? 'scale-110 shadow-[0_0_0_4px_rgba(8,36,169,0.14),0_0_16px_rgba(8,36,169,0.6)]'
+                                                : 'scale-100 shadow-[0_0_0_0_rgba(8,36,169,0),0_0_0_rgba(8,36,169,0)]'
+                                        }`}
+                                    />
 
-                                return (
-                                    <motion.div
-                                        key={exp.id}
-                                        ref={(el) => (cardRefs.current[exp.id] = el)}
-                                        layout
-                                        transition={{ duration: reduced ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
-                                        className="relative group"
-                                    >
-                                        {/* Timeline Node / Indicator Dot */}
-                                        <button
-                                            type="button"
-                                            aria-label={`Select and scroll to ${exp.role} at ${exp.company}`}
-                                            onClick={() => handleExperienceClick(exp.id)}
-                                            className={`absolute -left-[23px] sm:-left-[27px] md:-left-[31px] top-6 z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all duration-300 ${
-                                                isSelected
-                                                    ? 'border-primary bg-primary text-white shadow-[0_0_0_4px_rgba(8,36,169,0.2)] scale-110'
-                                                    : 'border-primary/40 bg-white text-primary hover:border-primary hover:scale-105'
-                                            }`}
-                                        >
-                                            <span className={`h-2 w-2 rounded-full ${isSelected ? 'bg-white' : 'bg-primary'}`} />
-                                        </button>
-
-                                        {/* Interactive Card */}
-                                        <div
-                                            role="button"
-                                            tabIndex={0}
-                                            aria-expanded={isSelected}
-                                            onClick={() => handleExperienceClick(exp.id)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.preventDefault();
-                                                    handleExperienceClick(exp.id);
-                                                }
-                                            }}
-                                            className={`cursor-pointer rounded-2xl border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] p-6 sm:p-7 md:p-8 backdrop-blur-[2px] ${
-                                                isSelected
-                                                    ? 'bg-white/95 border-primary/40 shadow-[0_16px_36px_-12px_rgba(8,36,169,0.18)] ring-1 ring-primary/20'
-                                                    : 'bg-white/70 border-black/[0.06] hover:bg-white/90 hover:border-primary/20 hover:shadow-[0_8px_24px_-8px_rgba(15,23,42,0.08)]'
-                                            }`}
-                                        >
-                                            <div className="flex flex-wrap items-start justify-between gap-3">
-                                                <div>
-                                                    <div className="flex items-center gap-2 font-mono text-[11px] font-semibold text-primary">
-                                                        <Briefcase size={13} className="shrink-0" />
-                                                        <span>{exp.company}</span>
-                                                        <span className="text-black/25">·</span>
-                                                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] tracking-wide text-primary">
-                                                            {exp.badge}
-                                                        </span>
-                                                    </div>
-                                                    <h3 className="mt-1.5 font-display text-xl sm:text-2xl font-black leading-snug text-primary md:text-[26px]">
-                                                        {exp.role}
-                                                    </h3>
+                                    <Reveal from="up" delay={reduced ? 0 : index * 0.06}>
+                                        <article className="rounded-card border border-black/[0.06] bg-white/90 p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-7 md:p-8">
+                                            <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+                                                <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 font-mono text-[11px] font-semibold text-primary">
+                                                    <Briefcase size={13} className="shrink-0" />
+                                                    <span>{exp.company}</span>
+                                                    <span aria-hidden="true" className="text-black/25">
+                                                        ·
+                                                    </span>
+                                                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-primary">
+                                                        {exp.badge}
+                                                    </span>
                                                 </div>
 
-                                                <div className="flex items-center gap-1.5 rounded-full border border-black/[0.06] bg-surface/80 px-3 py-1 font-mono text-[11px] font-medium text-muted">
-                                                    <Calendar size={12} className="shrink-0" />
-                                                    <span>{exp.period}</span>
+                                                <div className="w-full sm:w-auto sm:shrink-0">
+                                                    <div className="flex w-fit items-center gap-1.5 rounded-full border border-black/[0.06] bg-surface/80 px-3 py-1 font-mono text-[11px] font-medium text-muted">
+                                                        <Calendar size={12} className="shrink-0" />
+                                                        <span>{exp.period}</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <p className="mt-2 font-mono text-[12px] text-muted">
+                                            <h3 className="mt-2 font-display text-[22px] font-black leading-snug text-primary heading-balance sm:text-2xl md:text-[26px]">
+                                                {exp.role}
+                                            </h3>
+
+                                            <p className="mt-1.5 font-mono text-[12px] text-muted">
                                                 {exp.context}
                                             </p>
 
-                                            {/* Expandable detailed accomplishments */}
-                                            <AnimatePresence initial={false}>
-                                                {isSelected && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, height: 0 }}
-                                                        animate={{ opacity: 1, height: 'auto' }}
-                                                        exit={{ opacity: 0, height: 0 }}
-                                                        transition={{ duration: reduced ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
-                                                        className="overflow-hidden"
-                                                    >
-                                                        <div className="mt-5 pt-5 border-t border-black/[0.06]">
-                                                            {/* Tech Stack Pills */}
-                                                            <div className="flex flex-wrap gap-1.5 mb-4">
-                                                                {exp.tags.map((tag) => (
-                                                                    <span
-                                                                        key={tag}
-                                                                        className="inline-flex items-center gap-1 rounded-md bg-surface px-2.5 py-1 font-mono text-[10px] font-medium text-ink-soft border border-black/[0.04]"
-                                                                    >
-                                                                        <Sparkles size={10} className="text-primary/70" />
-                                                                        {tag}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
+                                            <div className="mt-5 border-t border-black/[0.06] pt-5">
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {exp.tags.map((tag) => (
+                                                        <span
+                                                            key={tag}
+                                                            className="inline-flex items-center rounded-full border border-black/[0.05] bg-surface px-2.5 py-1 font-mono text-[10px] font-medium text-ink-soft"
+                                                        >
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
 
-                                                            {/* Bullet points */}
-                                                            <ul className="space-y-2.5">
-                                                                {exp.points.map((point) => (
-                                                                    <li
-                                                                        key={point}
-                                                                        className="flex gap-3 font-body text-[13px] leading-[1.75] text-ink-soft md:text-[14px]"
-                                                                    >
-                                                                        <span
-                                                                            aria-hidden="true"
-                                                                            className="mt-[0.65em] h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
-                                                                        />
-                                                                        <span>{point}</span>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-
-                                            {/* Card footer indicator */}
-                                            <div className="mt-4 flex items-center justify-between font-mono text-[11px] text-primary/75">
-                                                <span className="text-[10px] text-muted">
-                                                    {isSelected ? 'Active milestone' : 'Click to scroll & expand'}
-                                                </span>
-                                                <ChevronRight
-                                                    size={14}
-                                                    className={`transition-transform duration-300 ${isSelected ? 'rotate-90 text-primary' : 'group-hover:translate-x-0.5'}`}
-                                                />
+                                                <ul className="mt-4 space-y-2.5">
+                                                    {exp.points.map((point) => (
+                                                        <li
+                                                            key={point}
+                                                            className="flex gap-3 font-body text-[13px] leading-[1.75] text-ink-soft text-pretty md:text-[14px]"
+                                                        >
+                                                            <span
+                                                                aria-hidden="true"
+                                                                className="mt-[0.65em] h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+                                                            />
+                                                            <span>{point}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
+                                        </article>
+                                    </Reveal>
+                                </li>
+                            ))}
+                        </ol>
                     </div>
                 </div>
             </div>

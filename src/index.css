@@ -141,6 +141,30 @@
   }
 }
 
+@keyframes contour-drift {
+  from {
+    transform: translate3d(-4px, 2px, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(4px, -3px, 0) scale(1.006);
+  }
+}
+
+.contour-map {
+  transform-origin: center;
+  animation: contour-drift 72s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contour-map {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+}
+
 @utility prose-measure {
   max-width: 62ch;
   text-wrap: pretty;
