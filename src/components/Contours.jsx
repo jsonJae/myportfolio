@@ -1,12 +1,5 @@
-import { memo, useEffect, useId, useMemo, useRef } from 'react';
-import {
-    motion,
-    useMotionValue,
-    useReducedMotion,
-    useScroll,
-    useSpring,
-    useTransform,
-} from 'framer-motion';
+import { memo, useLayoutEffect, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const VIEW_W = 1440;
 const VIEW_H = 1200;
@@ -149,71 +142,186 @@ function buildBands(nodes) {
     return bands;
 }
 
+// The contour field never changes, so its paths are parsed once per page
+// load and painted into two canvas bitmaps whenever the section resizes:
+// faint hairlines for rest, and a pre-blurred bloom for focus. Scrolling then
+// only moves composited bitmaps; no vector or blur work happens per frame.
+let bandCache = null;
+
+function getBands() {
+    if (!bandCache) {
+        bandCache = buildBands(buildField()).map((band) => ({ ...band, path: new Path2D(band.d) }));
+    }
+    return bandCache;
+}
+
+// Match the old SVG's `xMidYMid slice`: cover the box, centred.
+function coverTransform(width, height) {
+    const scale = Math.max(width / VIEW_W, height / VIEW_H);
+    return {
+        scale,
+        x: (width - VIEW_W * scale) / 2,
+        y: (height - VIEW_H * scale) / 2,
+    };
+}
+
+function prepare(canvas, width, height, density) {
+    canvas.width = Math.round(width * density);
+    canvas.height = Math.round(height * density);
+    const ctx = canvas.getContext('2d');
+    const fit = coverTransform(width, height);
+    ctx.setTransform(
+        fit.scale * density,
+        0,
+        0,
+        fit.scale * density,
+        fit.x * density,
+        fit.y * density,
+    );
+    ctx.lineCap = 'round';
+    return { ctx, unit: fit.scale * density };
+}
+
+// Fade the field into the surface at the top and bottom so contour lines
+// never terminate on a visible hard edge. Baked into the bitmap instead of a
+// CSS mask, which would force a repaint whenever anything inside it moves.
+function fadeEdges(ctx, width, height, stops) {
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.filter = 'none';
+    ctx.globalCompositeOperation = 'destination-in';
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    for (const [offset, alpha] of stops) {
+        gradient.addColorStop(Math.min(Math.max(offset, 0), 1), `rgba(0,0,0,${alpha})`);
+    }
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+}
+
+const EDGE_STOPS = [
+    [0, 0],
+    [0.14, 1],
+    [0.86, 1],
+    [1, 0],
+];
+
+function paintRest(canvas, width, height, density) {
+    const { ctx, unit } = prepare(canvas, width, height, density);
+    ctx.strokeStyle = 'rgb(8, 36, 169)';
+    for (const band of getBands()) {
+        // Hairlines keep a constant on-screen width, like non-scaling-stroke.
+        ctx.lineWidth = ((band.major ? 1.1 : 0.6) * density) / unit;
+        ctx.globalAlpha = band.major ? 0.15 + band.t * 0.1 : 0.08 + band.t * 0.09;
+        ctx.stroke(band.path);
+    }
+    fadeEdges(ctx, canvas.width, canvas.height, EDGE_STOPS);
+}
+
+// The full bloom (both blur passes) is painted once into an offscreen canvas,
+// then copied into one soft-edged slice per timeline stop.
+function paintBloom(width, height, density) {
+    const canvas = document.createElement('canvas');
+    const { ctx, unit } = prepare(canvas, width, height, density);
+    const layers = [
+        { color: 'rgb(8, 36, 169)', blur: 10, major: [7, 0.55], minor: [4.5, 0.4] },
+        { color: 'rgb(29, 78, 216)', blur: 2, major: [2.6, 1], minor: [1.6, 0.72] },
+    ];
+    for (const layer of layers) {
+        ctx.strokeStyle = layer.color;
+        ctx.filter = `blur(${layer.blur * unit}px)`;
+        for (const band of getBands()) {
+            const [lineWidth, alpha] = band.major ? layer.major : layer.minor;
+            ctx.lineWidth = lineWidth;
+            ctx.globalAlpha = alpha;
+            ctx.stroke(band.path);
+        }
+    }
+    return canvas;
+}
+
+function paintSlice(canvas, bloom, fraction, count) {
+    canvas.width = bloom.width;
+    canvas.height = bloom.height;
+    const ctx = canvas.getContext('2d');
+    // Kept quieter than the cards: the bloom marks focus, it is not the subject.
+    ctx.globalAlpha = 0.7;
+    ctx.drawImage(bloom, 0, 0);
+    ctx.globalAlpha = 1;
+
+    // Each stop owns a vertical slice centred on its card; the slice fades in
+    // and out at its edges (the old focus gradient: 0 / 0.8 / 1 / 0.8 / 0).
+    const span = (1 / count) * 0.94;
+    const start = Math.min(Math.max(fraction - span / 2, 0), 1 - span);
+    fadeEdges(ctx, canvas.width, canvas.height, [
+        [0, 0],
+        [start, 0],
+        [start + span * 0.24, 0.8],
+        [start + span * 0.5, 1],
+        [start + span * 0.76, 0.8],
+        [start + span, 0],
+        [1, 0],
+    ]);
+    fadeEdges(ctx, canvas.width, canvas.height, EDGE_STOPS);
+}
+
 const DEFAULT_FRACTIONS = [0.24, 0.5, 0.76];
 
 export default memo(function Contours({
     activeIndex = 0,
     bandFractions = DEFAULT_FRACTIONS,
 }) {
-    const bands = useMemo(() => buildBands(buildField()), []);
     const ref = useRef(null);
-    const reduced = useReducedMotion();
+    const restRef = useRef(null);
+    const sliceRefs = useRef([]);
 
-    const uid = useId().replace(/[:]/g, '');
-    const maskId = `contour-focus-${uid}`;
-    const fadeId = `contour-focus-fade-${uid}`;
-
-    // Each stop on the timeline owns a vertical slice of the map. The glow
-    // band is anchored to that slice's measured centre, so scrolling the
-    // timeline walks the blue bloom down the topography card by card.
     const count = Math.max(bandFractions.length, 1);
-    const bandHeight = (VIEW_H / count) * 0.94;
     const safeIndex = Math.min(Math.max(activeIndex, 0), count - 1);
-    const fraction = bandFractions[safeIndex] ?? (safeIndex + 0.5) / count;
-    const targetY = Math.min(
-        Math.max(fraction * VIEW_H - bandHeight / 2, 0),
-        VIEW_H - bandHeight,
-    );
+    const fractionKey = bandFractions.map((value) => value.toFixed(3)).join(',');
 
-    const focusTarget = useMotionValue(0);
-    const focusSpring = useSpring(focusTarget, {
-        stiffness: 90,
-        damping: 22,
-        mass: 0.6,
-    });
-    const focusY = reduced ? focusTarget : focusSpring;
+    // Repaint only when the section's size or the card positions change.
+    // Scrolling never repaints: the active slice just cross-fades in.
+    useLayoutEffect(() => {
+        const node = ref.current;
+        if (!node) return undefined;
 
-    useEffect(() => {
-        focusTarget.set(targetY);
-    }, [focusTarget, targetY]);
+        const fractions = fractionKey.split(',').map(Number);
+        let painted = '';
+        const paint = () => {
+            const width = node.clientWidth;
+            const height = node.clientHeight;
+            const key = `${width}x${height}`;
+            if (!width || !height || key === painted) return;
+            painted = key;
+
+            const density = Math.min(window.devicePixelRatio || 1, 1.5);
+            paintRest(restRef.current, width, height, density);
+            // The bloom is soft by design, so it can live at a lower resolution.
+            const bloom = paintBloom(width, height, Math.min(density, 0.75));
+            fractions.forEach((fraction, index) => {
+                const slice = sliceRefs.current[index];
+                if (slice) paintSlice(slice, bloom, fraction, fractions.length);
+            });
+        };
+
+        paint();
+        const observer = new ResizeObserver(paint);
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, [fractionKey]);
 
     const { scrollYProgress } = useScroll({
         target: ref,
         offset: ['start end', 'end start'],
     });
-    const smoothed = useSpring(scrollYProgress, {
-        stiffness: 120,
-        damping: 32,
-        mass: 0.4,
-    });
-    const progress = reduced ? scrollYProgress : smoothed;
-    const halo = useTransform(progress, [0, 0.4, 1], [0, 0.55, 0.12]);
-
-    // Fade the field into the surface at the top and bottom so contour lines
-    // never terminate on a visible hard edge.
-    const edgeFade = {
-        maskImage:
-            'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)',
-        WebkitMaskImage:
-            'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)',
-    };
+    const halo = useTransform(scrollYProgress, [0, 0.4, 1], [0, 0.55, 0.12]);
 
     return (
         <div
             ref={ref}
             aria-hidden="true"
             className="contour-map pointer-events-none absolute inset-0 z-0 overflow-hidden"
-            style={edgeFade}
         >
             <motion.div
                 className="absolute inset-0"
@@ -223,87 +331,20 @@ export default memo(function Contours({
                         'radial-gradient(620px 460px at 50% 40%, rgba(8, 36, 169, 0.1), transparent 72%), radial-gradient(520px 420px at 14% 60%, rgba(8, 36, 169, 0.06), transparent 74%)',
                 }}
             />
-            <svg
-                viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-                preserveAspectRatio="xMidYMid slice"
-                className="h-full w-full"
-            >
-                <defs>
-                    <linearGradient id={fadeId} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#0824A9" stopOpacity="0" />
-                        <stop offset="24%" stopColor="#0B2AC4" stopOpacity="0.8" />
-                        <stop offset="50%" stopColor="#1D4ED8" stopOpacity="1" />
-                        <stop offset="76%" stopColor="#0B2AC4" stopOpacity="0.8" />
-                        <stop offset="100%" stopColor="#0824A9" stopOpacity="0" />
-                    </linearGradient>
-                    <mask
-                        id={maskId}
-                        maskUnits="userSpaceOnUse"
-                        x="0"
-                        y="0"
-                        width={VIEW_W}
-                        height={VIEW_H}
-                    >
-                        <motion.rect
-                            x="0"
-                            width={VIEW_W}
-                            height={bandHeight}
-                            fill={`url(#${fadeId})`}
-                            style={{ y: focusY }}
-                        />
-                    </mask>
-                </defs>
 
-                {/* Rest state: faint hairlines covering the whole field. */}
-                {bands.map((band, index) => (
-                    <path
-                        key={index}
-                        d={band.d}
-                        fill="none"
-                        stroke="rgb(8, 36, 169)"
-                        strokeWidth={band.major ? 1.1 : 0.6}
-                        strokeOpacity={
-                            band.major ? 0.15 + band.t * 0.1 : 0.08 + band.t * 0.09
-                        }
-                        strokeLinecap="round"
-                        vectorEffect="non-scaling-stroke"
-                    />
-                ))}
+            <canvas ref={restRef} className="absolute inset-0 h-full w-full" />
 
-                {/* Focus state: the blue bloom lives only inside the active band. */}
-                <g mask={`url(#${maskId})`}>
-                    <g
-                        fill="none"
-                        stroke="rgb(8, 36, 169)"
-                        strokeLinecap="round"
-                        style={{ filter: 'blur(10px)' }}
-                    >
-                        {bands.map((band, index) => (
-                            <path
-                                key={index}
-                                d={band.d}
-                                strokeWidth={band.major ? 7 : 4.5}
-                                strokeOpacity={band.major ? 0.55 : 0.4}
-                            />
-                        ))}
-                    </g>
-                    <g
-                        fill="none"
-                        stroke="rgb(29, 78, 216)"
-                        strokeLinecap="round"
-                        style={{ filter: 'blur(2px)' }}
-                    >
-                        {bands.map((band, index) => (
-                            <path
-                                key={index}
-                                d={band.d}
-                                strokeWidth={band.major ? 2.6 : 1.6}
-                                strokeOpacity={band.major ? 1 : 0.72}
-                            />
-                        ))}
-                    </g>
-                </g>
-            </svg>
+            {bandFractions.map((_, index) => (
+                <canvas
+                    key={index}
+                    ref={(node) => {
+                        sliceRefs.current[index] = node;
+                    }}
+                    className={`absolute inset-0 h-full w-full transition-opacity duration-700 ease-soft ${
+                        index === safeIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
+                />
+            ))}
         </div>
     );
 });
