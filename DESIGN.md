@@ -14,19 +14,19 @@ colors:
   border-primary: "rgba(8, 36, 169, 0.35)"
 typography:
   display-large:
-    fontFamily: "Geist Mono, monospace"
+    fontFamily: "Bodoni Moda, serif"
     fontSize: "88px"
     fontWeight: 900
     lineHeight: 0.92
     letterSpacing: "-0.045em"
   display-heading:
-    fontFamily: "Geist Mono, monospace"
+    fontFamily: "Bodoni Moda, serif"
     fontSize: "56px"
     fontWeight: 900
     lineHeight: 1
     letterSpacing: "-0.04em"
   display-italic:
-    fontFamily: "Geist Mono, monospace"
+    fontFamily: "Bodoni Moda, serif"
     fontSize: "30px - 44px"
     fontWeight: 500
     fontStyle: "italic"
@@ -56,12 +56,12 @@ rounded:
 
 ## Creative North Star: "Precision Editorial & Tactile Micro-Interactions"
 
-The portfolio is rooted in a refined, minimalist aesthetic: calm, light Fog Paper backgrounds (`#EDF0F5`), crisp monospaced typography (Geist Mono), elegant rounded pill geometry, and deep Ultramarine ink (`#0824A9`). 
+The portfolio is rooted in a refined, minimalist aesthetic: calm, light Fog Paper backgrounds (`#EDF0F5`), a serif/mono typography pairing (Bodoni Moda for display, Geist Mono for body), elegant rounded pill geometry, and deep Ultramarine ink (`#0824A9`). 
 
 **What this design system is:**
 - Crisp, modern, clean, and intentional.
 - Tactile through deliberate micro-interactions: horizontal wipe hover fills, elastic spring physics, smooth magnification, and subtle ambient lifts.
-- Grounded in high-contrast typography: heavy 900 weights contrasted with delicate italic flourishes.
+- Grounded in high-contrast typography: didone serifs with razor hairlines paired against monospaced utility text, with 900 weights contrasted by delicate italic flourishes.
 
 **What this design system is NOT (Confirmed Anti-References):**
 - **No heavy neumorphism**: No deep extruded mud-shadows, no paired dual-tints (`#A3B1C6`), and no synthetic plastic recesses.
@@ -92,21 +92,24 @@ A focused, restrained palette where Fog Paper carries the page and Ultramarine c
 
 ## Typography
 
-**Single Typeface: Geist Mono** across all viewports and hierarchies. Monospace typography provides editorial structure, while deliberate variations in scale, weight, and italic phrasing introduce personality and delight.
+**Two-Typeface System**: Bodoni Moda for all display headings and heroic scales; Geist Mono for body text, controls, and metadata. The serif/mono pairing signals "designer + developer" and delivers editorial refinement on headings while maintaining tool-like clarity in prose and UI.
 
 ### Hierarchy
-1. **Hero & Name Display** (Geist Mono 900, 56px–88px+ mobile/desktop, tight tracking `-0.045em`, leading ~0.92):
+1. **Hero & Name Display** (Bodoni Moda 900, 56px–88px+ mobile/desktop, tight tracking `-0.045em`, leading ~0.92):
    - Solid Ultramarine ink.
    - Interactive letter-level physics: spring bounce on hover, kinetic wave cascading on tap/click.
-2. **Greeting Flourish** (Geist Mono 500 italic, 30px–44px, tracking `-0.02em`):
-   - Lowercase conversational opening ("hey, I’m", "hi, I'm").
+2. **Greeting Flourish** (Bodoni Moda 500 italic, 30px–44px, tracking `-0.02em`):
+   - Lowercase conversational opening ("hey, I’m", "hi, I’m").
    - Paired on the same optical baseline as the display name.
-3. **Editorial Prose** (Geist Mono 400, 15px mobile / 17px desktop, leading 1.75):
+3. **Section Headings** (Bodoni Moda 900, 40px–68px, tracking `-0.035em`):
+   - About Me, Experience, Stack, Projects, Beyond, Contact.
+   - Mix of full weight ("Me.", "Stack") and regular weight italic ("About", "Experience") for personality.
+4. **Editorial Prose** (Geist Mono 400, 15px mobile / 17px desktop, leading 1.75):
    - High legibility, generous line height, `text-pretty`.
    - Key location and interest anchors set in `font-semibold text-ink`.
-4. **Interactive Labels & Controls** (Geist Mono 700, 13px–14px, tracking `0.03em`):
+5. **Interactive Labels & Controls** (Geist Mono 700, 13px–14px, tracking `0.03em`):
    - Pill buttons, CTA actions, and download links.
-5. **Metadata & Tooltips** (Geist Mono 500, 10px, uppercase, tracking `0.16em`):
+6. **Metadata & Tooltips** (Geist Mono 500, 10px, uppercase, tracking `0.16em`):
    - Floating dock tooltips, project tags, and category labels.
 
 ---
@@ -161,11 +164,12 @@ The signature global navigation:
 - **Do** keep surfaces clean, light, and minimal (`#EDF0F5` background, `#FFFFFF` / `bg-surface` pills).
 - **Do** use the horizontal wipe hover effect for interactive pills and primary CTA buttons.
 - **Do** maintain a strict 44×44px minimum tap target for all circular and icon buttons.
+- **Do** use Bodoni Moda for display headings and Geist Mono for all body, controls, and metadata.
 - **Do** use Ultramarine `#0824A9` as the singular brand voice for typography, active states, and focal contrast.
 - **Do** vertically center aligned button rows (such as Resume and social icons) on a shared axis with uniform height.
 
 ### Don't:
 - **Don't** use heavy neumorphic dual-shadows, sunken clay insets, or extruded mud effects.
 - **Don't** use hard sheet dividers that chop the scroll experience into disjointed cards.
-- **Don't** mix different body fonts — Geist Mono defines the entire portfolio voice.
+- **Don't** mix fonts outside the serif (display) + mono (utility) pairing.
 - **Don't** clip text ascenders/descenders by applying tight `overflow-hidden` wrappers without generous padding.

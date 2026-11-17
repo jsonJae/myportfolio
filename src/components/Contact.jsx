@@ -147,7 +147,7 @@ export default function Contact() {
                         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
                             <button
                                 type="submit"
-                                className="group inline-flex items-center gap-2.5 rounded-full bg-primary px-6 py-3 font-display text-[13px] font-bold tracking-[0.02em] text-white shadow-[0_12px_28px_-14px_rgba(8,36,169,0.7)] transition-[transform,background-color,box-shadow] duration-300 ease-soft hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-[0_18px_34px_-16px_rgba(8,36,169,0.75)] active:translate-y-0 active:scale-[0.98]"
+                                className="group inline-flex items-center gap-2.5 rounded-full bg-primary px-6 py-3 font-mono text-[13px] font-bold tracking-[0.03em] text-white shadow-[0_12px_28px_-14px_rgba(8,36,169,0.7)] transition-[transform,background-color,box-shadow] duration-300 ease-soft hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-[0_18px_34px_-16px_rgba(8,36,169,0.75)] active:translate-y-0 active:scale-[0.98]"
                             >
                                 Send message
                                 <Send

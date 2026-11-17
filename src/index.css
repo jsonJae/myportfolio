@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Fraunces';
-  src: url('./assets/fonts/Fraunces-Variable.woff2') format('woff2');
+  font-family: 'Bodoni Moda';
+  src: url('./assets/fonts/BodoniModa-Variable.woff2') format('woff2');
   font-weight: 400 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Fraunces';
-  src: url('./assets/fonts/Fraunces-Variable.woff2') format('woff2');
+  font-family: 'Bodoni Moda';
+  src: url('./assets/fonts/BodoniModa-Italic-Variable.woff2') format('woff2');
   font-weight: 400 900;
   font-style: italic;
   font-display: swap;
@@ -25,7 +25,7 @@
 }
 
 @theme {
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', ui-serif, Georgia, serif;
   --font-body: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -161,6 +161,49 @@
   .contour-map {
     animation: none;
     transform: none;
+    will-change: auto;
+  }
+}
+
+@keyframes marquee-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-row {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-slide var(--marquee-duration, 50s) linear infinite;
+  animation-play-state: paused;
+}
+
+.marquee-track--reverse {
+  animation-direction: reverse;
+}
+
+.marquee[data-running='true'] .marquee-track {
+  animation-play-state: running;
+  will-change: transform;
+}
+
+/* Hovering a row holds it still so a pill can be read or wiped. */
+.marquee[data-running='true'] .marquee-row:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
     will-change: auto;
   }
 }
