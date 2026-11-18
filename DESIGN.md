@@ -150,6 +150,17 @@ The first visit's focal moment. It lives in `index.html`, so it paints before th
 - **Hand-off**: the letters fly to the hero name's measured position with a 40ms trail (scaled down on small type) and settle from 900 to the hero's resting 600. The splash then swaps for the real name, pixel for pixel, and only then does the portrait rise in front of it.
 - **Rules**: plays once per tab session (`?splash` forces a replay); reduced motion cross-fades without the flight; deep links that land below the hero skip the flight; a failsafe dismisses it if the app never claims it.
 
+### 6. Project Cards & Detail Sheet
+"Curated works" uses one card design for every project; content lives in `src/data/projects.js`.
+- **Card**: white, 24px radius, hairline border, a 16:9 image on top, then the Bodoni title (italic subtitle at 0.55em), an org · role line (an award shows as a filled Ultramarine pill), the summary, and a footer of mono tags beside a "Details +" pill with the horizontal wipe. Two columns from `md`; an odd last card centers.
+- **Placeholders**: a missing image shows grid paper with print crop marks; a missing GitHub link or detail list shows a dashed Ultramarine box marked "Placeholder." Fill the data field and the placeholder disappears.
+- **The press**: as a card enters view, a brayer rolls across its image and reveals it, and the title presses from weight 400 at 20% ink to 900, echoing the splash. Cards in a row stagger by 140ms.
+- **Expansion**: the whole card is one button. It morphs over the dimmed page through shared `layoutId`s (shell, image, title) on the contact window's spring (`stiffness 260, damping 32, mass 0.9`). Esc, the close button or a backdrop click folds it back into its card, and focus returns there.
+- **The spread** (desktop, `lg` and up): the sheet opens as a two-page spread up to 1240px wide. The left page is grid paper with crop marks holding one large print of the current screenshot, sized so the spread fits the viewport height; under it sit a `02 / 04` counter, the image's description as a visible caption, outline arrow buttons with the wipe, and a thumbnail strip. The right page (340–430px) holds the title, meta, Links (live app solid, GitHub outline), then Overview, What I did and Stack. Only the right page scrolls, inside a band that starts below the close button, so the print stays in view while reading. Phones and tablets stack the two pages and scroll the whole sheet, with the counter and arrows on one row over a full-width caption.
+- **Turning images**: the next print is revealed behind the same brayer that prints the cards, rolling in the direction of travel (0.72s). Arrow keys, the buttons, thumbnails and horizontal swipes all turn. Screenshots preload when the sheet opens.
+- **The loupe**: on fine pointers, hovering the print shows a 168px lens at 2.4x, close to the screenshots' native resolution, so small UI text is readable. The lens follows the pointer with no easing; only its glass fades and grows in.
+- **Scroll edges**: scrolling text fades out at the bottom always, and at the top once scrolled, so it never runs hard under the close button.
+
 ---
 
 ## Motion & Accessibility Standards
