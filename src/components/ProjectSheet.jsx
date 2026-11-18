@@ -19,10 +19,11 @@ const settle = (delay = 0.18) => ({
 const FOCUSABLE = 'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
 
 // The loupe: lens diameter in px, and how far it magnifies the print. Source
-// screenshots are about 2.4x the size the print shows them at, so the lens
-// lands on real pixels rather than an upscale.
-const LENS = 168;
-const ZOOM = 2.4;
+// screenshots are about 2.4x the size the print shows them at, so 1.7x stays
+// crisp while keeping enough of the surrounding UI in the lens to read it in
+// context.
+const LENS = 184;
+const ZOOM = 1.7;
 
 const pad = (value) => String(value).padStart(2, '0');
 
@@ -31,12 +32,6 @@ const markScrolled = (event) => {
     const scrolled = event.currentTarget.scrollTop > 8 ? 'true' : 'false';
     if (event.currentTarget.dataset.scrolled !== scrolled) event.currentTarget.dataset.scrolled = scrolled;
 };
-
-function Label({ children }) {
-    return (
-        <h4 className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-muted">{children}</h4>
-    );
-}
 
 // Marks content that has not been supplied yet, so it is easy to spot and
 // replace. Remove by filling the matching field in src/data/projects.js.
@@ -54,7 +49,7 @@ function LinkPill({ href, icon, label, solid = false }) {
             href={href}
             target="_blank"
             rel="noreferrer"
-            className={`group relative inline-flex h-11 items-center overflow-hidden rounded-full border px-4 font-mono text-[12px] font-bold tracking-[0.03em] shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-[transform,box-shadow] duration-300 ease-soft hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-8px_rgba(8,36,169,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:translate-y-0 active:scale-[0.97] ${
+            className={`group relative inline-flex h-11 items-center justify-center overflow-hidden rounded-full border px-5 font-mono text-[12px] font-bold tracking-[0.03em] shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-[transform,box-shadow] duration-300 ease-soft hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-8px_rgba(8,36,169,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:translate-y-0 active:scale-[0.97] ${
                 solid ? 'border-primary bg-primary text-white' : 'border-primary/25 bg-white text-primary'
             }`}
         >
@@ -74,25 +69,26 @@ function LinkPill({ href, icon, label, solid = false }) {
     );
 }
 
+// Two links share one row at equal width; a lone link keeps its own width.
 function Links({ project }) {
     return (
-        <div className="flex flex-wrap gap-2.5">
+        <div className={project.live ? 'grid grid-cols-2 gap-2.5' : 'flex'}>
             {project.live && (
                 <LinkPill
                     solid
                     href={project.live}
-                    label="Open live app"
+                    label="Live app"
                     icon={<Globe size={14} strokeWidth={2} aria-hidden="true" />}
                 />
             )}
             {project.github ? (
                 <LinkPill
                     href={project.github}
-                    label="View on GitHub"
+                    label="GitHub"
                     icon={<FontAwesomeIcon icon={faGithub} aria-hidden="true" className="text-[14px]" />}
                 />
             ) : (
-                <span className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-primary/35 px-4 font-mono text-[12px] font-bold tracking-[0.03em] text-primary/60">
+                <span className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-primary/35 px-5 font-mono text-[12px] font-bold tracking-[0.03em] text-primary/60">
                     <FontAwesomeIcon icon={faGithub} aria-hidden="true" className="text-[14px]" />
                     GitHub link pending
                 </span>
@@ -233,10 +229,6 @@ function Viewer({ project, view, onStep, onGo, onSettled }) {
                             }`}
                         >
                             {image.alt}
-                            <span className="loupe-hint ml-2 inline-flex translate-y-[2px] items-center gap-1 whitespace-nowrap text-primary/60">
-                                <ZoomIn size={12} strokeWidth={2} aria-hidden="true" />
-                                Hover to inspect
-                            </span>
                         </figcaption>
                         {count > 1 && (
                             <div className="order-2 flex shrink-0 gap-2 lg:order-3">
@@ -251,8 +243,12 @@ function Viewer({ project, view, onStep, onGo, onSettled }) {
                     </div>
                 )}
 
-                {count > 1 && (
-                    <ul aria-label={`${project.name} images`} className="mt-5 flex gap-2.5 overflow-x-auto pb-1">
+                {/* Thumbnails on the left; the loupe hint holds the right end of
+                    the row, so it stays put while captions change. */}
+                {count > 0 && (
+                    <div className="mt-5 flex items-center justify-between gap-4">
+                        {count > 1 ? (
+                    <ul aria-label={`${project.name} images`} className="-m-1 flex min-w-0 gap-2.5 overflow-x-auto p-1">
                         {images.map((thumb, index) => (
                             <li key={thumb.src} className="shrink-0">
                                 <button
@@ -269,6 +265,14 @@ function Viewer({ project, view, onStep, onGo, onSettled }) {
                             </li>
                         ))}
                     </ul>
+                        ) : (
+                            <span />
+                        )}
+                        <p className="loupe-hint inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-primary/70">
+                            <ZoomIn size={13} strokeWidth={2} aria-hidden="true" />
+                            Hover the image to inspect
+                        </p>
+                    </div>
                 )}
             </motion.div>
         </figure>
@@ -395,58 +399,53 @@ export default function ProjectSheet({ project, onClose }) {
                                 </motion.h3>
 
                                 <motion.div {...settle(0.22)}>
+                                    {/* Header facts: who it was for, then the stack, set
+                                        the way the card sets them. */}
                                     <ProjectMeta project={project} className="mt-4" />
+                                    <p className="mt-2 font-mono text-[11px] leading-[1.7] text-muted md:text-[12px]">
+                                        <span className="sr-only">Tags: </span>
+                                        {project.tags.join(' / ')}
+                                    </p>
 
                                     <div className="mt-6">
                                         <Links project={project} />
                                     </div>
 
-                                    <div className="mt-9 space-y-9 border-t border-black/[0.06] pt-8">
-                                        <section className="space-y-3">
-                                            <Label>Overview</Label>
-                                            <p className="prose-measure font-body text-[14px] leading-[1.8] text-ink-soft">
-                                                {project.summary}
-                                            </p>
-                                        </section>
+                                    {/* The summary leads; it needs no label. */}
+                                    <p className="mt-8 font-body text-[15px] leading-[1.75] text-ink/85 text-pretty">
+                                        {project.summary}
+                                    </p>
 
-                                        <section className="space-y-3">
-                                            <Label>What I did</Label>
-                                            {project.details ? (
-                                                <ul className="space-y-3">
-                                                    {project.details.map((point) => (
-                                                        <li
-                                                            key={point}
-                                                            className="flex gap-3 font-body text-[13.5px] leading-[1.75] text-ink-soft text-pretty"
-                                                        >
-                                                            <span
-                                                                aria-hidden="true"
-                                                                className="mt-[0.75em] h-1 w-1 shrink-0 rounded-full bg-primary/60"
-                                                            />
-                                                            <span>{point}</span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            ) : (
-                                                <Placeholder>
-                                                    Key contributions, decisions, and results go here, one per line.
-                                                </Placeholder>
-                                            )}
-                                        </section>
-
-                                        <section className="space-y-3">
-                                            <Label>Stack &amp; tags</Label>
-                                            <ul className="flex flex-wrap gap-2">
-                                                {project.tags.map((tag) => (
+                                    <section aria-labelledby={`${titleId}-did`} className="mt-10">
+                                        <h4
+                                            id={`${titleId}-did`}
+                                            className="font-display text-[28px] font-black leading-none tracking-[-0.03em] text-primary"
+                                        >
+                                            <span className="font-normal italic">what</span> I did.
+                                        </h4>
+                                        {project.details ? (
+                                            <ul className="mt-4 divide-y divide-black/[0.07] border-y border-black/[0.07]">
+                                                {project.details.map((point) => (
                                                     <li
-                                                        key={tag}
-                                                        className="rounded-full border border-primary/20 bg-surface/70 px-3 py-1.5 font-mono text-[11px] text-primary"
+                                                        key={point}
+                                                        className="flex gap-3 py-3.5 font-body text-[13.5px] leading-[1.7] text-ink-soft text-pretty"
                                                     >
-                                                        {tag}
+                                                        <span
+                                                            aria-hidden="true"
+                                                            className="mt-[0.72em] h-1 w-1 shrink-0 rounded-full bg-primary"
+                                                        />
+                                                        <span>{point}</span>
                                                     </li>
                                                 ))}
                                             </ul>
-                                        </section>
-                                    </div>
+                                        ) : (
+                                            <div className="mt-4">
+                                                <Placeholder>
+                                                    Key contributions, decisions, and results go here, one per line.
+                                                </Placeholder>
+                                            </div>
+                                        )}
+                                    </section>
                                 </motion.div>
                             </div>
                         </motion.div>
