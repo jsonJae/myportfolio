@@ -257,6 +257,314 @@
   }
 }
 
+/* Curated works: the press.
+   A project card moves idle → printing → live (data-state, set by
+   Projects.jsx). While printing, a brayer rolls across the card's image and
+   the picture appears behind it, then the title presses from hairline to
+   full weight, the same ink-fill the splash uses for the name. */
+.press-paper {
+  background-color: #f5f7fb;
+  background-image:
+    linear-gradient(rgb(8 36 169 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(8 36 169 / 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+}
+
+.press-crop {
+  position: absolute;
+  inset: 12px;
+  pointer-events: none;
+  --crop: rgb(8 36 169 / 0.4);
+  --arm: 12px;
+  background:
+    linear-gradient(var(--crop), var(--crop)) top left / var(--arm) 1px,
+    linear-gradient(var(--crop), var(--crop)) top left / 1px var(--arm),
+    linear-gradient(var(--crop), var(--crop)) top right / var(--arm) 1px,
+    linear-gradient(var(--crop), var(--crop)) top right / 1px var(--arm),
+    linear-gradient(var(--crop), var(--crop)) bottom left / var(--arm) 1px,
+    linear-gradient(var(--crop), var(--crop)) bottom left / 1px var(--arm),
+    linear-gradient(var(--crop), var(--crop)) bottom right / var(--arm) 1px,
+    linear-gradient(var(--crop), var(--crop)) bottom right / 1px var(--arm);
+  background-repeat: no-repeat;
+}
+
+.press-crop-compact {
+  inset: 6px;
+  --arm: 7px;
+}
+
+.press-roller {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.press-brayer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 72px;
+  background: linear-gradient(
+    90deg,
+    rgb(8 36 169 / 0) 0%,
+    rgb(8 36 169 / 0.06) 55%,
+    rgb(8 36 169 / 0.2) 93%,
+    rgb(8 36 169 / 0.9) 97.5%,
+    rgb(8 36 169 / 0) 100%
+  );
+}
+
+.project-card {
+  --press: 1.15s;
+  --press-ease: cubic-bezier(0.6, 0, 0.3, 1);
+  --press-delay: calc(var(--card-delay, 0s) + 0.1s);
+}
+
+.ink-title {
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+.ink-sub {
+  color: var(--color-primary);
+}
+
+.project-card[data-state='idle'] .press-print {
+  clip-path: inset(0 100% 0 0);
+}
+
+.project-card[data-state='idle'] .ink-title {
+  font-weight: 400;
+  color: rgb(8 36 169 / 0.2);
+}
+
+.project-card[data-state='idle'] .ink-sub {
+  color: rgb(8 36 169 / 0.2);
+}
+
+.project-card[data-state='printing'] .press-print {
+  animation: press-reveal var(--press) var(--press-ease) var(--press-delay) both;
+}
+
+.project-card[data-state='printing'] .press-roller {
+  animation: press-roll var(--press) var(--press-ease) var(--press-delay) both;
+}
+
+.project-card[data-state='printing'] .ink-title {
+  transition:
+    font-weight 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.8s var(--ease-soft);
+  transition-delay: calc(var(--card-delay, 0s) + 0.45s);
+}
+
+.project-card[data-state='printing'] .ink-sub {
+  transition: color 0.8s var(--ease-soft);
+  transition-delay: calc(var(--card-delay, 0s) + 0.7s);
+}
+
+@keyframes press-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes press-roll {
+  0% {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+/* The detail spread's print. Turning to another screenshot reuses the press:
+   the new print is revealed behind a brayer rolling in the direction of
+   travel (left to right for next, right to left for back). */
+.turn-layer {
+  animation: press-reveal 0.72s cubic-bezier(0.6, 0, 0.3, 1) both;
+}
+
+.turn-layer[data-dir='back'] {
+  animation-name: press-reveal-back;
+}
+
+.turn-roller {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: press-roll 0.72s cubic-bezier(0.6, 0, 0.3, 1) both;
+}
+
+.turn-roller[data-dir='back'] {
+  animation-name: press-roll-back;
+}
+
+.turn-roller[data-dir='back'] .press-brayer {
+  right: auto;
+  left: 0;
+  transform: scaleX(-1);
+}
+
+@keyframes press-reveal-back {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes press-roll-back {
+  0% {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+/* Scrolling text fades out at its edges. The bottom fade is always on; the
+   top one turns on once the reader has scrolled (data-scrolled, set in
+   ProjectSheet). On desktop the text page scrolls in a band that starts below
+   the close button, so a short fade is enough; on phones the whole sheet
+   scrolls under the button, so the fade keeps its 52px clear first. */
+.sheet-scroll,
+.page-scroll {
+  --fade: linear-gradient(to bottom, #000 calc(100% - 32px), transparent 100%);
+}
+
+.page-scroll[data-scrolled='true'] {
+  --fade: linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 32px), transparent 100%);
+}
+
+.sheet-scroll[data-scrolled='true'] {
+  --fade: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 52px,
+    #000 104px,
+    #000 calc(100% - 32px),
+    transparent 100%
+  );
+}
+
+@media (max-width: 1023.98px) {
+  .sheet-scroll {
+    -webkit-mask-image: var(--fade);
+    mask-image: var(--fade);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-scroll {
+    -webkit-mask-image: var(--fade);
+    mask-image: var(--fade);
+  }
+}
+
+/* The loupe. The outer span follows the pointer with no easing; only the
+   glass inside fades and grows, so the lens never trails the cursor. */
+.loupe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 168px;
+  height: 168px;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.loupe-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  box-shadow:
+    0 0 0 3px #ffffff,
+    0 0 0 4px rgb(8 36 169 / 0.3),
+    0 24px 48px -18px rgb(8 36 169 / 0.6);
+  opacity: 0;
+  transform: scale(0.55);
+  transition:
+    opacity 0.18s var(--ease-soft),
+    transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.loupe-cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  translate: -50% -50%;
+  opacity: 0.6;
+  background:
+    linear-gradient(var(--color-primary), var(--color-primary)) center / 100% 1px no-repeat,
+    linear-gradient(var(--color-primary), var(--color-primary)) center / 1px 100% no-repeat;
+}
+
+.loupe-host[data-loupe='true'] {
+  cursor: none;
+}
+
+.loupe-host[data-loupe='true'] .loupe-glass {
+  opacity: 1;
+  transform: none;
+}
+
+.caption-in {
+  animation: caption-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .loupe,
+  .loupe-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-roller,
+  .turn-roller {
+    display: none;
+  }
+
+  .turn-layer,
+  .caption-in {
+    animation: none;
+  }
+
+  .loupe-glass {
+    transform: none;
+  }
+}
+
 @utility prose-measure {
   max-width: 62ch;
   text-wrap: pretty;
