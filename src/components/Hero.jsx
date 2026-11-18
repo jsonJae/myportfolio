@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import heroPic from '../assets/HeroPic.png';
 import heroCutout from '../assets/HeroCutout.webp';
 import Ridges from './Ridges';
+import { getSplash } from '../utils/splash';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,6 +58,11 @@ export default function Hero() {
         const name = nameRefs.current.flat();
         const staggerBy = (step, count) => (i) => (i % count) * step;
 
+        // When the splash is up, its name flies into this hero. Until it lands,
+        // the cursor must not drift or reweight the landing spot.
+        const splash = getSplash();
+        const gate = { open: !splash };
+
         // Keep the outline layer masked to Jason's silhouette wherever the cutout
         // has moved to (intro, float, parallax, scroll), so the outline only
         // appears over the parts of the name he covers.
@@ -73,14 +79,22 @@ export default function Hero() {
             outline.style.webkitMaskSize = size;
             outline.style.maskSize = size;
         };
+        // Each sync forces a layout read. Under the splash the outline is hidden
+        // and the page is still, so skip the per-frame reads until it lands.
+        const tickMask = () => {
+            if (gate.open) syncMask();
+        };
         syncMask();
-        gsap.ticker.add(syncMask);
+        gsap.ticker.add(tickMask);
 
-        mm.add('(prefers-reduced-motion: no-preference)', () => {
+        mm.add('(prefers-reduced-motion: no-preference)', (context) => {
             const plates = parallaxRefs.current;
             const breath = floatRefs.current;
             const sweep = sweepRef.current;
             const masks = maskRefs.current;
+            const greetingMasks = [masks[0], masks[2]];
+            const nameLine = masks[1];
+            let cancelled = false;
 
             gsap.set(plates, { clipPath: 'inset(100% 0% 0% 0%)', y: 56, opacity: 0 });
             gsap.set(breath, { scale: 1.05 });
@@ -92,59 +106,192 @@ export default function Hero() {
             gsap.set(name, { yPercent: 115, rotate: 7, transformOrigin: '0% 100%' });
             gsap.set(outline, { opacity: 0 });
 
-            gsap.timeline({ defaults: { ease: 'power3.out' } })
-                .to(
-                    plates,
-                    {
-                        opacity: 1,
-                        y: 0,
-                        clipPath: 'inset(0% 0% 0% 0%)',
-                        duration: 1.2,
-                        ease: 'power4.inOut',
-                    },
-                    0,
-                )
-                .to(breath, { scale: 1, duration: 1.5, ease: 'power3.out' }, 0)
-                .to(
-                    greeting,
-                    {
-                        yPercent: 0,
-                        rotate: 0,
-                        duration: 1,
-                        ease: 'expo.out',
-                        stagger: staggerBy(0.09, GREETING.length),
-                    },
-                    0.45,
-                )
-                .to(
-                    name,
-                    {
-                        yPercent: 0,
-                        rotate: 0,
-                        duration: 1.3,
-                        ease: 'expo.out',
-                        stagger: staggerBy(0.065, NAME.length),
-                    },
-                    0.62,
-                )
-                .set(masks, { clipPath: 'none' })
-                // Once Jason has fully risen in front of the name, trace what he hides.
-                .to(outline, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 1.25)
-                .to(
-                    sweep,
-                    { xPercent: 140, opacity: 0.55, duration: 1.6, ease: 'power2.inOut' },
-                    0.4,
-                )
-                .to(sweep, { opacity: 0, duration: 0.4, ease: 'power1.out' }, 1.85);
+            const float = (delay) =>
+                gsap.to(breath, {
+                    y: -9,
+                    duration: 4.8,
+                    ease: 'sine.inOut',
+                    yoyo: true,
+                    repeat: -1,
+                    delay,
+                });
 
-            gsap.to(breath, {
-                y: -9,
-                duration: 4.8,
-                ease: 'sine.inOut',
-                yoyo: true,
-                repeat: -1,
-                delay: 1.5,
-            });
+            // No splash this session: the portrait and the name rise on their own.
+            const intro = () => {
+                gate.open = true;
+                gsap.timeline({ defaults: { ease: 'power3.out' } })
+                    .to(
+                        plates,
+                        {
+                            opacity: 1,
+                            y: 0,
+                            clipPath: 'inset(0% 0% 0% 0%)',
+                            duration: 1.2,
+                            ease: 'power4.inOut',
+                        },
+                        0,
+                    )
+                    .to(breath, { scale: 1, duration: 1.5, ease: 'power3.out' }, 0)
+                    .to(
+                        greeting,
+                        {
+                            yPercent: 0,
+                            rotate: 0,
+                            duration: 1,
+                            ease: 'expo.out',
+                            stagger: staggerBy(0.09, GREETING.length),
+                        },
+                        0.45,
+                    )
+                    .to(
+                        name,
+                        {
+                            yPercent: 0,
+                            rotate: 0,
+                            duration: 1.3,
+                            ease: 'expo.out',
+                            stagger: staggerBy(0.065, NAME.length),
+                        },
+                        0.62,
+                    )
+                    .set(masks, { clipPath: 'none' })
+                    // Once Jason has fully risen in front of the name, trace what he hides.
+                    .to(outline, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 1.25)
+                    .to(
+                        sweep,
+                        { xPercent: 140, opacity: 0.55, duration: 1.6, ease: 'power2.inOut' },
+                        0.4,
+                    )
+                    .to(sweep, { opacity: 0, duration: 0.4, ease: 'power1.out' }, 1.85);
+
+                float(1.5);
+            };
+
+            // The splash name is set in the same face, size and tracking as the
+            // hero name, so landing it is a pure translation plus a weight settle.
+            // On touchdown it is swapped for the real name, and only then does
+            // the portrait rise in front of it.
+            const handoff = (parts) => {
+                const to = nameLine.getBoundingClientRect();
+                const from = parts.name.getBoundingClientRect();
+                const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+                const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+                // Each letter trails the one before it, so the word ripples up
+                // the way the name used to rise, then settles as one line.
+                // The trail scales with the type: on a phone the letters are a
+                // third the size over the same distance, so a full trail would
+                // pull the word apart instead of rippling it.
+                const flight = 1.1;
+                const typeSize = parseFloat(getComputedStyle(parts.name).fontSize) || 300;
+                const trail = 0.04 * Math.min(1, Math.max(0.55, Math.sqrt(typeSize / 300)));
+                const touchdown = flight + trail * (NAME.length - 1);
+
+                // Weight settles from the splash's full ink to the hero's resting
+                // weight, snapped to steps of 10: every distinct weight is a new
+                // font instance to shape and rasterize, so keep the set small.
+                const weights = parts.letters.map((el) => ({
+                    w: parseFloat(getComputedStyle(el).fontWeight) || WEIGHT_PEAK,
+                }));
+                const applyWeights = () => {
+                    parts.letters.forEach((el, i) => {
+                        el.style.fontWeight = String(Math.round(weights[i].w / 10) * 10);
+                    });
+                };
+
+                // Built paused and started on the next tick. The measurements
+                // above force a full layout of the freshly mounted page; a timeline
+                // created now would sit on the clock from before that work and
+                // jump ahead on its first frame.
+                const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+                // Created here so the context still owns it; played once Jason has risen.
+                const drift = float(0).pause();
+                tl.to(parts.status, { autoAlpha: 0, y: 6, duration: 0.3, ease: 'power2.in' }, 0)
+                    .to(
+                        parts.letters,
+                        { x: dx, y: dy, duration: flight, ease: 'expo.inOut', stagger: trail },
+                        0,
+                    )
+                    .to(
+                        weights,
+                        {
+                            w: WEIGHT_REST,
+                            duration: flight,
+                            ease: 'power2.inOut',
+                            stagger: trail,
+                            onUpdate: applyWeights,
+                        },
+                        0,
+                    )
+                    .to(parts.bg, { autoAlpha: 0, duration: 0.85, ease: 'power2.inOut' }, 0.25)
+                    .call(
+                        () => {
+                            gsap.set(nameLine, { autoAlpha: 1 });
+                            splash.finish();
+                            gate.open = true;
+                        },
+                        null,
+                        touchdown,
+                    )
+                    .to(
+                        greeting,
+                        {
+                            yPercent: 0,
+                            rotate: 0,
+                            duration: 1,
+                            ease: 'expo.out',
+                            stagger: staggerBy(0.09, GREETING.length),
+                        },
+                        0.8,
+                    )
+                    .to(
+                        plates,
+                        {
+                            opacity: 1,
+                            y: 0,
+                            clipPath: 'inset(0% 0% 0% 0%)',
+                            duration: 1.2,
+                            ease: 'power4.inOut',
+                        },
+                        1.0,
+                    )
+                    .to(breath, { scale: 1, duration: 1.5, ease: 'power3.out' }, 1.0)
+                    .set(greetingMasks, { clipPath: 'none' }, 1.95)
+                    .to(outline, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 2.05)
+                    .to(
+                        sweep,
+                        { xPercent: 140, opacity: 0.55, duration: 1.6, ease: 'power2.inOut' },
+                        1.0,
+                    )
+                    .to(sweep, { opacity: 0, duration: 0.4, ease: 'power1.out' }, 2.45)
+                    .call(() => drift.play(), null, 2.5);
+
+                gsap.ticker.add(() => tl.play(), true);
+            };
+
+            if (splash) {
+                // The name arrives by flight, so it waits at rest, unclipped and hidden.
+                gsap.set(name, { yPercent: 0, rotate: 0 });
+                gsap.set(nameLine, { clipPath: 'none', autoAlpha: 0 });
+
+                splash.ready.then(() => {
+                    if (cancelled) return;
+                    // Deep links land below the hero; there is nothing to fly to.
+                    const parts = window.scrollY < 8 ? splash.claim() : null;
+                    context.add(() => {
+                        if (parts) {
+                            handoff(parts);
+                            return;
+                        }
+                        splash.fade();
+                        gsap.set(nameLine, { autoAlpha: 1 });
+                        gsap.set(name, { yPercent: 115, rotate: 7 });
+                        gsap.set(nameLine, { clipPath: 'inset(-0.4em -0.5em -0.2em -0.5em)' });
+                        intro();
+                    });
+                });
+            } else {
+                intro();
+            }
 
             const scrub = { trigger: root, start: 'top top', end: 'bottom top', scrub: 0.7 };
 
@@ -165,6 +312,24 @@ export default function Hero() {
                 ease: 'none',
                 scrollTrigger: { ...scrub, end: '70% top', invalidateOnRefresh: true },
             });
+
+            return () => {
+                cancelled = true;
+            };
+        });
+
+        // Reduced motion: no flight. The splash cross-fades onto the resting hero.
+        mm.add('(prefers-reduced-motion: reduce)', () => {
+            if (!splash) return undefined;
+            let cancelled = false;
+            splash.ready.then(() => {
+                if (cancelled) return;
+                gate.open = true;
+                splash.fade();
+            });
+            return () => {
+                cancelled = true;
+            };
         });
 
         mm.add('(prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine)', () => {
@@ -217,6 +382,7 @@ export default function Hero() {
             };
 
             const onPointerMove = (event) => {
+                if (!gate.open) return;
                 const rect = root.getBoundingClientRect();
                 if (!rect.width || !rect.height) return;
                 move(
@@ -248,8 +414,11 @@ export default function Hero() {
             };
         });
 
+        // The hero is laid out and its intro staged; the splash may hand off.
+        splash?.appReady();
+
         return () => {
-            gsap.ticker.remove(syncMask);
+            gsap.ticker.remove(tickMask);
             mm.revert();
         };
     }, []);
