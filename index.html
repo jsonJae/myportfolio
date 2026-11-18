@@ -4,9 +4,464 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#EDF0F5" />
     <title>Jason Gian Duran — Designer &amp; Developer</title>
+
+    <!-- Decide before first paint whether the splash plays: once per tab
+         session, or on demand with ?splash in the URL. -->
+    <script>
+      (function () {
+        var mode = 'on';
+        try {
+          if (!/[?&]splash\b/.test(location.search) && sessionStorage.getItem('jgd:splash')) mode = 'skip';
+        } catch (e) {}
+        document.documentElement.setAttribute('data-splash', mode);
+      })();
+    </script>
+
+    <!-- Everything the first screen needs, requested by the HTML parser so it
+         downloads alongside the app bundle instead of after it. The splash
+         script reads these links to track real progress. -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/BodoniModa-Italic-Variable.woff2" data-splash-font data-family="Bodoni Moda" data-style="italic" data-weights="400 900" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/BodoniModa-Variable.woff2" data-splash-font data-family="Bodoni Moda" data-style="normal" data-weights="400 900" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/GeistMono-Variable.woff2" data-splash-font data-family="Geist Mono" data-style="normal" data-weights="100 900" />
+    <link rel="preload" as="fetch" crossorigin href="/src/assets/HeroPic.png" data-splash-image data-label="Developing portrait" data-weight="4" data-critical />
+    <link rel="preload" as="fetch" crossorigin href="/src/assets/HeroCutout.webp" data-splash-image data-label="Cutting silhouette" data-weight="1" data-critical />
+    <link rel="preload" as="fetch" crossorigin href="/src/assets/AboutMePic.png" data-splash-image data-label="Printing photos" data-weight="3" />
+
+    <style>
+      /* The gutter stays reserved while the page is locked, so releasing the
+         lock cannot nudge the centered hero name off its landing spot. */
+      html { background: #EDF0F5; scrollbar-gutter: stable; }
+      html[data-splash='on'] { overflow: hidden; }
+      html[data-splash='skip'] #splash,
+      html[data-splash='done'] #splash { display: none; }
+
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483000;
+        color: #0824A9;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+      #splash.is-leaving { opacity: 0; pointer-events: none; }
+
+      /* A hair short of opaque, on purpose: a fully opaque cover lets the
+         browser skip rasterizing the page beneath it, and that whole first
+         raster would then land on the first frame of the hand-off. */
+      .splash-bg { position: absolute; inset: 0; background: #EDF0F5; opacity: 0.995; will-change: opacity; }
+
+      .splash-stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+      }
+
+      /* Same metrics as the hero name, so the hand-off is a pure translation. */
+      .splash-enter {
+        font-size: clamp(6rem, 27vw, 21rem);
+        opacity: 0;
+        transform: translateY(0.08em);
+        transition:
+          opacity 0.7s cubic-bezier(0, 0, 0.2, 1) !important,
+          transform 1.1s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+      .splash-name {
+        display: block;
+        white-space: nowrap;
+        font-family: 'Bodoni Moda', 'Didot', 'Bodoni 72', ui-serif, Georgia, serif;
+        font-size: 1em;
+        font-style: italic;
+        font-weight: 400;
+        line-height: 0.86;
+        letter-spacing: -0.035em;
+        font-optical-sizing: auto;
+        font-feature-settings: 'dlig' 1;
+        font-synthesis: none;
+      }
+      /* Own layers from the start, like the hero's letters: the flight's first
+         frame needs no promotion, and both render with the same antialiasing,
+         so the swap on touchdown is invisible. */
+      .splash-name > span { display: inline-block; color: rgb(8 36 169 / 0.16); will-change: transform; }
+
+      .splash-status {
+        position: absolute;
+        inset: auto 0 0 0;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 0 max(16px, 3vw) calc(22px + env(safe-area-inset-bottom));
+        font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgb(0 0 0 / 0.62);
+        opacity: 0;
+        transition: opacity 0.6s cubic-bezier(0, 0, 0.2, 1) 0.15s !important;
+      }
+      .splash-count {
+        color: #0824A9;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      #splash.is-revealed .splash-enter { opacity: 1; transform: none; }
+      #splash.is-revealed .splash-status { opacity: 1; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .splash-enter { transform: none; }
+      }
+    </style>
+    <noscript><style>#splash { display: none; } html[data-splash='on'] { overflow: auto; }</style></noscript>
   </head>
   <body>
+    <div id="splash" role="progressbar" aria-label="Loading Jason Gian Duran’s portfolio" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="splash-bg" data-splash-bg></div>
+      <div class="splash-stage" aria-hidden="true">
+        <div class="splash-enter">
+          <span class="splash-name" data-splash-name><span>J</span><span>a</span><span>s</span><span>o</span><span>n</span><span>.</span></span>
+        </div>
+      </div>
+      <div class="splash-status" aria-hidden="true" data-splash-status>
+        <span data-splash-label>Setting type</span>
+        <span class="splash-count" data-splash-count>000</span>
+      </div>
+    </div>
+
+    <script>
+      /* The splash: the name fills letter by letter as the page's assets
+         actually arrive (font weight is the progress bar). Once full, it holds
+         still for a beat, and that beat is when the app mounts (src/main.jsx), so
+         the one long main-thread task lands while nothing on screen moves.
+         Then src/components/Hero.jsx claims it and flies the name into place.
+         Exposed as window.__splash. */
+      (function () {
+        var html = document.documentElement;
+        var root = document.getElementById('splash');
+        if (!root) return;
+        if (html.getAttribute('data-splash') !== 'on') {
+          root.parentNode.removeChild(root);
+          return;
+        }
+
+        var MIN_FILL = 950; // ms, fastest sweep across the name
+        var HOLD = 260; // ms, beat at full weight before the hand-off
+        var SETTLE = 180; // ms after the app mounts, for its first paint and raster
+        var REVEAL_CAP = 1600; // ms, show the name even if the face is slow
+        var SOFT_CAP = 4500; // ms, stop waiting on below-the-fold assets
+        var HARD_CAP = 10000; // ms, stop waiting on anything
+        var CLAIM_GRACE = 1500; // ms, dismiss ourselves if the app never claims
+        var WEIGHT_MIN = 400;
+        var WEIGHT_MAX = 900;
+        var WAVE = 1.6; // letters the fill front spreads across
+        var WEIGHT_STEP = 10; // each distinct weight is a new font instance; keep few
+
+        var bg = root.querySelector('[data-splash-bg]');
+        var nameEl = root.querySelector('[data-splash-name]');
+        var letters = [].slice.call(nameEl.children);
+        var status = root.querySelector('[data-splash-status]');
+        var labelEl = root.querySelector('[data-splash-label]');
+        var countEl = root.querySelector('[data-splash-count]');
+
+        var noop = function () {};
+        var start = performance.now();
+        var tasks = [];
+        var state = 'loading';
+        var revealed = false;
+        var shown = 0;
+        var fullAt = 0;
+        var last = start;
+        var lastPct = -1;
+        var lastLabel = '';
+        var raf = 0;
+        var failsafe = 0;
+        var mountedAt = 0;
+        var stillOpen = false;
+        var stillQueue = [];
+        var resolveReady;
+        var ready = new Promise(function (resolve) {
+          resolveReady = resolve;
+        });
+
+        function task(label, weight, critical, creeps) {
+          var t = { label: label, weight: weight, critical: critical, creeps: creeps, f: 0, done: false };
+          tasks.push(t);
+          return t;
+        }
+
+        function complete(t) {
+          t.f = 1;
+          t.done = true;
+        }
+
+        function reveal() {
+          if (revealed) return;
+          revealed = true;
+          root.classList.add('is-revealed');
+        }
+
+        // Type: register the preloaded files as faces so the splash can set
+        // them before the app's stylesheet arrives (same URLs, one download).
+        var fontLinks = [].slice.call(document.querySelectorAll('link[data-splash-font]'));
+        var type = task('Setting type', 2, true, false);
+        if (window.FontFace && document.fonts && fontLinks.length) {
+          var pending = fontLinks.length;
+          Promise.all(
+            fontLinks.map(function (link) {
+              var face = new FontFace(link.getAttribute('data-family'), 'url("' + link.href + '") format("woff2")', {
+                style: link.getAttribute('data-style') || 'normal',
+                weight: link.getAttribute('data-weights') || '400',
+                display: 'swap',
+              });
+              document.fonts.add(face);
+              return face
+                .load()
+                .catch(noop)
+                .then(function () {
+                  pending -= 1;
+                  type.f = 1 - pending / fontLinks.length;
+                });
+            })
+          ).then(function () {
+            complete(type);
+            reveal();
+          });
+        } else {
+          complete(type);
+          reveal();
+        }
+
+        // Images: stream the bytes for honest progress, then decode so the
+        // hero never pops in. The <img> tags later hit the HTTP cache.
+        function decode(url) {
+          var img = new Image();
+          img.decoding = 'async';
+          img.src = url;
+          var done = img.decode
+            ? img.decode()
+            : new Promise(function (resolve) {
+                img.onload = img.onerror = resolve;
+              });
+          return done.catch(noop);
+        }
+
+        function stream(url, t) {
+          var settle = function () {
+            return decode(url).then(function () {
+              complete(t);
+            });
+          };
+          if (!window.fetch) return settle();
+          return fetch(url)
+            .then(function (res) {
+              var total = Number(res.headers.get('content-length')) || 0;
+              if (!res.ok || !res.body || !total) return res.arrayBuffer();
+              var reader = res.body.getReader();
+              var received = 0;
+              var pump = function () {
+                return reader.read().then(function (chunk) {
+                  if (chunk.done) return;
+                  received += chunk.value.length;
+                  t.f = Math.min(0.97, received / total);
+                  return pump();
+                });
+              };
+              return pump();
+            })
+            .catch(noop)
+            .then(settle);
+        }
+
+        [].slice.call(document.querySelectorAll('link[data-splash-image]')).forEach(function (link) {
+          var t = task(
+            link.getAttribute('data-label') || 'Loading',
+            Number(link.getAttribute('data-weight')) || 1,
+            link.hasAttribute('data-critical'),
+            false
+          );
+          stream(link.href, t);
+        });
+
+        // The app bundle reports in from main.jsx; until then it creeps.
+        var app = task('Wiring scripts', 3, true, true);
+
+        // Run work queued for the still moment (the app mount). Errors are
+        // rethrown asynchronously so one failure cannot wedge the splash.
+        function flushStill() {
+          stillOpen = true;
+          var queue = stillQueue;
+          stillQueue = [];
+          queue.forEach(function (fn) {
+            try {
+              fn();
+            } catch (error) {
+              setTimeout(function () {
+                throw error;
+              });
+            }
+          });
+        }
+
+        function paint(settled) {
+          // The fill front is centred on each letter, so the ink on screen
+          // tracks the number: a letter is half inked at its share of the bar.
+          var count = letters.length;
+          var front = shown * (count + WAVE) - WAVE / 2;
+          for (var i = 0; i < count; i += 1) {
+            var f = Math.min(1, Math.max(0, (front - i - 0.5) / WAVE + 0.5));
+            f = f * f * (3 - 2 * f);
+            var weight = WEIGHT_MIN + (WEIGHT_MAX - WEIGHT_MIN) * f;
+            letters[i].style.fontWeight = String(Math.round(weight / WEIGHT_STEP) * WEIGHT_STEP);
+            letters[i].style.color = 'rgb(8 36 169 / ' + (0.16 + 0.84 * f).toFixed(3) + ')';
+          }
+
+          var pct = Math.round(shown * 100);
+          if (pct !== lastPct) {
+            lastPct = pct;
+            countEl.textContent = ('00' + pct).slice(-3);
+            if (pct % 10 === 0) root.setAttribute('aria-valuenow', String(pct));
+          }
+
+          // Name the step the fill is passing through: the first task that is
+          // still loading, or whose share of the bar the fill has not crossed.
+          // On a fast line every step still gets named, in order.
+          var label = 'Ready';
+          var totalWeight = 0;
+          for (var w = 0; w < tasks.length; w += 1) totalWeight += tasks[w].weight;
+          var edge = 0;
+          for (var j = 0; j < tasks.length; j += 1) {
+            edge += tasks[j].weight / totalWeight;
+            if ((!tasks[j].done && !settled) || shown < edge - 0.0001) {
+              label = tasks[j].label;
+              break;
+            }
+          }
+          if (label !== lastLabel) {
+            lastLabel = label;
+            labelEl.textContent = label;
+          }
+        }
+
+        function tick(now) {
+          var dt = Math.min(64, now - last);
+          var elapsed = now - start;
+          last = now;
+
+          if (!revealed && elapsed > REVEAL_CAP) reveal();
+
+          var sum = 0;
+          var total = 0;
+          var criticalDone = true;
+          var allDone = true;
+          for (var i = 0; i < tasks.length; i += 1) {
+            var t = tasks[i];
+            if (t.creeps && !t.done) t.f = 0.85 * (1 - Math.exp(-elapsed / 1800));
+            sum += t.weight * t.f;
+            total += t.weight;
+            if (!t.done) {
+              allDone = false;
+              if (t.critical) criticalDone = false;
+            }
+          }
+
+          var settled = (criticalDone && (allDone || elapsed > SOFT_CAP)) || elapsed > HARD_CAP;
+          var goal = settled ? 1 : sum / total;
+
+          // Chase the real progress with a soft lag, never faster than one
+          // MIN_FILL sweep. Once everything is in, close the gap briskly: a
+          // long exponential tail reads as a bar stuck at 99.
+          if (revealed) {
+            var lag = settled ? 70 : 160;
+            var eased = shown + (goal - shown) * (1 - Math.exp(-dt / lag));
+            shown = Math.max(shown, Math.min(eased, shown + dt / MIN_FILL, 1));
+            if (settled && goal - shown < 0.012) shown = 1;
+          }
+          paint(settled);
+
+          if (shown === 1 && settled) {
+            if (!fullAt) {
+              fullAt = now;
+              flushStill();
+            }
+            var settledIn = mountedAt && now - mountedAt >= SETTLE;
+            if (now - fullAt >= HOLD && (settledIn || elapsed > HARD_CAP)) {
+              state = 'ready';
+              resolveReady();
+              failsafe = setTimeout(function () {
+                if (state === 'ready') fade();
+              }, CLAIM_GRACE);
+              return;
+            }
+          }
+          raf = requestAnimationFrame(tick);
+        }
+
+        function finish() {
+          if (state === 'done') return;
+          state = 'done';
+          api.active = false;
+          cancelAnimationFrame(raf);
+          clearTimeout(failsafe);
+          flushStill();
+          try {
+            sessionStorage.setItem('jgd:splash', '1');
+          } catch (e) {}
+          html.setAttribute('data-splash', 'done');
+          if (root.parentNode) root.parentNode.removeChild(root);
+        }
+
+        function fade() {
+          if (state === 'done' || state === 'leaving') return;
+          state = 'leaving';
+          api.active = false;
+          cancelAnimationFrame(raf);
+          clearTimeout(failsafe);
+          flushStill();
+          root.classList.add('is-leaving');
+          html.removeAttribute('data-splash');
+          setTimeout(finish, 520);
+        }
+
+        var api = {
+          active: true,
+          ready: ready,
+          // The bundle has arrived: run its mount at the still moment, or now
+          // if that moment has already come.
+          mount: function (fn) {
+            complete(app);
+            if (stillOpen) fn();
+            else stillQueue.push(fn);
+          },
+          // The app has mounted and staged its intro; the flight may begin.
+          appReady: function () {
+            if (!mountedAt) mountedAt = performance.now();
+          },
+          // Hand the pieces to the app for the flight; null if it is too late.
+          claim: function () {
+            if (state !== 'ready') return null;
+            state = 'claimed';
+            clearTimeout(failsafe);
+            root.style.pointerEvents = 'none';
+            return { bg: bg, name: nameEl, letters: letters, status: status };
+          },
+          finish: finish,
+          fade: fade,
+        };
+        window.__splash = api;
+
+        raf = requestAnimationFrame(tick);
+      })();
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
