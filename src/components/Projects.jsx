@@ -4,7 +4,7 @@ import { AnimatePresence, MotionConfig, motion, useInView, useReducedMotion } fr
 import { Plus } from 'lucide-react';
 import Reveal from './Reveal';
 import ProjectSheet from './ProjectSheet';
-import { ProjectMedia, ProjectMeta, ProjectTitleText } from './ProjectParts';
+import { ProjectMedia, ProjectMeta, ProjectTitleText, StackMarks } from './ProjectParts';
 import { projects } from '../data/projects';
 
 // A card and its sheet share layoutIds (shell, image, title), so the card
@@ -61,10 +61,7 @@ function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
 
                 <div className="mt-auto pt-6">
                     <div className="flex items-center justify-between gap-4 border-t border-black/[0.06] pt-4">
-                        <p className="min-w-0 font-mono text-[11px] leading-[1.7] text-muted transition-colors duration-500 ease-soft group-hover/card:text-primary">
-                            <span className="sr-only">Tags: </span>
-                            {project.tags.join(' / ')}
-                        </p>
+                        <StackMarks tags={project.tags} onOpen={ghost ? undefined : onOpen} className="min-w-0" />
                         <span
                             aria-hidden="true"
                             className="relative inline-flex h-9 shrink-0 items-center overflow-hidden rounded-full border border-primary/25 px-3.5 font-mono text-[11px] font-bold tracking-[0.03em] text-primary"
