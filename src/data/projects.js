@@ -5,6 +5,11 @@ import spacesCover from '../assets/projects/spaces-cover.jpg';
 import spacesListings from '../assets/projects/spaces-listings.jpg';
 import spacesAdmin from '../assets/projects/spaces-admin.jpg';
 import spacesAppliances from '../assets/projects/spaces-appliances.jpg';
+import optumAdminOverview from '../assets/projects/optum-admin-overview.jpg';
+import optumSessions from '../assets/projects/optum-sessions.jpg';
+import optumTeams from '../assets/projects/optum-teams.jpg';
+import optumAria from '../assets/projects/optum-aria.jpg';
+import optumLanding from '../assets/projects/optum-landing.jpg';
 
 // Curated works. Each project renders as a card that expands into a detail
 // sheet. Fields still on placeholders (fill these in as they arrive):
@@ -12,6 +17,8 @@ import spacesAppliances from '../assets/projects/spaces-appliances.jpg';
 //   images   [{ src, alt }]  first one is the cover; 16:9 crops best. Import
 //                            files from src/assets so Vite fingerprints them.
 //   github   'https://github.com/jsonJae/...'  or null while pending
+//   privateCode  true for client work whose code is never linked; shows no
+//                code link at all instead of the pending placeholder
 //   live     'https://...'  optional; omit when there is no live build
 //   details  ['One highlight per line.', ...] or null while pending
 //
@@ -52,18 +59,6 @@ export const projects = [
         ],
     },
     {
-        id: 'yseis',
-        name: 'YSEIS',
-        org: 'YSES',
-        role: 'Frontend Lead',
-        summary:
-            "Leading the frontend team of YSES' Inventory System, a platform that digitizes how the organization tracks and manages its equipment and supplies.",
-        tags: ['Frontend Lead', 'Inventory System', 'YSES'],
-        images: [],
-        github: null,
-        details: null,
-    },
-    {
         id: 'spaces',
         name: 'SPACES',
         org: 'UPLB',
@@ -100,6 +95,63 @@ export const projects = [
         ],
     },
     {
+        // Client work for Optum, shown with QE 360's permission. The code stays
+        // private: never link the repo. Screenshots come from a local run on
+        // sample data (the hosted database is gone); the judges' scoring screen,
+        // marked confidential in the app, is deliberately left out.
+        id: 'qe360',
+        name: 'Event Platform',
+        subtitle: 'Proposal for Optum',
+        org: 'QE 360',
+        role: 'Full-Stack Intern',
+        summary:
+            'A proposal event platform QE 360 built for Optum, with attendee, judge, and admin views, MUX video streaming, and a RAG chatbot backed by Supabase.',
+        tags: ['Next.js', 'Supabase', 'MUX'],
+        images: [
+            {
+                src: optumLanding,
+                alt: "The attendee landing page: the iFactor 5.0 Event Launch hero with a countdown and links to the schedule and showreel.",
+            },
+            {
+                src: optumAria,
+                alt: "ARIA, the event's RAG chatbot, open over Today's Program with its greeting and suggested questions, shown with sample data.",
+            },
+            {
+                src: optumAdminOverview,
+                alt: "The admin portal's executive overview for the event: live poll activity, attendee sources, and the Q&A queue, shown with sample data.",
+            },
+            {
+                src: optumSessions,
+                alt: "Sessions management listing the day's keynote and team pitches with live, ended, and scheduled statuses, using sample data.",
+            },
+            {
+                src: optumTeams,
+                alt: 'The participating teams table with logos, pitch descriptions, and member counts for fictional demo teams.',
+            },
+        ],
+        github: null,
+        privateCode: true,
+        details: [
+            'Worked on an event platform that QE 360 built as a proposal for Optum, during my full-stack internship.',
+            'Shipped full-stack features across the attendee, judge, and admin views.',
+            'Integrated MUX video streaming with webhooks, secrets, and environment variables for the deployed site.',
+            'Built a RAG chatbot on the OpenAI API with Supabase as its knowledge base.',
+            'Wrote test charters and ran QA cases against user-story acceptance criteria.',
+        ],
+    },
+    {
+        id: 'yseis',
+        name: 'YSEIS',
+        org: 'YSES',
+        role: 'Frontend Lead',
+        summary:
+            "Leading the frontend team of YSES' Inventory System, a platform that digitizes how the organization tracks and manages its equipment and supplies.",
+        tags: ['Frontend Lead', 'Inventory System', 'YSES'],
+        images: [],
+        github: null,
+        details: null,
+    },
+    {
         id: 'sipat',
         name: 'SIPAT',
         subtitle: 'Ang Resibo ng Bayan',
@@ -108,19 +160,6 @@ export const projects = [
         summary:
             'An offline-first, privacy-preserving mobile app that gamifies auditing government infrastructure, matching contract promises against geotagged community photos.',
         tags: ['Flutter', 'Hive', 'Civic Tech'],
-        images: [],
-        github: null,
-        details: null,
-    },
-    {
-        id: 'qe360',
-        name: 'QE 360',
-        subtitle: 'Event Platform',
-        org: 'QE 360',
-        role: 'Full-Stack Intern',
-        summary:
-            'Built full-stack features across attendee, judge, and admin views, integrated MUX video streaming, and shipped a RAG chatbot backed by Supabase.',
-        tags: ['Next.js', 'Supabase', 'MUX'],
         images: [],
         github: null,
         details: null,
