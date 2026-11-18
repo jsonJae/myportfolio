@@ -18,12 +18,12 @@ const settle = (delay = 0.18) => ({
 
 const FOCUSABLE = 'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
 
-// The loupe: lens diameter in px, and how far it magnifies the print. Source
-// screenshots are about 2.4x the size the print shows them at, so 1.7x stays
-// crisp while keeping enough of the surrounding UI in the lens to read it in
-// context.
-const LENS = 184;
-const ZOOM = 1.7;
+// The loupe: lens diameter in px, and how far it magnifies the print. A small
+// lens at a light 1.35x reads as a close look rather than a blow-up, keeps the
+// surrounding UI in view, and stays crisp because the source screenshots are
+// about 2.4x the print.
+const LENS = 160;
+const ZOOM = 1.35;
 
 const pad = (value) => String(value).padStart(2, '0');
 
@@ -268,7 +268,7 @@ function Viewer({ project, view, onStep, onGo, onSettled }) {
                         ) : (
                             <span />
                         )}
-                        <p className="loupe-hint inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] text-primary/70">
+                        <p className="loupe-hint shrink-0 items-center gap-1.5 font-mono text-[11px] text-primary/70">
                             <ZoomIn size={13} strokeWidth={2} aria-hidden="true" />
                             Hover the image to inspect
                         </p>
@@ -369,6 +369,11 @@ export default function ProjectSheet({ project, onClose }) {
                 transition={{ layout: morph }}
                 style={{ borderRadius: 24 }}
                 onKeyDown={onKeyDown}
+                onPointerMove={(event) => {
+                    // A mouse is in use: reveal the loupe hint (see .loupe-hint).
+                    const dialog = event.currentTarget;
+                    if (event.pointerType === 'mouse' && dialog.dataset.mouse !== 'true') dialog.dataset.mouse = 'true';
+                }}
                 className="relative flex max-h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden bg-white shadow-[0_40px_100px_-30px_rgba(8,36,169,0.55)] sm:max-h-[calc(100dvh-2rem)] sm:max-w-2xl lg:max-h-[calc(100dvh-3rem)] lg:w-[min(1240px,calc(100vw-3rem))] lg:max-w-none"
             >
                 {/* Phones and tablets scroll the whole sheet; desktop opens it as a
