@@ -3,13 +3,13 @@ import { Award, ImageIcon } from 'lucide-react';
 // Pieces shared by the project card and its detail sheet, so the two stay one
 // design and the morph between them lines up.
 
-export function ProjectMedia({ image, label = 'Project image', compact = false, plain = false }) {
+export function ProjectMedia({ image, label = 'Project image', compact = false, plain = false, eager = false }) {
     if (image) {
         return (
             <img
                 src={image.src}
                 alt={image.alt ?? ''}
-                loading="lazy"
+                loading={eager ? 'eager' : 'lazy'}
                 decoding="async"
                 draggable="false"
                 className="absolute inset-0 h-full w-full object-cover"
