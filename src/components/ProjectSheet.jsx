@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Globe, X, ZoomIn } from 'lucide-react';
-import { ProjectMedia, ProjectMeta, ProjectTitleText } from './ProjectParts';
+import { ProjectMedia, ProjectMeta, ProjectTitleText, StackMarks } from './ProjectParts';
 
 const morph = { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 };
 const ease = [0.16, 1, 0.3, 1];
@@ -424,10 +424,7 @@ export default function ProjectSheet({ project, onClose }) {
                                     {/* Header facts: who it was for, then the stack, set
                                         the way the card sets them. */}
                                     <ProjectMeta project={project} className="mt-4" />
-                                    <p className="mt-2 font-mono text-[11px] leading-[1.7] text-muted md:text-[12px]">
-                                        <span className="sr-only">Tags: </span>
-                                        {project.tags.join(' / ')}
-                                    </p>
+                                    <StackMarks tags={project.tags} labelled className="mt-4" />
 
                                     {/* Client work with private code and no live build has no links. */}
                                     {(project.live || project.github || !project.privateCode) && (
