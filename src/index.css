@@ -486,8 +486,8 @@
   top: 0;
   left: 0;
   z-index: 5;
-  width: 184px;
-  height: 184px;
+  width: 160px;
+  height: 160px;
   pointer-events: none;
   will-change: transform;
 }
@@ -542,11 +542,17 @@
   }
 }
 
-@media (hover: none), (pointer: coarse) {
-  .loupe,
-  .loupe-hint {
-    display: none;
-  }
+/* Visibility follows the input in use, not what the device reports: Chrome on
+   touchscreen laptops claims "no hover, coarse pointer" even while a mouse or
+   trackpad is driving it. The lens only ever opens on real mouse movement
+   (see ProjectSheet), and its hint appears once a mouse has moved inside the
+   sheet (data-mouse on the dialog). */
+.loupe-hint {
+  display: none;
+}
+
+[data-mouse='true'] .loupe-hint {
+  display: inline-flex;
 }
 
 @media (prefers-reduced-motion: reduce) {
