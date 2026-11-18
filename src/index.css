@@ -392,12 +392,46 @@
 /* The detail spread's print. Turning to another screenshot reuses the press:
    the new print is revealed behind a brayer rolling in the direction of
    travel (left to right for next, right to left for back). */
-.turn-layer {
-  animation: press-reveal 0.72s cubic-bezier(0.6, 0, 0.3, 1) both;
+/* a/b alternate per turn so the animation restarts on a layer that stays
+   mounted (see ProjectSheet). The pairs are identical. */
+[data-turn] {
+  animation-duration: 0.72s;
+  animation-timing-function: cubic-bezier(0.6, 0, 0.3, 1);
+  animation-fill-mode: both;
 }
 
-.turn-layer[data-dir='back'] {
+[data-turn='a'] {
+  animation-name: press-reveal;
+}
+
+[data-turn='b'] {
+  animation-name: press-reveal-b;
+}
+
+[data-turn='a'][data-dir='back'] {
   animation-name: press-reveal-back;
+}
+
+[data-turn='b'][data-dir='back'] {
+  animation-name: press-reveal-back-b;
+}
+
+@keyframes press-reveal-b {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes press-reveal-back-b {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
 }
 
 .turn-roller {
@@ -561,7 +595,7 @@
     display: none;
   }
 
-  .turn-layer,
+  [data-turn],
   .caption-in {
     animation: none;
   }
