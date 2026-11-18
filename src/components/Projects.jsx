@@ -1,115 +1,196 @@
-import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, MotionConfig, motion, useInView, useReducedMotion } from 'framer-motion';
+import { Plus } from 'lucide-react';
 import Reveal from './Reveal';
-import TiltCard from './TiltCard';
+import ProjectSheet from './ProjectSheet';
+import { ProjectMedia, ProjectMeta, ProjectTitleText } from './ProjectParts';
+import { projects } from '../data/projects';
 
-const projects = [
-    {
-        title: 'YSEIS',
-        desc: "Leading the frontend team of YSES' Inventory System, a platform that digitizes how the organization tracks and manages its equipment and supplies.",
-        tags: ['Frontend Lead', 'Inventory System', 'YSES'],
-        role: 'Frontend Lead · YSES',
-        mark: 'YS',
-    },
-    {
-        title: 'SPACES',
-        desc: "Co-developed a centralized student accommodation tracker for UPLB, replacing manual forms, spreadsheets, and email threads with one streamlined digital platform.",
-        tags: ['SvelteKit', 'PocketBase', 'Go'],
-        role: 'Frontend Developer · UPLB',
-        mark: 'SP',
-    },
-    {
-        title: 'SIPAT: Ang Resibo ng Bayan',
-        desc: "An offline-first, privacy-preserving mobile app that gamifies auditing government infrastructure, matching contract promises against geotagged community photos.",
-        tags: ['Flutter', 'Hive', 'Civic Tech'],
-        role: 'Hack the Flood · Most Innovative',
-        mark: 'SI',
-    },
-    {
-        title: 'QE 360 Event Platform',
-        desc: "Built full-stack features across attendee, judge, and admin views, integrated MUX video streaming, and shipped a RAG chatbot backed by Supabase.",
-        tags: ['Next.js', 'Supabase', 'MUX'],
-        role: 'Full-Stack Intern · QE 360',
-        mark: 'QE',
-    },
-];
+// A card and its sheet share layoutIds (shell, image, title), so the card
+// grows into the sheet and folds back into its slot. Same spring as the
+// contact pill → compose window.
+const morph = { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 };
 
-const grid = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
-};
+// Printing runs this long after a card enters view; then it settles.
+const PRINT_SECONDS = 2.6;
 
-const item = {
-    hidden: { opacity: 0, y: 44, filter: 'blur(6px)' },
-    show: {
-        opacity: 1,
-        y: 0,
-        filter: 'blur(0px)',
-        transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
-    },
-};
+function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
+    const id = (part) => (ghost ? undefined : `project-${part}${project.id}`);
 
-function ProjectCard({ title, desc, tags, role, mark }) {
     return (
-        <>
-            <div className="relative w-full h-44 md:h-48 rounded-well bg-surface shadow-neu-inset mb-6 overflow-hidden flex items-center justify-center">
-                <span aria-hidden="true" className="text-primary/10 font-display font-black text-[64px] leading-none select-none">
-                    {mark}
+        <motion.article
+            layoutId={id('')}
+            transition={{ layout: morph }}
+            data-state={state}
+            aria-hidden={ghost || undefined}
+            inert={ghost || undefined}
+            style={{ borderRadius: 24, '--card-delay': `${delay}s` }}
+            className={`project-card group/card relative flex h-full flex-col overflow-hidden border border-black/[0.06] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[translate,border-color,box-shadow] duration-500 ease-soft hover:-translate-y-1 hover:border-primary/20 hover:shadow-[0_24px_48px_-28px_rgba(8,36,169,0.45)] ${
+                ghost ? 'invisible' : ''
+            }`}
+        >
+            <motion.div
+                layoutId={id('media-')}
+                transition={{ layout: morph }}
+                style={{ borderRadius: 0 }}
+                className="relative aspect-video overflow-hidden border-b border-primary/10"
+            >
+                <div className="press-print absolute inset-0 transition-transform duration-700 ease-soft group-hover/card:scale-[1.03]">
+                    <ProjectMedia image={project.images[0]} />
+                </div>
+                <span className="press-roller">
+                    <span className="press-brayer" />
                 </span>
+            </motion.div>
+
+            <div className="flex flex-1 flex-col px-6 pb-6 pt-7 md:px-8 md:pb-7 md:pt-8">
+                <motion.h3
+                    layoutId={id('title-')}
+                    transition={{ layout: morph }}
+                    className="w-fit font-display text-[clamp(30px,9vw,36px)] leading-[0.95] tracking-[-0.035em] text-primary md:text-[clamp(34px,3.6vw,44px)]"
+                >
+                    <ProjectTitleText project={project} />
+                </motion.h3>
+
+                <ProjectMeta project={project} className="mt-4" />
+
+                <p className="mt-4 font-body text-[13px] leading-[1.75] text-ink-soft text-pretty md:text-[14px]">
+                    {project.summary}
+                </p>
+
+                <div className="mt-auto pt-6">
+                    <div className="flex items-center justify-between gap-4 border-t border-black/[0.06] pt-4">
+                        <p className="min-w-0 font-mono text-[11px] leading-[1.7] text-muted transition-colors duration-500 ease-soft group-hover/card:text-primary">
+                            <span className="sr-only">Tags: </span>
+                            {project.tags.join(' / ')}
+                        </p>
+                        <span
+                            aria-hidden="true"
+                            className="relative inline-flex h-9 shrink-0 items-center overflow-hidden rounded-full border border-primary/25 px-3.5 font-mono text-[11px] font-bold tracking-[0.03em] text-primary"
+                        >
+                            <span className="absolute inset-0 origin-left scale-x-0 bg-primary transition-transform duration-300 ease-soft group-hover/card:scale-x-100" />
+                            <span className="relative flex items-center gap-1.5 transition-colors duration-300 ease-soft group-hover/card:text-white">
+                                Details
+                                <Plus
+                                    size={13}
+                                    strokeWidth={2.25}
+                                    className="transition-transform duration-300 ease-soft group-hover/card:rotate-90"
+                                />
+                            </span>
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="text-2xl md:text-3xl text-primary font-display font-black leading-tight heading-balance">{title}</h3>
-                <span className="font-mono text-[12px] text-muted">{role}</span>
-            </div>
-            <p className="text-[13px] md:text-[14px] text-ink-soft font-body mt-3 leading-[1.75]">{desc}</p>
-            <div className="flex flex-wrap gap-2 mt-4">
-                {tags.map((tag) => (
-                    <span
-                        key={tag}
-                        className="font-mono text-[11px] font-medium px-3 py-1 rounded-full shadow-neu-small text-ink-soft bg-surface"
-                    >
-                        {tag}
-                    </span>
-                ))}
-            </div>
-        </>
+
+            {!ghost && (
+                // One button covers the card, so the whole card opens the sheet
+                // while keyboard and screen-reader users get a single named control.
+                <button
+                    type="button"
+                    data-project-trigger={project.id}
+                    onClick={onOpen}
+                    aria-haspopup="dialog"
+                    aria-label={`View ${project.name} details`}
+                    className="absolute inset-0 z-10 cursor-pointer rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+                />
+            )}
+        </motion.article>
+    );
+}
+
+function ProjectItem({ project, index, open, onOpen }) {
+    const reduced = useReducedMotion();
+    const ref = useRef(null);
+    const inView = useInView(ref, { once: true, amount: 0.3 });
+    const [settled, setSettled] = useState(false);
+    const delay = (index % 2) * 0.14;
+
+    useEffect(() => {
+        if (!inView || reduced) return undefined;
+        const timer = window.setTimeout(() => setSettled(true), (delay + PRINT_SECONDS) * 1000);
+        return () => window.clearTimeout(timer);
+    }, [inView, reduced, delay]);
+
+    const state = reduced || settled ? 'live' : inView ? 'printing' : 'idle';
+
+    return (
+        <li
+            ref={ref}
+            className="h-full md:last:odd:col-span-2 md:last:odd:mx-auto md:last:odd:w-[calc(50%-1rem)]"
+        >
+            {/* While open, an invisible copy holds the card's slot. */}
+            <ProjectCard
+                key={open ? 'ghost' : 'card'}
+                ghost={open}
+                project={project}
+                state={state}
+                delay={delay}
+                onOpen={onOpen}
+            />
+        </li>
     );
 }
 
 export default function Projects() {
-    const reduced = useReducedMotion();
+    const [openId, setOpenId] = useState(null);
+    const returnTo = useRef(null);
+    const openProject = projects.find((project) => project.id === openId);
+
+    // When the sheet folds back, hand focus to the card it came from.
+    useEffect(() => {
+        if (openId || !returnTo.current) return undefined;
+        const id = returnTo.current;
+        returnTo.current = null;
+        const timer = window.setTimeout(() => {
+            document.querySelector(`[data-project-trigger="${id}"]`)?.focus({ preventScroll: true });
+        }, 50);
+        return () => window.clearTimeout(timer);
+    }, [openId]);
+
+    const close = () => {
+        returnTo.current = openId;
+        setOpenId(null);
+    };
 
     return (
-        <div className="flex flex-col min-h-screen px-4 md:px-0">
-            <Reveal from="up" duration={0.9}>
-                <div className="text-center pt-15">
-                    <h2 id="projects-title" className="text-[40px] md:text-[64px] text-primary font-display font-black tracking-tight leading-[0.95] heading-balance">
-                        <span className="font-normal italic">curated</span> works.
-                    </h2>
-                </div>
-            </Reveal>
-            <Reveal from="up" delay={0.08}>
-                <p className="text-[13px] md:text-[14px] text-ink-soft font-body text-center mt-6 prose-measure mx-auto leading-[1.75]">
-                    Selected work across full-stack web, cross-platform mobile, and civic tech, built through internships, collaboration, and hackathons.
-                </p>
-            </Reveal>
+        <MotionConfig reducedMotion="user">
+            <div className="flex min-h-screen flex-col justify-center px-4 py-24 md:px-8">
+                <Reveal from="up" duration={0.9}>
+                    <div className="text-center">
+                        <h2
+                            id="projects-title"
+                            className="font-display text-[40px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[64px]"
+                        >
+                            <span className="font-normal italic">curated</span> works.
+                        </h2>
+                    </div>
+                </Reveal>
+                <Reveal from="up" delay={0.08}>
+                    <p className="prose-measure mx-auto mt-6 text-center font-body text-[13px] leading-[1.75] text-ink-soft md:text-[14px]">
+                        Selected work across full-stack web, cross-platform mobile, and civic tech, built through internships, collaboration, and hackathons.
+                    </p>
+                </Reveal>
 
-            <div className="flex justify-center">
-                <motion.div
-                    variants={reduced ? undefined : grid}
-                    initial={reduced ? false : 'hidden'}
-                    whileInView={reduced ? undefined : 'show'}
-                    viewport={{ once: true, margin: '-60px' }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 my-16 md:my-20 max-w-5xl w-full"
-                >
-                    {projects.map((project) => (
-                        <motion.div key={project.title} variants={reduced ? undefined : item} className="h-full">
-                            <TiltCard className="h-full shadow-neu rounded-panel bg-surface p-6 md:p-8 transition-shadow duration-300 ease-soft hover:shadow-neu-hover">
-                                <ProjectCard {...project} />
-                            </TiltCard>
-                        </motion.div>
+                <ul className="mx-auto mt-14 grid w-full max-w-xl grid-cols-1 gap-6 md:mt-16 md:max-w-5xl md:grid-cols-2 md:gap-8">
+                    {projects.map((project, index) => (
+                        <ProjectItem
+                            key={project.id}
+                            project={project}
+                            index={index}
+                            open={project.id === openId}
+                            onOpen={() => setOpenId(project.id)}
+                        />
                     ))}
-                </motion.div>
+                </ul>
             </div>
-        </div>
+
+            {createPortal(
+                <AnimatePresence>
+                    {openProject && <ProjectSheet key={openProject.id} project={openProject} onClose={close} />}
+                </AnimatePresence>,
+                document.body,
+            )}
+        </MotionConfig>
     );
 }
