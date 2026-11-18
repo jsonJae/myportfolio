@@ -87,7 +87,7 @@ function Links({ project }) {
                     label="GitHub"
                     icon={<FontAwesomeIcon icon={faGithub} aria-hidden="true" className="text-[14px]" />}
                 />
-            ) : (
+            ) : project.privateCode ? null : (
                 <span className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-primary/35 px-5 font-mono text-[12px] font-bold tracking-[0.03em] text-primary/60">
                     <FontAwesomeIcon icon={faGithub} aria-hidden="true" className="text-[14px]" />
                     GitHub link pending
@@ -185,17 +185,34 @@ function Viewer({ project, view, onStep, onGo, onSettled }) {
                     style={{ borderRadius: 10 }}
                     className="relative aspect-video w-full overflow-hidden bg-white shadow-[0_0_0_1px_rgba(8,36,169,0.08),0_28px_56px_-30px_rgba(8,36,169,0.55),0_2px_6px_rgba(15,23,42,0.06)]"
                 >
-                    {view.prev !== null && images[view.prev] && <ProjectMedia image={images[view.prev]} />}
-                    <div
-                        key={view.key}
-                        data-dir={view.dir}
-                        onAnimationEnd={(event) => {
-                            if (event.target === event.currentTarget) onSettled();
-                        }}
-                        className={`absolute inset-0 ${view.key ? 'turn-layer' : ''}`}
-                    >
-                        <ProjectMedia image={image} label="Project images" plain />
-                    </div>
+                    {/* Every screenshot stays mounted and decoded; a turn only
+                        changes which layer shows and which one rolls in. Re-creating
+                        <img> elements per turn could paint a blank frame first. The
+                        turn's animation name alternates (a/b) so it restarts on
+                        each turn without remounting the layer. */}
+                    {count ? (
+                        images.map((shot, index) => {
+                            const current = index === view.index;
+                            const previous = index === view.prev;
+                            const turning = current && view.prev !== null;
+                            return (
+                                <div
+                                    key={shot.src}
+                                    data-dir={view.dir}
+                                    data-turn={turning ? (view.key % 2 ? 'a' : 'b') : undefined}
+                                    onAnimationEnd={(event) => {
+                                        if (turning && event.target === event.currentTarget) onSettled();
+                                    }}
+                                    style={{ zIndex: current ? 2 : previous ? 1 : 0, opacity: current || previous ? 1 : 0 }}
+                                    className="pointer-events-none absolute inset-0"
+                                >
+                                    <ProjectMedia image={shot} eager />
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <ProjectMedia label="Project images" plain />
+                    )}
                     {view.key > 0 && (
                         <span key={`roller-${view.key}`} data-dir={view.dir} aria-hidden="true" className="turn-roller">
                             <span className="press-brayer" />
@@ -412,9 +429,12 @@ export default function ProjectSheet({ project, onClose }) {
                                         {project.tags.join(' / ')}
                                     </p>
 
-                                    <div className="mt-6">
-                                        <Links project={project} />
-                                    </div>
+                                    {/* Client work with private code and no live build has no links. */}
+                                    {(project.live || project.github || !project.privateCode) && (
+                                        <div className="mt-6">
+                                            <Links project={project} />
+                                        </div>
+                                    )}
 
                                     {/* The summary leads; it needs no label. */}
                                     <p className="mt-8 font-body text-[15px] leading-[1.75] text-ink/85 text-pretty">
