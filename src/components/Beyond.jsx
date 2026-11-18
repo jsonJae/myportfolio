@@ -1,68 +1,141 @@
-import { PenTool, Users, Compass } from 'lucide-react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'framer-motion';
 import Reveal from './Reveal';
+import PhotoReel from './beyond/PhotoReel';
+import WordReel from './beyond/WordReel';
+import PhotoViewer from './beyond/PhotoViewer';
+import { chapters, photos } from '../data/beyond';
 
-const facets = [
-    {
-        Icon: PenTool,
-        title: 'The designer',
-        body: 'I reach for type, color, and composition before I reach for code. UI/UX and graphic design are how I make an idea legible before it becomes a product.',
-    },
-    {
-        Icon: Users,
-        title: 'The teammate',
-        body: 'YSES HR taught me that onboarding, events, and small acts of inclusion are products too — built with attention and followed through.',
-    },
-    {
-        Icon: Compass,
-        title: 'The learner',
-        body: 'I follow where AI is headed, test new tools early, and treat coding agents as collaborators — with my hand still on the wheel.',
-    },
-];
+const ease = [0.16, 1, 0.3, 1];
 
+// Deal the chapters round-robin so neighbouring prints show different sides.
+const dealOrder = () => {
+    const piles = chapters.map((chapter) =>
+        photos.map((photo, index) => (photo.chapter === chapter.id ? index : -1)).filter((i) => i >= 0),
+    );
+    const order = [];
+    while (order.length < photos.length) piles.forEach((pile) => pile.length && order.push(pile.shift()));
+    return order;
+};
+const TOP_ROW = dealOrder();
+// The lower row runs the other way, starting half a loop on so the two rows
+// open on different prints.
+const BOTTOM_ROW = [...TOP_ROW.slice(7), ...TOP_ROW.slice(0, 7)];
+
+const Spark = () => (
+    <svg viewBox="0 0 24 24" className="mx-[0.35em] size-[0.42em] shrink-0" fill="currentColor" aria-hidden="true">
+        <path d="M12 0c.6 6.6 5.4 11.4 12 12-6.6.6-11.4 5.4-12 12-.6-6.6-5.4-11.4-12-12C6.6 11.4 11.4 6.6 12 0Z" />
+    </svg>
+);
+
+// Beyond the code: two reels of Jason's own photos running in opposite
+// directions, with a ribbon of what they're about running between them.
 export default function Beyond() {
-    return (
-        <div className="flex min-h-screen flex-col justify-center px-4 py-24 md:px-8">
-            <Reveal from="up" duration={0.9}>
-                <div className="text-center">
-                    <h2
-                        id="beyond-title"
-                        className="font-display text-[40px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[64px]"
-                    >
-                        <span className="font-normal italic">beyond</span> the code.
-                    </h2>
-                </div>
-            </Reveal>
-            <Reveal from="up" delay={0.08}>
-                <p className="prose-measure mx-auto mt-6 text-center font-body text-[13px] leading-[1.75] text-ink-soft md:text-[14px]">
-                    Software is what I do. These are the parts of me that shape how I do it.
-                </p>
-            </Reveal>
+    const reduced = useReducedMotion();
+    const [viewing, setViewing] = useState(null);
+    const returnTo = useRef(null);
 
-            <div className="mx-auto mt-16 grid w-full max-w-5xl gap-12 md:grid-cols-3 md:gap-10">
-                {facets.map((facet, index) => (
-                    <Reveal
-                        key={facet.title}
-                        from="up"
-                        delay={0.1 + index * 0.08}
-                        className="h-full"
-                    >
-                        <article className="flex h-full flex-col">
-                            <div className="flex items-center justify-between">
-                                <facet.Icon size={22} strokeWidth={1.6} className="text-primary" aria-hidden="true" />
-                                <span className="font-mono text-[12px] font-medium text-muted/75">
-                                    0{index + 1}
-                                </span>
-                            </div>
-                            <h3 className="mt-6 font-display text-2xl font-black leading-tight text-primary md:text-[28px]">
-                                {facet.title}
-                            </h3>
-                            <p className="mt-3 font-body text-[13px] leading-[1.75] text-ink-soft md:text-[14px]">
-                                {facet.body}
-                            </p>
-                        </article>
+    const open = (index, trigger) => {
+        returnTo.current = trigger;
+        setViewing(index);
+    };
+
+    useEffect(() => {
+        if (viewing !== null || !returnTo.current) return undefined;
+        const target = returnTo.current;
+        returnTo.current = null;
+        const id = window.setTimeout(() => target.focus?.({ preventScroll: true }), 50);
+        return () => window.clearTimeout(id);
+    }, [viewing]);
+
+    return (
+        <MotionConfig reducedMotion="user">
+            <div className="flex min-h-screen flex-col justify-center overflow-x-clip py-24">
+                <div className="px-4 md:px-8">
+                    <Reveal from="up" duration={0.9}>
+                        <h2
+                            id="beyond-title"
+                            className="text-center font-display text-[40px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[64px]"
+                        >
+                            <span className="font-normal italic">beyond</span> the code.
+                        </h2>
                     </Reveal>
-                ))}
+                    <Reveal from="up" delay={0.08}>
+                        <p className="prose-measure mx-auto mt-6 text-center font-body text-[13px] leading-[1.75] text-ink-soft md:text-[14px]">
+                            Software is what I do. These are the parts of me that shape how I do it, and they add up to me.
+                        </p>
+                    </Reveal>
+                </div>
+
+                <p className="sr-only">
+                    {chapters.map((c) => `I ${c.verb} ${c.rest} ${c.note}`).join(' ')}
+                </p>
+
+                <div className="relative mt-10 md:mt-14">
+                    <PhotoReel
+                        photos={photos}
+                        order={TOP_ROW}
+                        speed={42}
+                        reduced={reduced}
+                        onOpen={open}
+                        label="Photos from beyond the code. Tab through them, Enter opens one."
+                    />
+
+                    {/* The ribbon: a strip of ink laid across the reels at a tilt */}
+                    {/* The in-view trigger sits on an unclipped wrapper: a fully
+                        clipped element never counts as intersecting. */}
+                    <motion.div
+                        initial="hidden"
+                        whileInView="shown"
+                        viewport={{ once: true, amount: 0.4 }}
+                        className="relative z-10 -mx-[6vw] -mb-12 -mt-3 -rotate-[2.5deg] md:-mb-14 md:-mt-4"
+                    >
+                        <motion.div
+                            variants={{
+                                hidden: { clipPath: 'inset(0% 50% 0% 50%)' },
+                                shown: { clipPath: 'inset(0% 0% 0% 0%)' },
+                            }}
+                            transition={{ duration: 1.1, ease, delay: 0.15 }}
+                            className="bg-primary py-2.5 text-white shadow-[0_18px_36px_-20px_rgba(8,36,169,0.65)] md:py-3.5"
+                        >
+                            <WordReel speed={-64} reduced={reduced}>
+                                {chapters.map((c) => (
+                                    <Fragment key={c.id}>
+                                        <span className="whitespace-nowrap font-display text-[44px] font-black leading-[1.1] tracking-[-0.03em] md:text-[76px] lg:text-[96px]">
+                                            I <span className="font-normal italic">{c.verb}</span> {c.rest}
+                                        </span>
+                                        <Spark />
+                                    </Fragment>
+                                ))}
+                            </WordReel>
+                        </motion.div>
+                    </motion.div>
+
+                    <PhotoReel photos={photos} order={BOTTOM_ROW} speed={30} reduced={reduced} onOpen={open} decorative />
+                </div>
+
+                <p className="mt-6 px-4 text-center font-mono text-[10px] leading-[1.5] text-muted md:text-[11px]">
+                    <span className="hidden [@media(hover:hover)]:inline">Scroll to spin the reels, drag to scrub, click a print to open it.</span>
+                    <span className="[@media(hover:hover)]:hidden">Swipe the reels sideways, tap a print to open it.</span>
+                </p>
             </div>
-        </div>
+
+            {createPortal(
+                <AnimatePresence>
+                    {viewing !== null && (
+                        <PhotoViewer
+                            key="viewer"
+                            photos={photos}
+                            chapters={chapters}
+                            index={viewing}
+                            onIndex={setViewing}
+                            onClose={() => setViewing(null)}
+                        />
+                    )}
+                </AnimatePresence>,
+                document.body,
+            )}
+        </MotionConfig>
     );
 }
