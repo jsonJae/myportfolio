@@ -142,6 +142,14 @@ The signature global navigation:
 - Headline elements enter with spring physics (`cubic-bezier(0.22, 1, 0.36, 1)` or Framer Motion springs).
 - Interactive letters spring up with alternating micro-tilts (`-4°` to `+4°`) and soft ink drop-shadows on hover, allowing users to playfully scrub across typography.
 
+### 5. The Ink-Fill Splash & Name Hand-off
+The first visit's focal moment. It lives in `index.html`, so it paints before the app bundle arrives.
+- **Weight is the progress bar**: "Jason." is set in Bodoni Moda italic at the hero's exact size, starting as faint hairlines (weight 400, Ultramarine at 16%). Each letter presses to full ink (weight 900) as the page's fonts, photos and scripts actually arrive. Image progress is streamed byte by byte, and weights snap to steps of 10.
+- **Status line**: Geist Mono 10px uppercase, `rgb(0 0 0 / 0.62)`, naming the step the fill is passing through (Setting type, Developing portrait, Cutting silhouette, Printing photos, Wiring scripts, Ready). A tabular Ultramarine counter (`000`–`100`) sits opposite.
+- **The still beat**: at full weight the name holds while React mounts underneath. The one long main-thread task always lands while nothing on screen moves.
+- **Hand-off**: the letters fly to the hero name's measured position with a 40ms trail (scaled down on small type) and settle from 900 to the hero's resting 600. The splash then swaps for the real name, pixel for pixel, and only then does the portrait rise in front of it.
+- **Rules**: plays once per tab session (`?splash` forces a replay); reduced motion cross-fades without the flight; deep links that land below the hero skip the flight; a failsafe dismisses it if the app never claims it.
+
 ---
 
 ## Motion & Accessibility Standards
