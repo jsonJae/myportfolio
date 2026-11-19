@@ -100,7 +100,7 @@ export default function About() {
                     initial={initial}
                     whileInView={animate}
                     viewport={{ once: true, margin: '-100px' }}
-                    className="flex flex-col items-center text-center md:items-start md:text-left"
+                    className="flex flex-col items-start text-left"
                 >
                     <h2
                         id="about-title"
