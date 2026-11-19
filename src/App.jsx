@@ -7,6 +7,7 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Beyond from './components/Beyond';
 import Contact from './components/Contact';
+import ChatBot from './components/ChatBot';
 
 function App() {
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -62,6 +63,7 @@ function App() {
       </div>
 
       <Navbar onNavigate={handleNavigate} />
+      <ChatBot />
     </div>
   );
 }

@@ -613,3 +613,74 @@
 @utility heading-balance {
   text-wrap: balance;
 }
+
+/* ── Chat: the ink press ────────────────────────────────────────────────
+   Each streamed word mounts at hairline weight in faint Ultramarine and
+   presses to full reading ink, the same gesture as the splash and the
+   project cards. Geist Mono is monospaced, so the weight change never
+   reflows the line while it settles. */
+@keyframes ink-press {
+  from {
+    font-weight: 200;
+    color: rgb(8 36 169 / 0.3);
+    filter: blur(1px);
+  }
+  55% {
+    filter: blur(0);
+  }
+  to {
+    font-weight: 400;
+    color: inherit;
+    filter: blur(0);
+  }
+}
+
+.ink-word {
+  animation: ink-press 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Thinking: three dots that ink in and lift off in turn. */
+@keyframes typing-dot {
+  0%,
+  70%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  35% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-primary);
+  animation: typing-dot 1.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.chat-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(8 36 169 / 0.25) transparent;
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-word {
+    animation: none;
+  }
+  .typing-dot {
+    animation: none;
+    opacity: 0.55;
+  }
+}
