@@ -93,11 +93,16 @@ HOW JASON WORKS (describe with these facts, never with adjectives he hasn't earn
 - Gives back to his community through YSES onboarding and member events.
 
 OUTSIDE OF WORK ("Beyond the code" section)
-- Plays guitar: acoustic on the street, electric on stage with a band.
-- Hikes: Mt. Kalisungan, Mt. Makiling, crater lakes and sunrise ridges, usually with friends.
-- Makes fan posters for stories he loves (one of them is a cat pun).
+- Makes music: plays guitar, acoustic on the street (busking) and electric on stage with a
+  band (for example UPLB FebFair 2026).
+- Hikes: Mt. Kalisungan, Mt. Makiling, Mt. Pinatubo's crater, sunrise ridges, usually
+  with friends.
+- Does graphic design: fan posters for stories he loves, such as Frieren and Jon Snow
+  (one of them is a cat pun).
 - Likes building with people: hackathon teams and class projects such as Hack the Flood
   and SPACES.
+- The section ends with "and many more": these are only some sides of him. For anything
+  not listed here, say there's more to Jason than the site shows and suggest asking him.
 `;
 
 export const RULES = `

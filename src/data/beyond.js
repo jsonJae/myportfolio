@@ -28,27 +28,31 @@ import posterCatCard from '../assets/beyond/cards/poster-cat.jpg';
 import hackTheFloodCard from '../assets/beyond/cards/hack-the-flood.jpg';
 import spacesTeamCard from '../assets/beyond/cards/spaces-team.jpg';
 
-// "Beyond the code": four sides of Jason, told through his own photos.
+// "Beyond the code": four sides of Jason, told through his own photos,
+// and a closing line for everything the photos don't cover.
 export const chapters = [
-    { id: 'music', verb: 'play', rest: 'guitar.', note: 'Acoustic on the street, electric on stage with a band.' },
+    { id: 'music', verb: 'make', rest: 'music.', note: 'Guitar, acoustic on the street and electric on stage with a band.' },
     { id: 'mountains', verb: 'chase', rest: 'summits.', note: 'Kalisungan, Makiling, crater lakes and sunrise ridges, usually with friends.' },
-    { id: 'posters', verb: 'make', rest: 'posters.', note: 'Fan posters for the stories I love, plus one cat pun.' },
+    { id: 'design', verb: 'make', rest: 'graphic design.', note: 'Fan posters for the stories I love, plus one cat pun.' },
     { id: 'people', verb: 'build', rest: 'with people.', note: 'Hackathon teams and class projects, like Hack the Flood and SPACES.' },
 ];
 
+// Closes the word ribbon. Not a chapter, so it has no photos.
+export const coda = { lead: 'and', em: 'many', rest: 'more.' };
+
 export const photos = [
-    { chapter: 'music', src: guitarStreet, card: guitarStreetCard, caption: 'Acoustic guitar on the street, Christmas 2021.' },
-    { chapter: 'music', src: guitarStage, card: guitarStageCard, caption: 'On stage with the band, electric guitar in hand.' },
-    { chapter: 'mountains', src: kalisungan, card: kalisunganCard, caption: 'The Mt. Kalisungan summit marker, 760 MASL.' },
-    { chapter: 'mountains', src: craterLake, card: craterLakeCard, caption: 'A crater lake at the end of the trail.' },
-    { chapter: 'mountains', src: ashPlains, card: ashPlainsCard, caption: 'Arms out on the ash-grey plains of the trek in.' },
+    { chapter: 'music', src: guitarStreet, card: guitarStreetCard, caption: 'Me playing acoustic guitar, I also do buskings.' },
+    { chapter: 'music', src: guitarStage, card: guitarStageCard, caption: 'UPLB FebFair 2026.' },
+    { chapter: 'mountains', src: kalisungan, card: kalisunganCard, caption: 'Mt. Kalisungan summit marker, 760 MASL.' },
+    { chapter: 'mountains', src: craterLake, card: craterLakeCard, caption: 'Mt. Pinatubos Crater.' },
+    { chapter: 'mountains', src: ashPlains, card: ashPlainsCard, caption: 'Land formations in the trail of Zambales to Pinatubo' },
     { chapter: 'mountains', src: makiling, card: makilingCard, caption: 'Peak 2 of the Mt. Makiling trail.' },
-    { chapter: 'mountains', src: sunriseRidge, card: sunriseRidgeCard, caption: 'Sunrise on a summit ridge.' },
-    { chapter: 'mountains', src: trailBreak, card: trailBreakCard, caption: 'A trail break, shot from the ground up.' },
+    { chapter: 'mountains', src: sunriseRidge, card: sunriseRidgeCard, caption: 'Sunrise on a Mt. Kalisungan.' },
+    { chapter: 'mountains', src: trailBreak, card: trailBreakCard, caption: 'Photo taking with my friend' },
     { chapter: 'mountains', src: trailheadCrew, card: trailheadCrewCard, caption: 'Trailhead selfie with the hiking crew.' },
-    { chapter: 'posters', src: posterFrieren, card: posterFrierenCard, caption: "A Frieren: Beyond Journey's End poster." },
-    { chapter: 'posters', src: posterJonSnow, card: posterJonSnowCard, caption: 'A Jon Snow poster in ink-splatter black and white.' },
-    { chapter: 'posters', src: posterCat, card: posterCatCard, caption: '"You\'ve cat to be kitten me right meow."' },
+    { chapter: 'design', src: posterFrieren, card: posterFrierenCard, caption: "A Frieren: Beyond Journey's End poster." },
+    { chapter: 'design', src: posterJonSnow, card: posterJonSnowCard, caption: 'A Jon Snow poster in ink-splatter black and white.' },
+    { chapter: 'design', src: posterCat, card: posterCatCard, caption: '"You\'ve cat to be kitten me right meow."' },
     { chapter: 'people', src: hackTheFlood, card: hackTheFloodCard, caption: 'Hack the Flood: team GraviTEE takes the Innovation Award.' },
     { chapter: 'people', src: spacesTeam, card: spacesTeamCard, caption: 'The SPACES team.' },
 ];

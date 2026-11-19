@@ -5,7 +5,7 @@ import Reveal from './Reveal';
 import PhotoReel from './beyond/PhotoReel';
 import WordReel from './beyond/WordReel';
 import PhotoViewer from './beyond/PhotoViewer';
-import { chapters, photos } from '../data/beyond';
+import { chapters, coda, photos } from '../data/beyond';
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -69,7 +69,7 @@ export default function Beyond() {
                 </div>
 
                 <p className="sr-only">
-                    {chapters.map((c) => `I ${c.verb} ${c.rest} ${c.note}`).join(' ')}
+                    {chapters.map((c) => `I ${c.verb} ${c.rest} ${c.note}`).join(' ')} And {coda.em} {coda.rest}
                 </p>
 
                 <div className="relative mt-10 md:mt-14">
@@ -108,6 +108,12 @@ export default function Beyond() {
                                         <Spark />
                                     </Fragment>
                                 ))}
+                                <Fragment key="coda">
+                                    <span className="whitespace-nowrap font-display text-[48px] leading-[1.1] tracking-[-0.02em] md:text-[80px] lg:text-[96px]">
+                                        {coda.lead} <span className="font-normal italic">{coda.em}</span> {coda.rest}
+                                    </span>
+                                    <Spark />
+                                </Fragment>
                             </WordReel>
                         </motion.div>
                     </motion.div>
