@@ -153,6 +153,38 @@
   }
 }
 
+/* Hero on phones (below md). Desktop keeps its own layout untouched.
+   The name is tied to the portrait instead of to the viewport, so Jason's hair
+   overlaps the letters by the same 0.11em the desktop composition shows, at
+   every phone height. Measured constants:
+   - his hair starts 9.16% down the photo (first opaque row of HeroCutout),
+     so the photo's top edge sits 0.9084 × its height above the section bottom;
+   - the name's baseline sits 0.10em above its line box's bottom;
+   - the headline block is the 30.2px greeting plus 0.80em of name.
+   The photo shrinks on short phones so the headline always starts at least
+   80px down, clear of the menu button. The splash in index.html uses the same
+   --hero-name size, so its hand-off stays a pure translation. */
+@media (width < 48rem) {
+  .hero-stage {
+    --hero-name: min(calc(22vw + 3.5rem), 40svh);
+    --hero-photo-h: min(644px, calc((100svh - 110px - 0.59 * var(--hero-name)) / 0.9084));
+    min-height: 100svh;
+  }
+
+  .hero-photo {
+    max-height: var(--hero-photo-h);
+  }
+
+  .hero-headline {
+    top: auto;
+    bottom: calc(0.9084 * var(--hero-photo-h) - 0.21 * var(--hero-name));
+  }
+
+  .hero-name {
+    font-size: var(--hero-name);
+  }
+}
+
 @keyframes contour-drift {
   from {
     transform: translate3d(-4px, 2px, 0) scale(1);
