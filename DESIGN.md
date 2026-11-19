@@ -98,6 +98,7 @@ A focused, restrained palette where Fog Paper carries the page and Ultramarine c
 ### Hierarchy
 1. **Hero & Name Display** (Instrument Serif italic, `clamp(6rem, 27vw, 21rem)`, tracking `-0.02em`, leading 0.86):
    - Solid Ultramarine ink.
+   - Optically centred on the ink, not the letter boxes: shifted `0.137em` right (`translate` on `.hero-name` and `.splash-name`) because the italic J's swash hangs past its box on the left.
    - Cursor proximity lift: letters within 260px of the pointer rise by up to 0.05em on a soft `power3.out` follow; the outline copy in front of Jason mirrors the filled letters exactly.
    - Phones (below md): the name grows to `min(22vw + 3.5rem, 40svh)` (about 76% of the width) and is tied to the portrait rather than the viewport, so Jason's hair overlaps the letters by the same 0.11em as on desktop at every phone height. The hero fills `100svh`, and the photo shrinks on short phones so the greeting always starts at least 80px down, clear of the menu button. The constants live with `.hero-stage` in `src/index.css`; the splash in `index.html` shares the mobile size.
 2. **Greeting Flourish** (Instrument Serif roman, `clamp(1.8rem, 4.8vw, 4.25rem)`, tracking `-0.01em`):

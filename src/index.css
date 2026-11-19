@@ -153,6 +153,18 @@
   }
 }
 
+/* Optical centring of "Jason." The browser centres the letters' advance boxes,
+   but the italic J's swash hangs 0.156em past the left of its box while the
+   full stop's ink stops short of the right, so the ink sat 0.137em left of
+   centre (46px on desktop). Measured with canvas measureText on Instrument
+   Serif italic at -0.02em tracking; em-based, so it holds at every size.
+   `translate` composes with GSAP's transforms and moves the bounding rect,
+   so the splash hand-off and the outline copy follow it. The splash name
+   carries the same shift in index.html. */
+.hero-name {
+  translate: 0.137em 0;
+}
+
 /* Hero on phones (below md). Desktop keeps its own layout untouched.
    The name is tied to the portrait instead of to the viewport, so Jason's hair
    overlaps the letters by the same 0.11em the desktop composition shows, at
