@@ -59,7 +59,10 @@ function App() {
         <section id="stack" aria-labelledby="stack-title" className="scroll-mt-20"><Skills /></section>
         <section id="projects" aria-labelledby="projects-title" className="scroll-mt-20"><Projects /></section>
         <section id="beyond" aria-labelledby="beyond-title" className="scroll-mt-20"><Beyond /></section>
-        <section id="contact" aria-labelledby="contact-title" className="scroll-mt-20"><Contact /></section>
+        {/* -mb-24 lets Contact run over the wrapper's pb-24, so the section ends at the page bottom and
+            fills the screen exactly when scrolled all the way down. -scroll-mt-6 cancels html's
+            scroll-padding-top so the dock lands at that same bottom position. */}
+        <section id="contact" aria-labelledby="contact-title" className="-mb-24 -scroll-mt-6"><Contact /></section>
       </div>
 
       <Navbar onNavigate={handleNavigate} />
