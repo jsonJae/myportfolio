@@ -124,8 +124,10 @@ export default function Contact() {
 
     return (
         <MotionConfig reducedMotion="user">
-            <div className="flex min-h-screen flex-col items-center justify-center px-4 py-24 md:px-8">
-                <div className="flex w-full max-w-2xl flex-col items-center text-center">
+            {/* Equal 1fr rows above and below keep the content at the true centre of the screen;
+                the copyright sits in the bottom row, clear of the dock, without pushing it up. */}
+            <div className="grid min-h-screen grid-rows-[1fr_auto_1fr] justify-items-center px-4 py-24 md:px-8">
+                <div className="row-start-2 flex w-full max-w-2xl flex-col items-center text-center">
                     <Reveal from="up" duration={0.9}>
                         <h2
                             id="contact-title"
@@ -239,7 +241,7 @@ export default function Contact() {
                     </Reveal>
                 </div>
 
-                <p className="mt-20 text-center font-mono text-[11px] text-muted/80">
+                <p className="row-start-3 self-end pt-8 text-center font-mono text-[11px] text-muted/80">
                     © {new Date().getFullYear()} Jason Gian Duran · Muntinlupa, Metro Manila, Philippines
                 </p>
             </div>
