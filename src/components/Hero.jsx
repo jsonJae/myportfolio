@@ -406,7 +406,7 @@ export default function Hero() {
         return (
             <div
                 ref={(el) => (headlineScrollRefs.current[layer] = el)}
-                className="absolute inset-x-0 top-[var(--hero-type-top)] flex justify-center px-4 [--hero-type-top:18vh] sm:[--hero-type-top:6vh] md:[--hero-type-top:4vh]"
+                className="hero-headline absolute inset-x-0 top-[4vh] flex justify-center px-4"
             >
                 <div
                     ref={(el) => (headlineDriftRefs.current[layer] = el)}
@@ -430,7 +430,7 @@ export default function Hero() {
                     </span>
                     <span
                         ref={(el) => (maskRefs.current[layer * 2 + 1] = el)}
-                        className={`-mt-[0.06em] block whitespace-nowrap font-display text-[clamp(6rem,27vw,21rem)] italic leading-[0.86] tracking-[-0.02em] ${front ? 'hero-outline' : 'text-primary'}`}
+                        className={`hero-name -mt-[0.06em] block whitespace-nowrap font-display text-[clamp(6rem,27vw,21rem)] italic leading-[0.86] tracking-[-0.02em] ${front ? 'hero-outline' : 'text-primary'}`}
                     >
                         {NAME.map((char, i) => (
                             <span
@@ -448,13 +448,13 @@ export default function Hero() {
     };
 
     const photoClass =
-        'block h-auto w-auto max-h-[96vh] max-w-none object-contain select-none md:max-h-[104vh]';
+        'hero-photo block h-auto w-auto max-h-[96vh] max-w-none object-contain select-none md:max-h-[104vh]';
 
     return (
         <section
             ref={rootRef}
             aria-labelledby="hero-title"
-            className="relative flex min-h-screen items-center justify-center overflow-hidden pb-24"
+            className="hero-stage relative flex min-h-screen items-center justify-center overflow-hidden pb-24"
         >
             <h1 id="hero-title" className="sr-only">
                 Hey, I’m Jason. Jason Gian Duran, AI engineer and software developer.
