@@ -182,18 +182,18 @@ function inlineInk(text, settled, key) {
 function RichText({ text, settled }) {
   return parseBlocks(text).map((b, bi) =>
     b.type === 'ul' ? (
-      <ul key={bi} className="mt-2 flex flex-col gap-1.5 first:mt-0">
+      <ul key={bi} className="mt-1.5 flex flex-col gap-1 first:mt-0">
         {b.items.map((it, ii) => (
           <li
             key={ii}
-            className="relative pl-4 before:absolute before:left-[3px] before:top-[0.62em] before:size-[5px] before:rounded-full before:bg-primary/60 before:content-['']"
+            className="relative pl-3.5 before:absolute before:left-[2px] before:top-[0.6em] before:size-[4px] before:rounded-full before:bg-primary/60 before:content-['']"
           >
             {inlineInk(it, settled, `${bi}-${ii}`)}
           </li>
         ))}
       </ul>
     ) : (
-      <p key={bi} className="mt-2 first:mt-0">
+      <p key={bi} className="mt-1.5 first:mt-0">
         {b.items.map((line, li) => (
           <Fragment key={li}>
             {li > 0 && ' '}
@@ -205,10 +205,10 @@ function RichText({ text, settled }) {
   );
 }
 
-const BUBBLE_BASE = 'break-words font-mono text-[14px]';
-const BUBBLE_KISMET = `${BUBBLE_BASE} rounded-[20px] rounded-bl-[6px] bg-surface px-4 py-3 leading-[1.6] text-ink/85`;
-const BUBBLE_USER = `${BUBBLE_BASE} whitespace-pre-wrap max-w-[82%] self-end rounded-[20px] rounded-br-[6px] bg-primary px-4 py-2.5 leading-[1.55] text-white shadow-[0_8px_18px_-12px_rgba(8,36,169,0.7)] selection:bg-white/30 selection:text-white`;
-const BUBBLE_ERROR = 'rounded-[20px] rounded-bl-[6px] border border-dashed border-primary/35 bg-white px-4 py-3 font-mono text-[13px] leading-[1.6] text-ink/80';
+const BUBBLE_BASE = 'break-words font-mono text-[13px]';
+const BUBBLE_KISMET = `${BUBBLE_BASE} rounded-[18px] rounded-bl-[5px] bg-surface px-3.5 py-2.5 leading-[1.55] text-ink/85`;
+const BUBBLE_USER = `${BUBBLE_BASE} whitespace-pre-wrap max-w-[80%] self-end rounded-[18px] rounded-br-[5px] bg-primary px-3.5 py-2 leading-[1.5] text-white shadow-[0_8px_18px_-12px_rgba(8,36,169,0.7)] selection:bg-white/30 selection:text-white`;
+const BUBBLE_ERROR = 'rounded-[18px] rounded-bl-[5px] border border-dashed border-primary/35 bg-white px-3.5 py-2.5 font-mono text-[12.5px] leading-[1.55] text-ink/80';
 
 /** One of Kismet's messages: a small, still avatar at the bubble's tail corner. */
 function KismetRow({ children, state = 'idle', animateIn = false, reduced }) {
@@ -217,9 +217,9 @@ function KismetRow({ children, state = 'idle', animateIn = false, reduced }) {
       initial={animateIn ? (reduced ? { opacity: 0 } : { opacity: 0, y: 8 }) : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.32, ease: EASE_OUT }}
-      className="flex max-w-[94%] items-end gap-2"
+      className="flex max-w-[92%] items-end gap-1.5"
     >
-      <KismetFace size={26} state={state} still className="mb-0.5" />
+      <KismetFace size={22} state={state} still className="mb-0.5" />
       <div className="min-w-0">{children}</div>
     </motion.div>
   );
@@ -227,7 +227,7 @@ function KismetRow({ children, state = 'idle', animateIn = false, reduced }) {
 
 function TypingDots() {
   return (
-    <span className="flex h-[22px] items-center gap-1.5" role="status">
+    <span className="flex h-5 items-center gap-1.5" role="status">
       <span className="sr-only">Kismet is thinking</span>
       <span aria-hidden="true" className="typing-dot" />
       <span aria-hidden="true" className="typing-dot" />
@@ -633,17 +633,17 @@ export default function ChatBot() {
                   const el = e.currentTarget;
                   stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
                 }}
-                className="chat-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-2 pb-5"
+                className="chat-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-4"
                 aria-live="polite"
                 aria-busy={busy}
               >
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
                   <KismetRow>
                     <p className={BUBBLE_KISMET}>{GREETING}</p>
                   </KismetRow>
 
                   {messages.length === 0 && (
-                    <ul className="-mt-1 flex flex-col items-start gap-2 pl-[34px]" aria-label="Suggested questions">
+                    <ul className="-mt-1 flex flex-col items-start gap-1.5 pl-[28px]" aria-label="Suggested questions">
                       {SUGGESTIONS.map((s, i) => (
                         <motion.li
                           key={s}
@@ -654,7 +654,7 @@ export default function ChatBot() {
                           <button
                             type="button"
                             onClick={() => ask(s)}
-                            className="group relative overflow-hidden rounded-full border border-primary/20 bg-white px-3.5 py-2 text-left font-mono text-[12.5px] leading-snug text-primary transition-colors duration-300 ease-soft hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                            className="group relative overflow-hidden rounded-full border border-primary/20 bg-white px-3 py-1.5 text-left font-mono text-[12px] leading-snug text-primary transition-colors duration-300 ease-soft hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                           >
                             <span
                               aria-hidden="true"
@@ -693,7 +693,7 @@ export default function ChatBot() {
                               <button
                                 type="button"
                                 onClick={retry}
-                                className="mt-2.5 inline-flex h-8 items-center gap-1.5 rounded-full border border-primary/25 px-3 font-mono text-[12px] font-bold tracking-[0.02em] text-primary transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                                className="mt-2 inline-flex h-7 items-center gap-1.5 rounded-full border border-primary/25 px-3 font-mono text-[12px] font-bold tracking-[0.02em] text-primary transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                               >
                                 <RotateCcw size={12} strokeWidth={2.2} />
                                 Try again
