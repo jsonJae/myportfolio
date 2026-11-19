@@ -494,7 +494,7 @@ export default function Hero() {
             className="relative flex min-h-screen items-center justify-center overflow-hidden pb-24"
         >
             <h1 id="hero-title" className="sr-only">
-                Hey, I’m Jason. Jason Gian Duran, designer and developer.
+                Hey, I’m Jason. Jason Gian Duran, AI engineer and software developer.
             </h1>
 
             <Ridges />

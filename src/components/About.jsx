@@ -129,8 +129,9 @@ export default function About() {
                             variants={reduced ? undefined : line}
                             className="mt-5 font-mono text-[15px] leading-[1.75] text-ink-soft md:text-[17px]"
                         >
-                            Design and engineering stay side by side in my work, and right now I’m most curious about{' '}
-                            <strong className="font-semibold text-ink">where AI is headed</strong>.
+                            Right now I’m learning{' '}
+                            <strong className="font-semibold text-ink">AI engineering and machine learning</strong> by
+                            building small projects and wiring models into the software I already know how to make.
                         </motion.p>
                     </div>
 
