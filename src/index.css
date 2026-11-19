@@ -1,17 +1,20 @@
 @import "tailwindcss";
 
+/* Display: Instrument Serif (SIL Open Font License). One weight, roman and
+   italic; hierarchy comes from size and the roman/italic pairing, never from
+   weight, so faux bold is switched off below. */
 @font-face {
-  font-family: 'Bodoni Moda';
-  src: url('./assets/fonts/BodoniModa-Variable.woff2') format('woff2');
-  font-weight: 400 900;
+  font-family: 'Instrument Serif';
+  src: url('./assets/fonts/InstrumentSerif-Regular.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Bodoni Moda';
-  src: url('./assets/fonts/BodoniModa-Italic-Variable.woff2') format('woff2');
-  font-weight: 400 900;
+  font-family: 'Instrument Serif';
+  src: url('./assets/fonts/InstrumentSerif-Italic.woff2') format('woff2');
+  font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
@@ -25,7 +28,7 @@
 }
 
 @theme {
-  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni 72', ui-serif, Georgia, serif;
+  --font-display: 'Instrument Serif', 'Times New Roman', ui-serif, Georgia, serif;
   --font-body: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -79,8 +82,8 @@
   }
 
   .font-display {
-    font-optical-sizing: auto;
-    font-feature-settings: 'dlig' 1;
+    font-weight: 400;
+    font-synthesis: none;
   }
 
   ::selection {
@@ -260,8 +263,8 @@
 /* Curated works: the press.
    A project card moves idle → printing → live (data-state, set by
    Projects.jsx). While printing, a brayer rolls across the card's image and
-   the picture appears behind it, then the title presses from hairline to
-   full weight, the same ink-fill the splash uses for the name. */
+   the picture appears behind it, then the title presses from a faint, soft
+   wash to full ink, the same ink-fill the splash uses for the name. */
 .press-paper {
   background-color: #f5f7fb;
   background-image:
@@ -325,7 +328,6 @@
 }
 
 .ink-title {
-  font-weight: 900;
   color: var(--color-primary);
 }
 
@@ -338,8 +340,8 @@
 }
 
 .project-card[data-state='idle'] .ink-title {
-  font-weight: 400;
-  color: rgb(8 36 169 / 0.2);
+  color: rgb(8 36 169 / 0.18);
+  filter: blur(2px);
 }
 
 .project-card[data-state='idle'] .ink-sub {
@@ -356,8 +358,8 @@
 
 .project-card[data-state='printing'] .ink-title {
   transition:
-    font-weight 1.4s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.8s var(--ease-soft);
+    filter 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.9s var(--ease-soft);
   transition-delay: calc(var(--card-delay, 0s) + 0.45s);
 }
 

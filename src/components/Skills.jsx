@@ -186,7 +186,7 @@ export default function Skills() {
                 <div className="text-center">
                     <h2
                         id="stack-title"
-                        className="font-display text-[40px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[64px]"
+                        className="font-display text-[48px] leading-[0.92] tracking-[-0.02em] text-primary heading-balance md:text-[80px]"
                     >
                         <span className="font-normal italic">tools</span> of the trade.
                     </h2>

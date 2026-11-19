@@ -415,7 +415,7 @@ export default function ProjectSheet({ project, onClose }) {
                                     id={titleId}
                                     layoutId={`project-title-${project.id}`}
                                     transition={{ layout: morph }}
-                                    className="w-fit font-display text-[clamp(32px,11cqi,46px)] leading-[0.95] tracking-[-0.035em] text-primary"
+                                    className="w-fit font-display text-[clamp(36px,12cqi,52px)] leading-[0.95] tracking-[-0.015em] text-primary"
                                 >
                                     <ProjectTitleText project={project} />
                                 </motion.h3>
@@ -441,7 +441,7 @@ export default function ProjectSheet({ project, onClose }) {
                                     <section aria-labelledby={`${titleId}-did`} className="mt-10">
                                         <h4
                                             id={`${titleId}-did`}
-                                            className="font-display text-[28px] font-black leading-none tracking-[-0.03em] text-primary"
+                                            className="font-display text-[34px] leading-none tracking-[-0.015em] text-primary"
                                         >
                                             <span className="font-normal italic">what</span> I did.
                                         </h4>

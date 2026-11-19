@@ -48,7 +48,7 @@ function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
                 <motion.h3
                     layoutId={id('title-')}
                     transition={{ layout: morph }}
-                    className="w-fit font-display text-[clamp(30px,9vw,36px)] leading-[0.95] tracking-[-0.035em] text-primary md:text-[clamp(34px,3.6vw,44px)]"
+                    className="w-fit font-display text-[clamp(34px,10vw,42px)] leading-[0.95] tracking-[-0.015em] text-primary md:text-[clamp(38px,4vw,50px)]"
                 >
                     <ProjectTitleText project={project} />
                 </motion.h3>
@@ -157,7 +157,7 @@ export default function Projects() {
                     <div className="text-center">
                         <h2
                             id="projects-title"
-                            className="font-display text-[40px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[64px]"
+                            className="font-display text-[48px] leading-[0.92] tracking-[-0.02em] text-primary heading-balance md:text-[80px]"
                         >
                             <span className="font-normal italic">curated</span> works.
                         </h2>

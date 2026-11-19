@@ -14,23 +14,24 @@ colors:
   border-primary: "rgba(8, 36, 169, 0.35)"
 typography:
   display-large:
-    fontFamily: "Bodoni Moda, serif"
-    fontSize: "88px"
-    fontWeight: 900
-    lineHeight: 0.92
-    letterSpacing: "-0.045em"
-  display-heading:
-    fontFamily: "Bodoni Moda, serif"
-    fontSize: "56px"
-    fontWeight: 900
-    lineHeight: 1
-    letterSpacing: "-0.04em"
-  display-italic:
-    fontFamily: "Bodoni Moda, serif"
-    fontSize: "30px - 44px"
-    fontWeight: 500
+    fontFamily: "Instrument Serif, serif"
+    fontSize: "clamp(6rem, 27vw, 21rem)"
+    fontWeight: 400
     fontStyle: "italic"
+    lineHeight: 0.86
     letterSpacing: "-0.02em"
+  display-heading:
+    fontFamily: "Instrument Serif, serif"
+    fontSize: "48px - 88px"
+    fontWeight: 400
+    lineHeight: 0.92
+    letterSpacing: "-0.02em"
+  display-italic:
+    fontFamily: "Instrument Serif, serif"
+    fontSize: "1.8rem - 4.25rem"
+    fontWeight: 400
+    fontStyle: "italic"
+    letterSpacing: "-0.01em"
   body:
     fontFamily: "Geist Mono, monospace"
     fontSize: "15px - 17px"
@@ -56,12 +57,12 @@ rounded:
 
 ## Creative North Star: "Precision Editorial & Tactile Micro-Interactions"
 
-The portfolio is rooted in a refined, minimalist aesthetic: calm, light Fog Paper backgrounds (`#EDF0F5`), a serif/mono typography pairing (Bodoni Moda for display, Geist Mono for body), elegant rounded pill geometry, and deep Ultramarine ink (`#0824A9`). 
+The portfolio is rooted in a refined, minimalist aesthetic: calm, light Fog Paper backgrounds (`#EDF0F5`), a serif/mono typography pairing (Instrument Serif for display, Geist Mono for body), elegant rounded pill geometry, and deep Ultramarine ink (`#0824A9`). 
 
 **What this design system is:**
 - Crisp, modern, clean, and intentional.
 - Tactile through deliberate micro-interactions: horizontal wipe hover fills, elastic spring physics, smooth magnification, and subtle ambient lifts.
-- Grounded in high-contrast typography: didone serifs with razor hairlines paired against monospaced utility text, with 900 weights contrasted by delicate italic flourishes.
+- Grounded in editorial typography: a narrow, high-contrast Instrument Serif at large sizes against monospaced utility text, with hierarchy carried by size and the roman/italic pairing rather than weight.
 
 **What this design system is NOT (Confirmed Anti-References):**
 - **No heavy neumorphism**: No deep extruded mud-shadows, no paired dual-tints (`#A3B1C6`), and no synthetic plastic recesses.
@@ -92,18 +93,19 @@ A focused, restrained palette where Fog Paper carries the page and Ultramarine c
 
 ## Typography
 
-**Two-Typeface System**: Bodoni Moda for all display headings and heroic scales; Geist Mono for body text, controls, and metadata. The serif/mono pairing signals "designer + developer" and delivers editorial refinement on headings while maintaining tool-like clarity in prose and UI.
+**Two-Typeface System**: Instrument Serif (SIL Open Font License, self-hosted as `InstrumentSerif-Regular.woff2` and `InstrumentSerif-Italic.woff2`) for all display headings and heroic scales; Geist Mono for body text, controls, and metadata. Instrument Serif has one weight, roman and italic, so display type never uses weight utilities (`font-semibold`, `font-black`): `.font-display` pins weight 400 and turns off `font-synthesis`, so a stray weight class can never fake a bold. Hierarchy comes from size and from pairing an italic word with a roman one. Because the face is narrow and light, display sizes run a step larger than a heavy didone would.
 
 ### Hierarchy
-1. **Hero & Name Display** (Bodoni Moda 900, 56px–88px+ mobile/desktop, tight tracking `-0.045em`, leading ~0.92):
+1. **Hero & Name Display** (Instrument Serif italic, `clamp(6rem, 27vw, 21rem)`, tracking `-0.02em`, leading 0.86):
    - Solid Ultramarine ink.
-   - Interactive letter-level physics: spring bounce on hover, kinetic wave cascading on tap/click.
-2. **Greeting Flourish** (Bodoni Moda 500 italic, 30px–44px, tracking `-0.02em`):
-   - Lowercase conversational opening ("hey, I’m", "hi, I’m").
+   - Cursor proximity lift: letters within 260px of the pointer rise by up to 0.05em on a soft `power3.out` follow; the outline copy in front of Jason mirrors the filled letters exactly.
+2. **Greeting Flourish** (Instrument Serif roman, `clamp(1.8rem, 4.8vw, 4.25rem)`, tracking `-0.01em`):
+   - Conversational opening ("Hey, I’m"), set in ink at 80%.
    - Paired on the same optical baseline as the display name.
-3. **Section Headings** (Bodoni Moda 900, 40px–68px, tracking `-0.035em`):
+3. **Section Headings** (Instrument Serif, 48px mobile / 80px desktop; About 50–84px, Contact 52–88px; tracking `-0.02em`, leading 0.92):
    - About Me, Experience, Stack, Projects, Beyond, Contact.
-   - Mix of full weight ("Me.", "Stack") and regular weight italic ("About", "Experience") for personality.
+   - One italic word against roman words ("*About* Me.", "*where* I’ve worked.", "*beyond* the code.") for personality.
+   - Card and sheet titles (experience roles 28–32px, project titles up to 50px, the sheet's "*what* I did." at 34px) follow the same rule.
 4. **Editorial Prose** (Geist Mono 400, 15px mobile / 17px desktop, leading 1.75):
    - High legibility, generous line height, `text-pretty`.
    - Key location and interest anchors set in `font-semibold text-ink`.
@@ -144,19 +146,19 @@ The signature global navigation:
 
 ### 5. The Ink-Fill Splash & Name Hand-off
 The first visit's focal moment. It lives in `index.html`, so it paints before the app bundle arrives.
-- **Weight is the progress bar**: "Jason." is set in Bodoni Moda italic at the hero's exact size, starting as faint hairlines (weight 400, Ultramarine at 16%). Each letter presses to full ink (weight 900) as the page's fonts, photos and scripts actually arrive. Image progress is streamed byte by byte, and weights snap to steps of 10.
+- **Ink is the progress bar**: "Jason." is set in Instrument Serif italic at the hero's exact size, starting as a faint, soft wash (Ultramarine at 16%, blurred 3px). Each letter presses to crisp full ink as the page's fonts, photos and scripts actually arrive. Image progress is streamed byte by byte.
 - **Status line**: Geist Mono 10px uppercase, `rgb(0 0 0 / 0.62)`, naming the step the fill is passing through (Setting type, Developing portrait, Cutting silhouette, Printing photos, Wiring scripts, Ready). A tabular Ultramarine counter (`000`–`100`) sits opposite.
-- **The still beat**: at full weight the name holds while React mounts underneath. The one long main-thread task always lands while nothing on screen moves.
-- **Hand-off**: the letters fly to the hero name's measured position with a 40ms trail (scaled down on small type) and settle from 900 to the hero's resting 600. The splash then swaps for the real name, pixel for pixel, and only then does the portrait rise in front of it.
+- **The still beat**: at full ink the name holds while React mounts underneath. The one long main-thread task always lands while nothing on screen moves.
+- **Hand-off**: the letters fly to the hero name's measured position with a 40ms trail (scaled down on small type), a pure translation since the splash and the hero share face, size and tracking. The splash then swaps for the real name, pixel for pixel, and only then does the portrait rise in front of it.
 - **Rules**: plays once per tab session (`?splash` forces a replay); reduced motion cross-fades without the flight; deep links that land below the hero skip the flight; a failsafe dismisses it if the app never claims it.
 
 ### 6. Project Cards & Detail Sheet
 "Curated works" uses one card design for every project; content lives in `src/data/projects.js`.
-- **Card**: white, 24px radius, hairline border, a 16:9 image on top, then the Bodoni title (italic subtitle at 0.55em), an org · role line (an award shows as a filled Ultramarine pill), the summary, and a footer of mono tags beside a "Details +" pill with the horizontal wipe. Two columns from `md`; an odd last card centers.
+- **Card**: white, 24px radius, hairline border, a 16:9 image on top, then the Instrument Serif title (italic subtitle at 0.55em), an org · role line (an award shows as a filled Ultramarine pill), the summary, and a footer of mono tags beside a "Details +" pill with the horizontal wipe. Two columns from `md`; an odd last card centers.
 - **Placeholders**: a missing image shows grid paper with print crop marks; a missing GitHub link or detail list shows a dashed Ultramarine box marked "Placeholder." Fill the data field and the placeholder disappears.
 - **The press**: as a card enters view, a brayer rolls across its image and reveals it, and the title presses from weight 400 at 20% ink to 900, echoing the splash. Cards in a row stagger by 140ms.
 - **Expansion**: the whole card is one button. It morphs over the dimmed page through shared `layoutId`s (shell, image, title) on the contact window's spring (`stiffness 260, damping 32, mass 0.9`). Esc, the close button or a backdrop click folds it back into its card, and focus returns there.
-- **The spread** (desktop, `lg` and up): the sheet opens as a two-page spread up to 1240px wide. The left page is grid paper with crop marks holding one large print of the current screenshot, sized so the spread fits the viewport height; under it sit a `02 / 04` counter, the image's description as a visible caption, outline arrow buttons with the wipe, and a thumbnail strip. The right page (340–430px) has no eyebrow labels. It opens with the title, the org · role line and the tags as a mono slash line, then the links (live app solid and GitHub outline, side by side at equal width), then the summary as an unlabeled lead paragraph (15px, ink at 85%). "What I did" follows under a heading in the site's own section style (*what* in Bodoni italic, *I did.* in black), its points separated by hairlines. Only the right page scrolls, inside a band that starts below the close button, so the print stays in view while reading. Phones and tablets stack the two pages and scroll the whole sheet, with the counter and arrows on one row over a full-width caption.
+- **The spread** (desktop, `lg` and up): the sheet opens as a two-page spread up to 1240px wide. The left page is grid paper with crop marks holding one large print of the current screenshot, sized so the spread fits the viewport height; under it sit a `02 / 04` counter, the image's description as a visible caption, outline arrow buttons with the wipe, and a thumbnail strip. The right page (340–430px) has no eyebrow labels. It opens with the title, the org · role line and the tags as a mono slash line, then the links (live app solid and GitHub outline, side by side at equal width), then the summary as an unlabeled lead paragraph (15px, ink at 85%). "What I did" follows under a heading in the site's own section style (*what* in Instrument Serif italic, *I did.* in roman), its points separated by hairlines. Only the right page scrolls, inside a band that starts below the close button, so the print stays in view while reading. Phones and tablets stack the two pages and scroll the whole sheet, with the counter and arrows on one row over a full-width caption.
 - **Turning images**: the next print is revealed behind the same brayer that prints the cards, rolling in the direction of travel (0.72s). Arrow keys, the buttons, thumbnails and horizontal swipes all turn. Screenshots preload when the sheet opens.
 - **The loupe**: hovering the print with a mouse shows a small 160px lens at a light 1.35x, which reads as a close look rather than a blow-up and keeps the surrounding UI in view; it stays crisp since the screenshots are about 2.4x the print's size. The lens follows the pointer with no easing; only its glass fades and grows in. Its hint ("Hover the image to inspect") sits fixed at the right end of the thumbnail row, never inside a caption.
 - **Mouse, not media queries**: the lens opens only on real mouse movement, and the hint appears once a mouse has moved inside the sheet. Never gate either on `hover`/`pointer` media queries: Chrome on touchscreen laptops reports "no hover, coarse pointer" even while a mouse or trackpad drives it, which hid the loupe entirely.
@@ -164,7 +166,7 @@ The first visit's focal moment. It lives in `index.html`, so it paints before th
 
 ### 7. Kismet, the portfolio assistant
 The site's chatbot (`src/components/ChatBot.jsx`, face in `KismetFace.jsx`, server in `server/`).
-- **Identity**: the name is set like the hero name: Bodoni Moda italic 600 in Ultramarine with a full stop ("Kismet."). The mark is a split-face tortoiseshell cat inside an Ultramarine ink disc, the same 46px circle as the dock's buttons, with a faint second Ultramarine plate behind it like a two-plate print. Every shape is rounded: soft ears inside the circle, round amber eyes with oval pupils, a soft pink nose, a pale muzzle and curved cream whiskers. No pointed or angular shapes in the face.
+- **Identity**: the name is set like the hero name: Instrument Serif italic in Ultramarine with a full stop ("Kismet."). The mark is a split-face tortoiseshell cat inside an Ultramarine ink disc, the same 46px circle as the dock's buttons, with a faint second Ultramarine plate behind it like a two-plate print. Every shape is rounded: soft ears inside the circle, round amber eyes with oval pupils, a soft pink nose, a pale muzzle and curved cream whiskers. No pointed or angular shapes in the face.
 - **Tortoiseshell palette** (the one place warm colour enters the site, and only inside the mark): dark fur `#33251E`, ginger `#DE8638`, caramel flecks `#B5642C`, muzzle `#F2CB98`, inner ear `#E59C7E`, nose `#D7796C`, iris `#F0BF48`, line ink `#1E1511`, whiskers `#FCEEDC`.
 - **Launcher**: a 64px circle holding only Kismet's face, the same height as the dock shell and on the dock's exact line (`bottom-[calc(1.25rem+env(safe-area-inset-bottom))]`). Below `sm` the dock fills the row, so the launcher rises above it. No label. Hover (and keyboard focus-visible): lifts 3px and grows to 1.05, the shadow deepens, the second ink plate slides out from under the disc like a sticker peeling off the page, the cat's eyes close happily, and an "Ask Kismet" label appears above it in the dock's tooltip style. Press: 0.94. The launcher only ever scales uniformly; it is never stretched.
 - **Signature moment (registration)**: while Kismet thinks, the second plate drifts out of register behind the disc, the pupils widen and glance up, and an ear flicks every second or so; when the answer starts the plate snaps back into register on a stiff spring. That is the only looping motion. At rest the cat blinks irregularly, twitches an ear now and then, and follows the pointer with its pupils. On hover its eyes close into content "^ ^" arcs and its ears perk; while it streams, the jaw drops with each chunk and the whiskers flick; on an error its ears flatten and its mouth goes flat.
@@ -196,7 +198,7 @@ The site's chatbot (`src/components/ChatBot.jsx`, face in `KismetFace.jsx`, serv
 - **Do** keep surfaces clean, light, and minimal (`#EDF0F5` background, `#FFFFFF` / `bg-surface` pills).
 - **Do** use the horizontal wipe hover effect for interactive pills and primary CTA buttons.
 - **Do** maintain a strict 44×44px minimum tap target for all circular and icon buttons.
-- **Do** use Bodoni Moda for display headings and Geist Mono for all body, controls, and metadata.
+- **Do** use Instrument Serif for display headings and Geist Mono for all body, controls, and metadata. Never put weight utilities on display type.
 - **Do** use Ultramarine `#0824A9` as the singular brand voice for typography, active states, and focal contrast.
 - **Do** vertically center aligned button rows (such as Resume and social icons) on a shared axis with uniform height.
 

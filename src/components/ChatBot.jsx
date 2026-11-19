@@ -600,7 +600,7 @@ export default function ChatBot() {
                 <div className="min-w-0 flex-1">
                   <h2
                     id="kismet-name"
-                    className="font-display text-[24px] font-semibold italic leading-none tracking-[-0.02em] text-primary"
+                    className="font-display text-[28px] italic leading-none tracking-[-0.01em] text-primary"
                   >
                     Kismet.
                   </h2>

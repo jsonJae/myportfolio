@@ -56,7 +56,7 @@ export default function Beyond() {
                     <Reveal from="up" duration={0.9}>
                         <h2
                             id="beyond-title"
-                            className="text-center font-display text-[40px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[64px]"
+                            className="text-center font-display text-[48px] leading-[0.92] tracking-[-0.02em] text-primary heading-balance md:text-[80px]"
                         >
                             <span className="font-normal italic">beyond</span> the code.
                         </h2>
@@ -102,7 +102,7 @@ export default function Beyond() {
                             <WordReel speed={-64} reduced={reduced}>
                                 {chapters.map((c) => (
                                     <Fragment key={c.id}>
-                                        <span className="whitespace-nowrap font-display text-[44px] font-black leading-[1.1] tracking-[-0.03em] md:text-[76px] lg:text-[96px]">
+                                        <span className="whitespace-nowrap font-display text-[48px] leading-[1.1] tracking-[-0.02em] md:text-[80px] lg:text-[96px]">
                                             I <span className="font-normal italic">{c.verb}</span> {c.rest}
                                         </span>
                                         <Spark />

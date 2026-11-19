@@ -104,7 +104,7 @@ export default function About() {
                 >
                     <h2
                         id="about-title"
-                        className="font-display text-[42px] font-black leading-[0.95] tracking-tight text-primary heading-balance select-none sm:text-[52px] md:text-[68px]"
+                        className="font-display text-[50px] leading-[0.92] tracking-[-0.02em] text-primary heading-balance select-none sm:text-[62px] md:text-[84px]"
                     >
                         <motion.span
                             variants={reduced ? undefined : titleWordVariant}

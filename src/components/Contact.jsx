@@ -129,7 +129,7 @@ export default function Contact() {
                     <Reveal from="up" duration={0.9}>
                         <h2
                             id="contact-title"
-                            className="font-display text-[44px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[72px]"
+                            className="font-display text-[52px] leading-[0.92] tracking-[-0.02em] text-primary heading-balance md:text-[88px]"
                         >
                             let’s make <span className="font-normal italic">something</span>.
                         </h2>

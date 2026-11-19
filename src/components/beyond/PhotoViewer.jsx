@@ -88,7 +88,7 @@ export default function PhotoViewer({ photos, chapters, index, onIndex, onClose 
                 </button>
                 <div className="min-w-0 flex-1 text-center">
                     {chapter && (
-                        <p className="font-display text-[20px] leading-tight text-white sm:text-[24px]">
+                        <p className="font-display text-[24px] leading-tight text-white sm:text-[28px]">
                             I <span className="italic">{chapter.verb}</span> {chapter.rest}
                         </p>
                     )}

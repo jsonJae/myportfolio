@@ -82,7 +82,7 @@ export default function PhotoReel({ photos, order, speed, reduced, onOpen, decor
                                     />
                                 </div>
                                 <figcaption className="flex h-11 items-center gap-2.5 px-1 text-left sm:h-12 sm:px-1.5">
-                                    <span className="line-clamp-2 flex-1 font-display text-[12px] italic leading-[1.25] text-primary sm:text-[13.5px]">
+                                    <span className="line-clamp-2 flex-1 font-display text-[13px] italic leading-[1.2] text-primary sm:text-[15px]">
                                         {photo.caption}
                                     </span>
                                     <span className="shrink-0 font-mono text-[9px] tabular-nums text-muted sm:text-[10px]">

@@ -11,10 +11,10 @@ gsap.registerPlugin(ScrollTrigger);
 const GREETING = ['Hey,', 'I’m'];
 const NAME = 'Jason.'.split('');
 
-// Cursor proximity weight for the name: resting ink vs. pressed ink.
-const WEIGHT_REST = 600;
-const WEIGHT_PEAK = 900;
-const WEIGHT_RADIUS = 260;
+// Cursor proximity lift for the name: letters near the pointer rise a little,
+// as if pressed up from the page.
+const LIFT_PEAK = 0.05; // em of the name's type size
+const LIFT_RADIUS = 260; // px
 
 // The cutout covers the top 400px of the 644px source photo.
 const CUTOUT_HEIGHT = `${(400 / 644) * 100}%`;
@@ -168,7 +168,7 @@ export default function Hero() {
             };
 
             // The splash name is set in the same face, size and tracking as the
-            // hero name, so landing it is a pure translation plus a weight settle.
+            // hero name, so landing it is a pure translation.
             // On touchdown it is swapped for the real name, and only then does
             // the portrait rise in front of it.
             const handoff = (parts) => {
@@ -186,18 +186,6 @@ export default function Hero() {
                 const trail = 0.04 * Math.min(1, Math.max(0.55, Math.sqrt(typeSize / 300)));
                 const touchdown = flight + trail * (NAME.length - 1);
 
-                // Weight settles from the splash's full ink to the hero's resting
-                // weight, snapped to steps of 10: every distinct weight is a new
-                // font instance to shape and rasterize, so keep the set small.
-                const weights = parts.letters.map((el) => ({
-                    w: parseFloat(getComputedStyle(el).fontWeight) || WEIGHT_PEAK,
-                }));
-                const applyWeights = () => {
-                    parts.letters.forEach((el, i) => {
-                        el.style.fontWeight = String(Math.round(weights[i].w / 10) * 10);
-                    });
-                };
-
                 // Built paused and started on the next tick. The measurements
                 // above force a full layout of the freshly mounted page; a timeline
                 // created now would sit on the clock from before that work and
@@ -209,17 +197,6 @@ export default function Hero() {
                     .to(
                         parts.letters,
                         { x: dx, y: dy, duration: flight, ease: 'expo.inOut', stagger: trail },
-                        0,
-                    )
-                    .to(
-                        weights,
-                        {
-                            w: WEIGHT_REST,
-                            duration: flight,
-                            ease: 'power2.inOut',
-                            stagger: trail,
-                            onUpdate: applyWeights,
-                        },
                         0,
                     )
                     .to(parts.bg, { autoAlpha: 0, duration: 0.85, ease: 'power2.inOut' }, 0.25)
@@ -346,27 +323,18 @@ export default function Hero() {
                 gsap.quickTo(el, 'y', { duration: 1.4, ease: 'power3.out' }),
             );
 
-            // Weight is measured on the filled letters and mirrored onto the outline.
+            // Letters near the pointer lift a little. The outline copy in front of
+            // Jason mirrors the filled letters exactly, so the two never part.
             const [letters, outlineLetters] = nameRefs.current;
-            const current = letters.map(() => WEIGHT_REST);
-            const target = letters.map(() => WEIGHT_REST);
-            let frame = 0;
-
-            const tick = () => {
-                let moving = false;
-                letters.forEach((el, i) => {
-                    const next = current[i] + (target[i] - current[i]) * 0.14;
-                    if (Math.abs(target[i] - next) > 0.5) moving = true;
-                    current[i] = Math.abs(target[i] - next) > 0.5 ? next : target[i];
-                    const weight = String(Math.round(current[i]));
-                    el.style.fontWeight = weight;
-                    outlineLetters[i].style.fontWeight = weight;
-                });
-                frame = moving ? requestAnimationFrame(tick) : 0;
-            };
-            const wake = () => {
-                if (!frame) frame = requestAnimationFrame(tick);
-            };
+            const lift = letters.map((el, i) => {
+                const opts = { duration: 0.55, ease: 'power3.out' };
+                const fill = gsap.quickTo(el, 'y', opts);
+                const trace = gsap.quickTo(outlineLetters[i], 'y', opts);
+                return (value) => {
+                    fill(value);
+                    trace(value);
+                };
+            });
 
             const move = (nx, ny) => {
                 plateX.forEach((to) => to(nx * -12));
@@ -377,8 +345,7 @@ export default function Hero() {
 
             const reset = () => {
                 move(0, 0);
-                target.fill(WEIGHT_REST);
-                wake();
+                lift.forEach((to) => to(0));
             };
 
             const onPointerMove = (event) => {
@@ -390,25 +357,21 @@ export default function Hero() {
                     ((event.clientY - rect.top) / rect.height - 0.5) * 2,
                 );
 
+                const size = parseFloat(getComputedStyle(letters[0]).fontSize) || 200;
                 letters.forEach((el, i) => {
                     const box = el.getBoundingClientRect();
                     const dx = event.clientX - (box.left + box.width / 2);
                     const dy = event.clientY - (box.top + box.height / 2);
-                    const falloff = Math.max(0, 1 - Math.hypot(dx, dy) / WEIGHT_RADIUS);
+                    const falloff = Math.max(0, 1 - Math.hypot(dx, dy) / LIFT_RADIUS);
                     const eased = falloff * falloff * (3 - 2 * falloff);
-                    target[i] = WEIGHT_REST + (WEIGHT_PEAK - WEIGHT_REST) * eased;
+                    lift[i](-eased * LIFT_PEAK * size);
                 });
-                wake();
             };
 
             root.addEventListener('pointermove', onPointerMove);
             root.addEventListener('pointerleave', reset);
 
             return () => {
-                cancelAnimationFrame(frame);
-                name.forEach((el) => {
-                    el.style.fontWeight = '';
-                });
                 root.removeEventListener('pointermove', onPointerMove);
                 root.removeEventListener('pointerleave', reset);
             };
@@ -451,7 +414,7 @@ export default function Hero() {
                 >
                     <span
                         ref={(el) => (maskRefs.current[layer * 2] = el)}
-                        className={`block font-display text-[clamp(1.6rem,4.4vw,3.75rem)] font-normal leading-[1.1] tracking-[-0.01em] ${front ? 'hero-outline' : 'text-ink/80'}`}
+                        className={`block font-display text-[clamp(1.8rem,4.8vw,4.25rem)] leading-[1.05] tracking-[-0.01em] ${front ? 'hero-outline' : 'text-ink/80'}`}
                     >
                         {GREETING.map((word, i) => (
                             <span key={word} className="inline-block">
@@ -467,7 +430,7 @@ export default function Hero() {
                     </span>
                     <span
                         ref={(el) => (maskRefs.current[layer * 2 + 1] = el)}
-                        className={`-mt-[0.06em] block whitespace-nowrap font-display text-[clamp(6rem,27vw,21rem)] font-semibold italic leading-[0.86] tracking-[-0.035em] ${front ? 'hero-outline' : 'text-primary'}`}
+                        className={`-mt-[0.06em] block whitespace-nowrap font-display text-[clamp(6rem,27vw,21rem)] italic leading-[0.86] tracking-[-0.02em] ${front ? 'hero-outline' : 'text-primary'}`}
                     >
                         {NAME.map((char, i) => (
                             <span

@@ -22,8 +22,8 @@
     <!-- Everything the first screen needs, requested by the HTML parser so it
          downloads alongside the app bundle instead of after it. The splash
          script reads these links to track real progress. -->
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/BodoniModa-Italic-Variable.woff2" data-splash-font data-family="Bodoni Moda" data-style="italic" data-weights="400 900" />
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/BodoniModa-Variable.woff2" data-splash-font data-family="Bodoni Moda" data-style="normal" data-weights="400 900" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/InstrumentSerif-Italic.woff2" data-splash-font data-family="Instrument Serif" data-style="italic" data-weights="400" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/InstrumentSerif-Regular.woff2" data-splash-font data-family="Instrument Serif" data-style="normal" data-weights="400" />
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/src/assets/fonts/GeistMono-Variable.woff2" data-splash-font data-family="Geist Mono" data-style="normal" data-weights="100 900" />
     <link rel="preload" as="fetch" crossorigin href="/src/assets/HeroPic.png" data-splash-image data-label="Developing portrait" data-weight="4" data-critical />
     <link rel="preload" as="fetch" crossorigin href="/src/assets/HeroCutout.webp" data-splash-image data-label="Cutting silhouette" data-weight="1" data-critical />
@@ -74,20 +74,18 @@
       .splash-name {
         display: block;
         white-space: nowrap;
-        font-family: 'Bodoni Moda', 'Didot', 'Bodoni 72', ui-serif, Georgia, serif;
+        font-family: 'Instrument Serif', 'Times New Roman', ui-serif, Georgia, serif;
         font-size: 1em;
         font-style: italic;
         font-weight: 400;
         line-height: 0.86;
-        letter-spacing: -0.035em;
-        font-optical-sizing: auto;
-        font-feature-settings: 'dlig' 1;
+        letter-spacing: -0.02em;
         font-synthesis: none;
       }
       /* Own layers from the start, like the hero's letters: the flight's first
          frame needs no promotion, and both render with the same antialiasing,
          so the swap on touchdown is invisible. */
-      .splash-name > span { display: inline-block; color: rgb(8 36 169 / 0.16); will-change: transform; }
+      .splash-name > span { display: inline-block; color: rgb(8 36 169 / 0.16); filter: blur(3px); will-change: transform; }
 
       .splash-status {
         position: absolute;
@@ -139,7 +137,7 @@
 
     <script>
       /* The splash: the name fills letter by letter as the page's assets
-         actually arrive (font weight is the progress bar). Once full, it holds
+         actually arrive (ink density is the progress bar). Once full, it holds
          still for a beat, and that beat is when the app mounts (src/main.jsx), so
          the one long main-thread task lands while nothing on screen moves.
          Then src/components/Hero.jsx claims it and flies the name into place.
@@ -154,16 +152,14 @@
         }
 
         var MIN_FILL = 950; // ms, fastest sweep across the name
-        var HOLD = 260; // ms, beat at full weight before the hand-off
+        var HOLD = 260; // ms, beat at full ink before the hand-off
         var SETTLE = 180; // ms after the app mounts, for its first paint and raster
         var REVEAL_CAP = 1600; // ms, show the name even if the face is slow
         var SOFT_CAP = 4500; // ms, stop waiting on below-the-fold assets
         var HARD_CAP = 10000; // ms, stop waiting on anything
         var CLAIM_GRACE = 1500; // ms, dismiss ourselves if the app never claims
-        var WEIGHT_MIN = 400;
-        var WEIGHT_MAX = 900;
         var WAVE = 1.6; // letters the fill front spreads across
-        var WEIGHT_STEP = 10; // each distinct weight is a new font instance; keep few
+        var BLUR_MAX = 3; // px of softness on an un-inked letter
 
         var bg = root.querySelector('[data-splash-bg]');
         var nameEl = root.querySelector('[data-splash-name]');
@@ -319,9 +315,9 @@
           for (var i = 0; i < count; i += 1) {
             var f = Math.min(1, Math.max(0, (front - i - 0.5) / WAVE + 0.5));
             f = f * f * (3 - 2 * f);
-            var weight = WEIGHT_MIN + (WEIGHT_MAX - WEIGHT_MIN) * f;
-            letters[i].style.fontWeight = String(Math.round(weight / WEIGHT_STEP) * WEIGHT_STEP);
+            // Ink density: a faint, soft wash presses into crisp full ink.
             letters[i].style.color = 'rgb(8 36 169 / ' + (0.16 + 0.84 * f).toFixed(3) + ')';
+            letters[i].style.filter = f >= 0.999 ? 'none' : 'blur(' + ((1 - f) * BLUR_MAX).toFixed(2) + 'px)';
           }
 
           var pct = Math.round(shown * 100);
