@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Award, ImageIcon } from 'lucide-react';
 import { stackLogos } from '../data/stackLogos';
 
@@ -56,19 +57,51 @@ export function StackMarks({ tags, labelled = false, onOpen, className = '' }) {
 // Pieces shared by the project card and its detail sheet, so the two stay one
 // design and the morph between them lines up.
 
-export function ProjectMedia({ image, label = 'Project image', compact = false, plain = false, eager = false }) {
-    if (image) {
-        return (
-            <img
-                src={image.src}
-                alt={image.alt ?? ''}
-                loading={eager ? 'eager' : 'lazy'}
-                decoding="async"
-                draggable="false"
-                className="absolute inset-0 h-full w-full object-cover"
-            />
-        );
-    }
+// A picture that fades in once it has loaded and decoded, so a late image
+// never pops, and reports that moment (onReady) so the project card can start
+// its press on a real picture. Errors report too, so nothing waits forever.
+function FadeImage({ image, eager, onReady }) {
+    const [loaded, setLoaded] = useState(false);
+    const readyRef = useRef(onReady);
+    useEffect(() => {
+        readyRef.current = onReady;
+    }, [onReady]);
+
+    const reveal = useCallback((el) => {
+        const done = () => {
+            setLoaded(true);
+            readyRef.current?.();
+        };
+        if (el.decode) el.decode().then(done, done);
+        else done();
+    }, []);
+    // Already in the cache: show it before the first paint.
+    const check = useCallback(
+        (el) => {
+            if (el?.complete && el.naturalWidth) reveal(el);
+        },
+        [reveal],
+    );
+
+    return (
+        <img
+            ref={check}
+            src={image.src}
+            alt={image.alt ?? ''}
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+            draggable="false"
+            onLoad={(e) => reveal(e.currentTarget)}
+            onError={() => readyRef.current?.()}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-soft ${
+                loaded ? 'opacity-100' : 'opacity-0'
+            }`}
+        />
+    );
+}
+
+export function ProjectMedia({ image, label = 'Project image', compact = false, plain = false, eager = false, onReady }) {
+    if (image) return <FadeImage key={image.src} image={image} eager={eager} onReady={onReady} />;
 
     return (
         <div

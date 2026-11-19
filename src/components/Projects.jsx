@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, MotionConfig, motion, useInView, useReducedMotion } from 'framer-motion';
 import { Plus } from 'lucide-react';
@@ -12,10 +12,31 @@ import { projects } from '../data/projects';
 // contact pill → compose window.
 const morph = { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 };
 
-// Printing runs this long after a card enters view; then it settles.
+// Printing runs this long once it starts; then the card settles.
 const PRINT_SECONDS = 2.6;
+// The press waits for the cover to be downloaded and decoded, so the brayer
+// always reveals a real picture. On a slow network it waits at most this long,
+// then prints onto the blank sheet and the picture fades in when it arrives.
+const PRINT_WAIT = 1.4;
 
-function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
+// Warm every cover once the page is idle, so most cards are ready long before
+// anyone scrolls to them.
+let coversWarmed = false;
+function warmCovers() {
+    if (coversWarmed) return;
+    coversWarmed = true;
+    const run = () =>
+        projects.forEach((p) => {
+            if (!p.images?.[0]?.src) return;
+            const img = new Image();
+            img.decoding = 'async';
+            img.src = p.images[0].src;
+        });
+    if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 4000 });
+    else window.setTimeout(run, 2000);
+}
+
+function ProjectCard({ project, state, delay, onOpen, near = false, onImageReady, ghost = false }) {
     const id = (part) => (ghost ? undefined : `project-${part}${project.id}`);
 
     return (
@@ -34,10 +55,10 @@ function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
                 layoutId={id('media-')}
                 transition={{ layout: morph }}
                 style={{ borderRadius: 0 }}
-                className="relative aspect-video overflow-hidden border-b border-primary/10"
+                className="press-paper relative aspect-video overflow-hidden border-b border-primary/10"
             >
                 <div className="press-print absolute inset-0 transition-transform duration-700 ease-soft group-hover/card:scale-[1.03]">
-                    <ProjectMedia image={project.images[0]} />
+                    <ProjectMedia image={project.images[0]} eager={near} onReady={onImageReady} />
                 </div>
                 <span className="press-roller">
                     <span className="press-brayer" />
@@ -99,17 +120,31 @@ function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
 function ProjectItem({ project, index, open, onOpen }) {
     const reduced = useReducedMotion();
     const ref = useRef(null);
+    // The cover switches to eager loading well before the card is on screen,
+    // and the press waits for that visible image to be decoded.
+    const near = useInView(ref, { once: true, margin: '900px 0px 900px 0px' });
     const inView = useInView(ref, { once: true, amount: 0.3 });
+    const [ready, setReady] = useState(!project.images?.[0]);
+    const onImageReady = useCallback(() => setReady(true), []);
+    const [waited, setWaited] = useState(false);
     const [settled, setSettled] = useState(false);
     const delay = (index % 2) * 0.14;
 
     useEffect(() => {
-        if (!inView || reduced) return undefined;
+        if (!inView || ready || reduced) return undefined;
+        const timer = window.setTimeout(() => setWaited(true), PRINT_WAIT * 1000);
+        return () => window.clearTimeout(timer);
+    }, [inView, ready, reduced]);
+
+    const printing = inView && (ready || waited);
+
+    useEffect(() => {
+        if (!printing || reduced) return undefined;
         const timer = window.setTimeout(() => setSettled(true), (delay + PRINT_SECONDS) * 1000);
         return () => window.clearTimeout(timer);
-    }, [inView, reduced, delay]);
+    }, [printing, reduced, delay]);
 
-    const state = reduced || settled ? 'live' : inView ? 'printing' : 'idle';
+    const state = reduced || settled ? 'live' : printing ? 'printing' : 'idle';
 
     return (
         <li
@@ -124,6 +159,8 @@ function ProjectItem({ project, index, open, onOpen }) {
                 state={state}
                 delay={delay}
                 onOpen={onOpen}
+                near={near}
+                onImageReady={onImageReady}
             />
         </li>
     );
@@ -131,6 +168,10 @@ function ProjectItem({ project, index, open, onOpen }) {
 
 export default function Projects() {
     const [openId, setOpenId] = useState(null);
+
+    useEffect(() => {
+        warmCovers();
+    }, []);
     const returnTo = useRef(null);
     const openProject = projects.find((project) => project.id === openId);
 
