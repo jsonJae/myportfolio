@@ -17,19 +17,21 @@ const STORAGE_KEY = 'jgd-chat-v1';
 const MAX_INPUT = 1000;
 
 // The launcher sits on the navbar's line (same bottom offset, same 64px shell
-// height as the dock). On phones the dock fills the row, so it rises above it.
-const LAUNCHER_POS = 'right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:right-6 sm:bottom-[calc(1.25rem+env(safe-area-inset-bottom))]';
+// height as the dock). Below md the dock gives way to the menu button at the
+// top, so the bottom row is the launcher's alone.
+const LAUNCHER_POS = 'right-4 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] sm:right-6';
 // The open panel shares the launcher's bottom edge, so it grows up out of the
-// button. Between sm and xl a 25rem panel on that line would cover the dock,
-// so there it sits just above the dock instead.
+// button. Between md and xl a 25rem panel on that line would cover the dock,
+// so there it sits just above the dock instead. On phones its top stays below
+// the menu button (which ends 4rem down).
 const PANEL_POS =
-  'inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] h-[min(37rem,calc(100dvh-7.5rem))] ' +
-  'sm:left-auto sm:right-6 sm:w-[25rem] sm:bottom-[calc(6rem+env(safe-area-inset-bottom))] sm:h-[min(37rem,calc(100dvh-8rem))] ' +
+  'inset-x-4 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] h-[min(37rem,calc(100dvh-6rem))] ' +
+  'sm:left-auto sm:right-6 sm:w-[25rem] sm:h-[min(37rem,calc(100dvh-8rem))] ' +
+  'md:bottom-[calc(6rem+env(safe-area-inset-bottom))] ' +
   'xl:bottom-[calc(1.25rem+env(safe-area-inset-bottom))] xl:h-[min(40rem,calc(100dvh-4rem))]';
 
 // Kismet's speech bubble sits right above the launcher, right-aligned to it.
-const NUDGE_POS =
-  'right-4 bottom-[calc(5.5rem+74px+env(safe-area-inset-bottom))] sm:right-6 sm:bottom-[calc(1.25rem+74px+env(safe-area-inset-bottom))]';
+const NUDGE_POS = 'right-4 bottom-[calc(1.25rem+74px+env(safe-area-inset-bottom))] sm:right-6';
 
 const GREETING =
   "Hi, I'm Kismet. Ask me about Jason's projects, his experience, or what he's learning in AI and machine learning.";
