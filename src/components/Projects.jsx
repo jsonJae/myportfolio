@@ -221,7 +221,7 @@ export default function Projects() {
                 </Reveal>
                 <Reveal from="up" delay={0.08}>
                     <p className="prose-measure mx-auto mt-6 text-center font-body text-[13px] leading-[1.75] text-ink-soft md:text-[14px]">
-                        Selected work across full-stack web, cross-platform mobile, and civic tech, built through internships, collaboration, and hackathons.
+                        Selected work across machine learning and full-stack web, built solo, during an internship, and with teams at UPLB and YSES.
                     </p>
                 </Reveal>
 

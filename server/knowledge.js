@@ -74,15 +74,10 @@ PROJECTS
   tests. Next up: the member and admin screens. There are no screens to show yet, and the
   code belongs to the YSES org and is private.
 - SIPAT: Resibo ng Bayan (Hack the Flood: Digital Rights Hackathon; won Most Innovative
-  with a team of three). A proof of concept that exists only as a Figma design, not a built
-  app: a mobile app concept that gamifies auditing government infrastructure. Near a flood
-  control project, road or bridge, it shows the contract's specs beside the live camera and
-  asks whether they match. Planned offline-first for remote barangays with no signal;
-  photos only in the app and within 500 m of the project; whistleblower safety (random
-  aliases, a pin goes public only after three devices report it, uploads post after a
-  random 2 to 6 hour delay); neutral wording ("mismatch", not corruption) with a right to
-  reply for contractors; remote users review anonymized photos with a swipe. Figma:
-  https://www.figma.com/design/cNs5vnDoZM5tcnMBTq87mv/SIPAT?node-id=19-2508
+  with a team of three). A proof of concept that exists only as a design, not a built app:
+  a mobile app concept that gamifies auditing government infrastructure by matching
+  contract data against geotagged community photos, offline-first and privacy-preserving.
+  It is not one of the site's curated works, so don't point visitors to a SIPAT card.
 
 SKILLS AND TOOLS (do not rank them or claim mastery)
 - Stacks: MERN, Flutter with Firebase, SvelteKit with PocketBase, Next.js with Supabase.
