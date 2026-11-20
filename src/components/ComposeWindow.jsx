@@ -306,7 +306,7 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                         <span className="inline-flex min-w-0 items-center gap-2 rounded-full bg-surface py-1 pl-1 pr-3">
                             <span
                                 aria-hidden="true"
-                                className="grid size-6 shrink-0 place-items-center rounded-full bg-primary font-display text-[12px] font-bold italic text-white"
+                                className="grid size-6 shrink-0 place-items-center rounded-full bg-primary font-display text-[14px] italic text-white"
                             >
                                 J
                             </span>

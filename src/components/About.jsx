@@ -100,11 +100,11 @@ export default function About() {
                     initial={initial}
                     whileInView={animate}
                     viewport={{ once: true, margin: '-100px' }}
-                    className="flex flex-col items-center text-center md:items-start md:text-left"
+                    className="flex flex-col items-start text-left"
                 >
                     <h2
                         id="about-title"
-                        className="font-display text-[42px] font-black leading-[0.95] tracking-tight text-primary heading-balance select-none sm:text-[52px] md:text-[68px]"
+                        className="font-display text-[50px] leading-[0.92] tracking-[-0.02em] text-primary heading-balance select-none sm:text-[62px] md:text-[84px]"
                     >
                         <motion.span
                             variants={reduced ? undefined : titleWordVariant}
@@ -129,8 +129,9 @@ export default function About() {
                             variants={reduced ? undefined : line}
                             className="mt-5 font-mono text-[15px] leading-[1.75] text-ink-soft md:text-[17px]"
                         >
-                            Design and engineering stay side by side in my work, and right now I’m most curious about{' '}
-                            <strong className="font-semibold text-ink">where AI is headed</strong>.
+                            Right now I’m learning{' '}
+                            <strong className="font-semibold text-ink">AI engineering and machine learning</strong> by
+                            building small projects and wiring models into the software I already know how to make.
                         </motion.p>
                     </div>
 

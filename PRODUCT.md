@@ -10,16 +10,16 @@ web
 
 Two audiences, confirmed as equal priorities:
 
-- Recruiters and hiring managers evaluating Jason for internships or junior designer/developer roles. They scan quickly to judge visual craft and technical competence, then look for a resume and contact route.
+- Recruiters and hiring managers evaluating Jason for internships or junior AI engineering, machine learning, and software developer roles. They scan quickly to judge visual craft and technical competence, then look for a resume and contact route.
 - Freelance clients considering Jason for design, UI/UX, or development work. They need enough evidence of range and quality to start an inquiry.
 
 ## Product Purpose
 
-A personal portfolio for Jason Gian Duran that presents him as both a designer and a developer, and converts a visit into either an interview conversation or a freelance inquiry. Success means a visitor leaves with a credible impression of his work and a clear way to reach him.
+A personal portfolio for Jason Gian Duran that presents him as an early-career AI engineer and software developer, and converts a visit into either an interview conversation or a freelance inquiry. Success means a visitor leaves with a credible impression of his work and a clear way to reach him.
 
 ## Positioning
 
-A hybrid designer-developer: graphic and UI/UX design paired with full-stack implementation, plus a stated interest in ML and AI. The current site copy frames this as work at the intersection of form and function. A design-only or code-only portfolio could not truthfully make that same claim.
+Focused on AI engineering, machine learning, and software development, as a CS senior who is still learning. Copy stays modest: never call Jason senior, expert, or a designer. The site's visual craft is evidence, not a positioning claim.
 
 ## Operating Context
 
@@ -31,7 +31,7 @@ A hybrid designer-developer: graphic and UI/UX design paired with full-stack imp
 ## Capabilities and Constraints
 
 - Single-page React 19 + Vite 7 + Tailwind CSS 4 app, built with Framer Motion; sections are anchor targets (Home, About, Experience, Stack, Projects, Beyond, Contact) with smooth scrolling.
-- No backend, CMS, or analytics. The contact form is client-side and hands off to the visitor's email app via `mailto:`.
+- No CMS or analytics. The only backend is `/api/chat` for the Kismet assistant (Groq, 30 requests/min per visitor, key server-side). Kismet's knowledge lives in `server/knowledge.js` and must only contain what the site or resume already makes public; keep it in sync when content changes. It deliberately omits the phone number and home address. The contact form is client-side and hands off to the visitor's email app via `mailto:`.
 - `Experiences` and `Skills` are populated from the resume PDF; `Beyond` uses confirmed facets of design, community, and AI curiosity; `Contact` replaces the former empty `Footer` shell.
 - The Projects section presents four real projects from the resume: YSEIS, SPACES, SIPAT, and QE 360.
 - Not yet decided: which specific public GitHub repositories should be featured.

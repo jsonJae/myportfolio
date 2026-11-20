@@ -91,7 +91,7 @@ function ExperienceCard({ exp, active }) {
                         <p className="tabular-nums">{exp.period}</p>
                     </div>
 
-                    <h3 className="mt-1.5 font-display text-[24px] font-semibold leading-[1.15] text-primary heading-balance sm:text-[28px]">
+                    <h3 className="mt-1.5 font-display text-[28px] leading-[1.08] text-primary heading-balance sm:text-[32px]">
                         {exp.role}
                     </h3>
 
@@ -235,7 +235,7 @@ export default function Experiences() {
                     <div className="text-center">
                         <h2
                             id="experiences-title"
-                            className="font-display text-[40px] font-black leading-[0.95] tracking-tight text-primary heading-balance md:text-[64px]"
+                            className="font-display text-[48px] leading-[0.92] tracking-[-0.02em] text-primary heading-balance md:text-[80px]"
                         >
                             <span className="font-normal italic">where</span> I’ve worked.
                         </h2>

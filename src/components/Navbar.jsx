@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Home, UserRound, Briefcase, Layers, LayoutGrid, Sparkles, Mail } from 'lucide-react';
 import { MagnificationDock } from './MagnificationDock';
+import MobileMenu from './MobileMenu';
 
 const navItems = [
     { label: 'Home', id: 'home', Icon: Home },
@@ -14,15 +15,6 @@ const navItems = [
 
 export default function Navbar({ onNavigate }) {
     const [activeSection, setActiveSection] = useState('home');
-    const [compact, setCompact] = useState(false);
-
-    useEffect(() => {
-        const query = window.matchMedia('(max-width: 420px)');
-        const update = () => setCompact(query.matches);
-        update();
-        query.addEventListener('change', update);
-        return () => query.removeEventListener('change', update);
-    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -64,11 +56,17 @@ export default function Navbar({ onNavigate }) {
     }));
 
     return (
-        <nav
-            aria-label="Primary"
-            className="fixed inset-x-0 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-50 flex justify-center px-4"
-        >
-            <MagnificationDock items={dockItems} baseItemSize={compact ? 42 : 46} />
-        </nav>
+        <>
+            {/* The dock is the desktop and tablet navigation (md and up). */}
+            <nav
+                aria-label="Primary"
+                className="fixed inset-x-0 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-50 hidden justify-center px-4 md:flex"
+            >
+                <MagnificationDock items={dockItems} baseItemSize={46} />
+            </nav>
+
+            {/* Below md: a menu button at the top right opens a full-screen menu. */}
+            <MobileMenu items={navItems} active={activeSection} onNavigate={scrollTo} />
+        </>
     );
 }
