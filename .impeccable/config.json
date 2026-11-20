@@ -8,6 +8,12 @@
         "value": "geist mono",
         "createdAt": "2026-11-20T03:37:10.155Z",
         "reason": "DESIGN.md: Geist Mono is the committed body/utility face in the documented Bodoni Moda + Geist Mono pairing; predates this session"
+      },
+      {
+        "rule": "overused-font",
+        "value": "instrument serif",
+        "createdAt": "2026-11-20T04:09:38.900Z",
+        "reason": "DESIGN.md + commit 5ca5809 (feat: switch display type to instrument serif): the committed display face, chosen before this session"
       }
     ]
   }
