@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "geist mono",
+        "createdAt": "2026-11-20T03:37:10.155Z",
+        "reason": "DESIGN.md: Geist Mono is the committed body/utility face in the documented Bodoni Moda + Geist Mono pairing; predates this session"
+      }
+    ]
+  }
+}
