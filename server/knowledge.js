@@ -61,13 +61,28 @@ PROJECTS
 - Event Platform for Optum (QE 360 internship; full-stack intern): a proposal platform with
   attendee, judge and admin views, MUX video streaming and a RAG chatbot. Client work, so
   the code is private.
-- YSEIS, YSES' Inventory System (frontend lead): currently leading the frontend team of a
-  system that digitizes how the org tracks its equipment and supplies.
-- SIPAT: Ang Resibo ng Bayan (Hack the Flood: A Digital Rights Hackathon, won Most
-  Innovative): a proof-of-concept, offline-first, privacy-preserving mobile app designed for
-  Flutter and Hive that gamifies auditing government infrastructure. Citizens check flood
-  control projects, roads and bridges by matching contract data against geotagged
-  community photos.
+- YSEIS, YSES' Inventory System v2 (frontend lead; ongoing, still in development): Jason
+  leads the frontend team of the system that will run equipment lending, event assets and
+  borrowing approvals for YSES' Executive and Visuals & Logistics departments. A pnpm
+  monorepo: SvelteKit and Svelte 5 frontend, a SvelteKit API on Neon Postgres, and Zod
+  contracts shared by both. So far he set up Tailwind CSS 4 and turned the YSEIS design
+  system into tokens (brand blues, six item statuses from available to removed, a 4px
+  spacing grid, radii, a type scale); wrote the design rules every screen follows, for
+  teammates and AI coding agents (44px tap targets, one focus ring, Lucide icons,
+  sentence-case copy); scaffolded the component folders, a token showcase page and the
+  frontend's Vitest suite with an 80% coverage gate; and fixed a SvelteKit SSR error in the
+  tests. Next up: the member and admin screens. There are no screens to show yet, and the
+  code belongs to the YSES org and is private.
+- SIPAT: Resibo ng Bayan (Hack the Flood: Digital Rights Hackathon; won Most Innovative
+  with a team of three). A proof of concept that exists only as a Figma design, not a built
+  app: a mobile app concept that gamifies auditing government infrastructure. Near a flood
+  control project, road or bridge, it shows the contract's specs beside the live camera and
+  asks whether they match. Planned offline-first for remote barangays with no signal;
+  photos only in the app and within 500 m of the project; whistleblower safety (random
+  aliases, a pin goes public only after three devices report it, uploads post after a
+  random 2 to 6 hour delay); neutral wording ("mismatch", not corruption) with a right to
+  reply for contractors; remote users review anonymized photos with a swipe. Figma:
+  https://www.figma.com/design/cNs5vnDoZM5tcnMBTq87mv/SIPAT?node-id=19-2508
 
 SKILLS AND TOOLS (do not rank them or claim mastery)
 - Stacks: MERN, Flutter with Firebase, SvelteKit with PocketBase, Next.js with Supabase.
