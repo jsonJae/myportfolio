@@ -119,10 +119,10 @@ export function ProjectMedia({ image, label = 'Project image', compact = false, 
     );
 }
 
-// An ongoing project's name is pressed only part way: the splash's ink-fill,
-// where weight is the progress bar, stopped mid-run. The first 60% of the
-// letters are at full ink, the next one is wet and keeps pressing in time
-// with the brayer on the proof, and the rest are still hairlines.
+// An ongoing project's name is pressed only part way: the card press, from
+// soft wash to crisp ink, stopped mid-run. The first 60% of the letters are
+// at full ink, the next one is wet and keeps pressing in time with the
+// brayer on the proof, and the rest are still a soft wash (see .ink-letter).
 const PRESSED = 0.6;
 
 function PressingName({ name }) {

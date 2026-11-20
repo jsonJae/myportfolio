@@ -849,27 +849,35 @@
   }
 }
 
-/* The ongoing name (PressingName in ProjectParts): full letters inherit
-   .ink-title; the wet one presses in time with the proof's brayer. */
+/* The ongoing name (PressingName in ProjectParts). Instrument Serif has one
+   weight, so the press works in ink and focus, as on every card title: full
+   letters inherit .ink-title's crisp ink, the wet one sharpens and darkens in
+   time with the proof's brayer and then softens again, and the rest are still
+   a soft wash. While idle the title's own blur covers every letter, so the
+   letters add none of their own until the press starts. */
+.ink-letter {
+  display: inline-block;
+}
+
 .ink-letter[data-ink='wet'] {
-  font-weight: 560;
   color: rgb(8 36 169 / 0.46);
+  filter: blur(0.9px);
 }
 
 .ink-letter[data-ink='dry'] {
-  font-weight: 400;
-  color: rgb(8 36 169 / 0.32);
+  color: rgb(8 36 169 / 0.22);
+  filter: blur(1.6px);
 }
 
 .project-card[data-state='idle'] .ink-letter {
-  font-weight: 400;
-  color: rgb(8 36 169 / 0.2);
+  color: rgb(8 36 169 / 0.18);
+  filter: none;
 }
 
 .project-card[data-state='printing'] .ink-letter {
   transition:
-    font-weight 1.4s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.8s var(--ease-soft);
+    filter 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.9s var(--ease-soft);
   transition-delay: calc(var(--card-delay, 0s) + 0.45s + var(--i) * 0.09s);
 }
 
@@ -881,19 +889,19 @@
 @keyframes ink-wet {
   0%,
   8% {
-    font-weight: 560;
     color: rgb(8 36 169 / 0.46);
+    filter: blur(0.9px);
     animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
   }
   50% {
-    font-weight: 760;
-    color: rgb(8 36 169 / 0.76);
+    color: rgb(8 36 169 / 0.8);
+    filter: blur(0);
     animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
   }
   92%,
   100% {
-    font-weight: 560;
     color: rgb(8 36 169 / 0.46);
+    filter: blur(0.9px);
   }
 }
 
