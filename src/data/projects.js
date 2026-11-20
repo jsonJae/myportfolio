@@ -23,6 +23,8 @@ import optumLanding from '../assets/projects/optum-landing.jpg';
 //            pill, presses the name only part way, and, until images arrive,
 //            shows a proof still on the press instead of the image placeholder
 //   live     'https://...'  optional; omit when there is no live build
+//   figma    'https://www.figma.com/...'  for a design-only concept; links the
+//            file and, with no GitHub link, shows no pending code placeholder
 //   details  ['One highlight per line.', ...] or null while pending
 //
 // Until a field is filled, the card and sheet show a marked placeholder.
@@ -143,17 +145,28 @@ export const projects = [
         ],
     },
     {
+        // A hackathon proof of concept: designed in Figma and never built, so
+        // it links the Figma file and has no code to wait for. Facts come from
+        // the team's concept doc and YSES' post on the award (December 2025).
         id: 'sipat',
         name: 'SIPAT',
-        subtitle: 'Ang Resibo ng Bayan',
+        subtitle: 'Resibo ng Bayan',
         org: 'Hack the Flood',
         award: 'Most Innovative',
         summary:
-            'An offline-first, privacy-preserving mobile app that gamifies auditing government infrastructure, matching contract promises against geotagged community photos.',
-        tags: ['Flutter', 'Hive', 'Civic Tech'],
+            'A proof-of-concept mobile app, designed in Figma, that gamifies auditing government infrastructure by matching contract promises against geotagged community photos. Offline-first and privacy-preserving.',
+        tags: ['Figma', 'Civic Tech', 'Proof of Concept'],
         images: [],
+        figma: 'https://www.figma.com/design/cNs5vnDoZM5tcnMBTq87mv/SIPAT?node-id=19-2508',
         github: null,
-        details: null,
+        details: [
+            "Co-created SIPAT with a team of three at Hack the Flood: Digital Rights Hackathon, where it won the Most Innovative award. It's a proof of concept: the app lives in Figma, not in code.",
+            "Built the concept around one check anyone can do: near a flood-control project, road, or bridge, the app puts the contract's specs beside the live camera and asks whether they match.",
+            'Planned it offline-first for remote barangays with no signal. Photos can only be taken in the app, within 500 m of the project, so every report comes from the site itself.',
+            'Designed for whistleblower safety: reporters appear under random aliases, a pin goes public only after three devices report it, and uploads post after a random 2 to 6 hour delay.',
+            "Kept the wording neutral, flagging a mismatch rather than corruption, and gave contractors a right to reply with their own evidence.",
+            'Let remote users review anonymized photos with a swipe, so a project is flagged only once enough people agree.',
+        ],
     },
     {
         // Still being built, so it stays last and shows a proof still on the

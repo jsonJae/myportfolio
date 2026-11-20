@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faFigma, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Globe, X, ZoomIn } from 'lucide-react';
 import { ProjectMedia, ProjectMeta, ProjectTitleText, StackMarks } from './ProjectParts';
 import ProjectProof from './ProjectProof';
@@ -71,9 +71,11 @@ function LinkPill({ href, icon, label, solid = false }) {
 }
 
 // Two links share one row at equal width; a lone link keeps its own width.
+// A Figma-only concept links its design and has no code to wait for.
 function Links({ project }) {
+    const pair = Boolean(project.live) || Boolean(project.figma && project.github);
     return (
-        <div className={project.live ? 'grid grid-cols-2 gap-2.5' : 'flex'}>
+        <div className={pair ? 'grid grid-cols-2 gap-2.5' : 'flex'}>
             {project.live && (
                 <LinkPill
                     solid
@@ -82,13 +84,21 @@ function Links({ project }) {
                     icon={<Globe size={14} strokeWidth={2} aria-hidden="true" />}
                 />
             )}
+            {project.figma && (
+                <LinkPill
+                    solid={!project.live}
+                    href={project.figma}
+                    label="Figma"
+                    icon={<FontAwesomeIcon icon={faFigma} aria-hidden="true" className="text-[14px]" />}
+                />
+            )}
             {project.github ? (
                 <LinkPill
                     href={project.github}
                     label="GitHub"
                     icon={<FontAwesomeIcon icon={faGithub} aria-hidden="true" className="text-[14px]" />}
                 />
-            ) : project.privateCode ? null : (
+            ) : project.privateCode || project.figma ? null : (
                 <span className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-primary/35 px-5 font-mono text-[12px] font-bold tracking-[0.03em] text-primary/60">
                     <FontAwesomeIcon icon={faGithub} aria-hidden="true" className="text-[14px]" />
                     GitHub link pending
