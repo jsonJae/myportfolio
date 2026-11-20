@@ -474,6 +474,419 @@
   }
 }
 
+/* Ongoing work: a proof still on the press (ProjectProof).
+   Two plates register exactly. The ink plate is printed up to --frontier and
+   the key plate shows the rest as unprinted keylines, so the cut runs straight
+   through chips and swatches the way a half-finished pass would. On entry the
+   brayer inks up to the frontier; after that it keeps working the edge,
+   pressing a little past it and lifting, in a loop that pauses off-screen
+   (data-run on the card). Everything inside is sized in cqw, so the card and
+   the detail spread show the same print at two sizes. */
+.proof {
+  --frontier: 61%;
+  --proof-press: 0.95s;
+  --proof-ease: cubic-bezier(0.6, 0, 0.3, 1);
+  --proof-delay: calc(var(--card-delay, 0s) + 0.1s);
+  --proof-loop: 5.2s;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: inline-size;
+  background-color: #fbfcfe;
+  font-family: var(--font-mono);
+}
+
+/* Print stock on the same 4-unit grid the proof documents. Drawn on a
+   pseudo-element so its cqw resolves against the proof itself. */
+.proof::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(8 36 169 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(8 36 169 / 0.045) 1px, transparent 1px);
+  background-size: 4cqw 4cqw;
+  background-position: -1px -1px;
+}
+
+.proof-plate {
+  position: absolute;
+  inset: 0;
+}
+
+.proof-sheet {
+  position: absolute;
+  inset: 5.5cqw 6.5cqw max(44px, 10.5cqw);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.proof-row {
+  display: grid;
+  grid-template-columns: 8.5cqw minmax(0, 1fr);
+  column-gap: 2cqw;
+  align-items: end;
+}
+
+.proof-label {
+  padding-bottom: 0.25cqw;
+  font-size: 1.2cqw;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.proof-note,
+.proof-name {
+  display: block;
+  font-size: 1.15cqw;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.proof-swatches {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1.3cqw;
+}
+
+.proof-swatch {
+  display: block;
+  height: 6.2cqw;
+  margin-bottom: 0.6cqw;
+  border: 1px solid transparent;
+  border-radius: 0.8cqw;
+}
+
+.proof-chips {
+  display: flex;
+  gap: 0.9cqw;
+}
+
+.proof-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6cqw;
+  height: 3.3cqw;
+  padding: 0 1.1cqw;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 1.4cqw;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.proof-chip::before {
+  content: '';
+  width: 0.75cqw;
+  height: 0.75cqw;
+  border-radius: 9999px;
+}
+
+.proof-type {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.6cqw;
+}
+
+.proof-glyph {
+  display: block;
+  margin-bottom: 0.5cqw;
+  font-size: calc(var(--px) * 0.165cqw);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.proof-space {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5cqw;
+}
+
+.proof-bar {
+  display: block;
+  width: calc(var(--px) * 0.27cqw);
+  height: 1.8cqw;
+  margin-bottom: 0.5cqw;
+  border: 1px solid transparent;
+  border-radius: 0.3cqw;
+}
+
+/* Ink plate: the YSEIS palette, printed. */
+.proof-plate[data-plate='ink'] {
+  color: #5b6370;
+  clip-path: inset(0 calc(100% - var(--frontier)) 0 0);
+}
+
+[data-plate='ink'] .proof-swatch {
+  background-color: var(--c);
+  border-color: rgb(31 35 41 / 0.08);
+}
+
+[data-plate='ink'] .proof-name,
+[data-plate='ink'] .proof-glyph {
+  color: #1f2329;
+}
+
+[data-plate='ink'] .proof-chip {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+[data-plate='ink'] .proof-chip::before {
+  background-color: var(--fg);
+}
+
+[data-plate='ink'] .proof-bar {
+  background-color: #1f6fa3;
+}
+
+/* Key plate: the same layout as keylines, not yet inked. */
+.proof-plate[data-plate='key'] {
+  color: rgb(8 36 169 / 0.36);
+  clip-path: inset(0 0 0 var(--frontier));
+}
+
+[data-plate='key'] .proof-swatch,
+[data-plate='key'] .proof-bar,
+[data-plate='key'] .proof-chip {
+  border: 1px dashed rgb(8 36 169 / 0.3);
+}
+
+[data-plate='key'] .proof-chip::before {
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+[data-plate='key'] .proof-glyph {
+  color: transparent;
+  -webkit-text-stroke: max(0.5px, 0.05cqw) rgb(8 36 169 / 0.42);
+}
+
+/* Ink builds up where the brayer keeps stopping. */
+.proof-edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--frontier);
+  width: 3cqw;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgb(8 36 169 / 0) 0%,
+    rgb(8 36 169 / 0.04) 55%,
+    rgb(8 36 169 / 0.13) 96%,
+    rgb(8 36 169 / 0.3) 100%
+  );
+  transition: opacity 0.6s var(--ease-soft);
+}
+
+.proof-roller {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(calc(var(--frontier) - 100%));
+}
+
+.proof-slug {
+  position: absolute;
+  right: 6.5cqw;
+  bottom: max(20px, 3.6cqw);
+  left: 6.5cqw;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqw;
+  font-size: max(9px, 1.3cqw);
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(8 36 169 / 0.62);
+}
+
+.proof-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.proof-dot {
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 9999px;
+  background-color: currentColor;
+}
+
+/* Before the card is in view: keylines only. */
+.proof[data-state='idle'] [data-plate='ink'] {
+  clip-path: inset(0 100% 0 0);
+}
+
+.proof[data-state='idle'] [data-plate='key'] {
+  clip-path: inset(0 0 0 0);
+}
+
+.proof[data-state='idle'] .proof-edge,
+.proof[data-state='printing'] .proof-edge {
+  opacity: 0;
+}
+
+.proof[data-state='printing'] [data-plate='ink'] {
+  animation: proof-ink var(--proof-press) var(--proof-ease) var(--proof-delay) both;
+}
+
+.proof[data-state='printing'] [data-plate='key'] {
+  animation: proof-key var(--proof-press) var(--proof-ease) var(--proof-delay) both;
+}
+
+.proof[data-state='printing'] .proof-roller {
+  animation: proof-roll-in var(--proof-press) var(--proof-ease) var(--proof-delay) both;
+}
+
+.proof[data-state='live'] .proof-roller {
+  animation: proof-work var(--proof-loop) 0.4s infinite;
+}
+
+@keyframes proof-ink {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes proof-key {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes proof-roll-in {
+  0% {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(calc(var(--frontier) - 100%));
+  }
+}
+
+/* One stroke from a quarter-sheet back, a press just past the edge, a lift,
+   then a rest before the next stroke. */
+@keyframes proof-work {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(var(--frontier) - 128%));
+    animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  9% {
+    opacity: 1;
+  }
+  46% {
+    opacity: 1;
+    transform: translateX(calc(var(--frontier) - 99%));
+  }
+  58%,
+  100% {
+    opacity: 0;
+    transform: translateX(calc(var(--frontier) - 99%));
+  }
+}
+
+/* The ongoing name (PressingName in ProjectParts): full letters inherit
+   .ink-title; the wet one presses in time with the proof's brayer. */
+.ink-letter[data-ink='wet'] {
+  font-weight: 560;
+  color: rgb(8 36 169 / 0.46);
+}
+
+.ink-letter[data-ink='dry'] {
+  font-weight: 400;
+  color: rgb(8 36 169 / 0.32);
+}
+
+.project-card[data-state='idle'] .ink-letter {
+  font-weight: 400;
+  color: rgb(8 36 169 / 0.2);
+}
+
+.project-card[data-state='printing'] .ink-letter {
+  transition:
+    font-weight 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.8s var(--ease-soft);
+  transition-delay: calc(var(--card-delay, 0s) + 0.45s + var(--i) * 0.09s);
+}
+
+.project-card[data-state='live'] .ink-letter[data-ink='wet'],
+.project-sheet .ink-letter[data-ink='wet'] {
+  animation: ink-wet 5.2s 0.4s infinite;
+}
+
+@keyframes ink-wet {
+  0%,
+  8% {
+    font-weight: 560;
+    color: rgb(8 36 169 / 0.46);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  50% {
+    font-weight: 760;
+    color: rgb(8 36 169 / 0.76);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  92%,
+  100% {
+    font-weight: 560;
+    color: rgb(8 36 169 / 0.46);
+  }
+}
+
+/* The "Ongoing" pill's dot. */
+.ongoing-dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--color-primary);
+}
+
+.ongoing-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: var(--color-primary);
+  animation: ongoing-ping 2.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ongoing-ping {
+  from {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  70%,
+  to {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+[data-run='false'] .proof-roller,
+[data-run='false'] .ink-letter,
+[data-run='false'] .ongoing-dot::after {
+  animation-play-state: paused;
+}
+
 /* Scrolling text fades out at its edges. The bottom fade is always on; the
    top one turns on once the reader has scrolled (data-scrolled, set in
    ProjectSheet). On desktop the text page scrolls in a band that starts below
@@ -591,8 +1004,17 @@
 
 @media (prefers-reduced-motion: reduce) {
   .press-roller,
-  .turn-roller {
+  .turn-roller,
+  .proof-roller {
     display: none;
+  }
+
+  /* The proof rests half printed, the name part pressed. */
+  .proof [data-plate],
+  .ink-letter,
+  .ongoing-dot::after {
+    animation: none !important;
+    transition: none !important;
   }
 
   [data-turn],

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Globe, X, ZoomIn } from 'lucide-react';
 import { ProjectMedia, ProjectMeta, ProjectTitleText, StackMarks } from './ProjectParts';
+import ProjectProof from './ProjectProof';
 
 const morph = { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 };
 const ease = [0.16, 1, 0.3, 1];
@@ -210,6 +211,8 @@ function Viewer({ project, view, onStep, onGo, onSettled }) {
                                 </div>
                             );
                         })
+                    ) : project.ongoing ? (
+                        <ProjectProof />
                     ) : (
                         <ProjectMedia label="Project images" plain />
                     )}
@@ -254,6 +257,11 @@ function Viewer({ project, view, onStep, onGo, onSettled }) {
                             </div>
                         )}
                     </div>
+                ) : project.ongoing ? (
+                    <p className="mt-5 font-mono text-[11.5px] leading-[1.65] text-ink-soft text-pretty">
+                        The screens are still being built. Until they land, this proof prints the tokens I set
+                        up for them: brand colors, item statuses, the type scale, and the 4px grid.
+                    </p>
                 ) : (
                     <div className="mt-5">
                         <Placeholder>Screenshots of the project go here.</Placeholder>
@@ -391,7 +399,7 @@ export default function ProjectSheet({ project, onClose }) {
                     const dialog = event.currentTarget;
                     if (event.pointerType === 'mouse' && dialog.dataset.mouse !== 'true') dialog.dataset.mouse = 'true';
                 }}
-                className="relative flex max-h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden bg-white shadow-[0_40px_100px_-30px_rgba(8,36,169,0.55)] sm:max-h-[calc(100dvh-2rem)] sm:max-w-2xl lg:max-h-[calc(100dvh-3rem)] lg:w-[min(1240px,calc(100vw-3rem))] lg:max-w-none"
+                className="project-sheet relative flex max-h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden bg-white shadow-[0_40px_100px_-30px_rgba(8,36,169,0.55)] sm:max-h-[calc(100dvh-2rem)] sm:max-w-2xl lg:max-h-[calc(100dvh-3rem)] lg:w-[min(1240px,calc(100vw-3rem))] lg:max-w-none"
             >
                 {/* Phones and tablets scroll the whole sheet; desktop opens it as a
                     spread, where the print stays put and only the text page scrolls. */}
@@ -443,7 +451,8 @@ export default function ProjectSheet({ project, onClose }) {
                                             id={`${titleId}-did`}
                                             className="font-display text-[28px] font-black leading-none tracking-[-0.03em] text-primary"
                                         >
-                                            <span className="font-normal italic">what</span> I did.
+                                            <span className="font-normal italic">what</span>{' '}
+                                            {project.ongoing ? "I've done so far." : 'I did.'}
                                         </h4>
                                         {project.details ? (
                                             <ul className="mt-4 divide-y divide-black/[0.07] border-y border-black/[0.07]">

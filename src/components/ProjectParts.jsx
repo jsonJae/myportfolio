@@ -86,10 +86,42 @@ export function ProjectMedia({ image, label = 'Project image', compact = false, 
     );
 }
 
+// An ongoing project's name is pressed only part way: the splash's ink-fill,
+// where weight is the progress bar, stopped mid-run. The first 60% of the
+// letters are at full ink, the next one is wet and keeps pressing in time
+// with the brayer on the proof, and the rest are still hairlines.
+const PRESSED = 0.6;
+
+function PressingName({ name }) {
+    const letters = [...name];
+    const pressed = Math.floor(letters.length * PRESSED);
+    return (
+        <span className="ink-title block whitespace-nowrap">
+            <span className="sr-only">{name}</span>
+            <span aria-hidden="true">
+                {letters.map((letter, index) => (
+                    <span
+                        key={index}
+                        className="ink-letter"
+                        data-ink={index < pressed ? 'full' : index === pressed ? 'wet' : 'dry'}
+                        style={{ '--i': index }}
+                    >
+                        {letter}
+                    </span>
+                ))}
+            </span>
+        </span>
+    );
+}
+
 export function ProjectTitleText({ project }) {
     return (
         <>
-            <span className="ink-title block whitespace-nowrap">{project.name}</span>
+            {project.ongoing ? (
+                <PressingName name={project.name} />
+            ) : (
+                <span className="ink-title block whitespace-nowrap">{project.name}</span>
+            )}
             {project.subtitle && (
                 <>
                     <span className="sr-only">: </span>
@@ -116,6 +148,17 @@ export function ProjectMeta({ project, className = '' }) {
                 </span>
             ) : (
                 <span>{project.role}</span>
+            )}
+            {project.ongoing && (
+                <>
+                    <span aria-hidden="true" className="text-black/25">
+                        ·
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-white py-[3px] pl-2 pr-2.5 font-medium text-primary">
+                        <span aria-hidden="true" className="ongoing-dot" />
+                        Ongoing
+                    </span>
+                </>
             )}
         </p>
     );

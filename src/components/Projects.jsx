@@ -4,6 +4,7 @@ import { AnimatePresence, MotionConfig, motion, useInView, useReducedMotion } fr
 import { Plus } from 'lucide-react';
 import Reveal from './Reveal';
 import ProjectSheet from './ProjectSheet';
+import ProjectProof from './ProjectProof';
 import { ProjectMedia, ProjectMeta, ProjectTitleText, StackMarks } from './ProjectParts';
 import { projects } from '../data/projects';
 
@@ -15,14 +16,17 @@ const morph = { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 };
 // Printing runs this long after a card enters view; then it settles.
 const PRINT_SECONDS = 2.6;
 
-function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
+function ProjectCard({ project, state, run, delay, onOpen, ghost = false }) {
     const id = (part) => (ghost ? undefined : `project-${part}${project.id}`);
+    // Ongoing work with no screenshots yet prints its own proof instead.
+    const proof = project.ongoing && !project.images.length;
 
     return (
         <motion.article
             layoutId={id('')}
             transition={{ layout: morph }}
             data-state={state}
+            data-run={run ? 'true' : 'false'}
             aria-hidden={ghost || undefined}
             inert={ghost || undefined}
             style={{ borderRadius: 24, '--card-delay': `${delay}s` }}
@@ -36,12 +40,16 @@ function ProjectCard({ project, state, delay, onOpen, ghost = false }) {
                 style={{ borderRadius: 0 }}
                 className="relative aspect-video overflow-hidden border-b border-primary/10"
             >
-                <div className="press-print absolute inset-0 transition-transform duration-700 ease-soft group-hover/card:scale-[1.03]">
-                    <ProjectMedia image={project.images[0]} />
+                <div
+                    className={`${proof ? '' : 'press-print '}absolute inset-0 transition-transform duration-700 ease-soft group-hover/card:scale-[1.03]`}
+                >
+                    {proof ? <ProjectProof state={state} /> : <ProjectMedia image={project.images[0]} />}
                 </div>
-                <span className="press-roller">
-                    <span className="press-brayer" />
-                </span>
+                {!proof && (
+                    <span className="press-roller">
+                        <span className="press-brayer" />
+                    </span>
+                )}
             </motion.div>
 
             <div className="flex flex-1 flex-col px-6 pb-6 pt-7 md:px-8 md:pb-7 md:pt-8">
@@ -100,6 +108,8 @@ function ProjectItem({ project, index, open, onOpen }) {
     const reduced = useReducedMotion();
     const ref = useRef(null);
     const inView = useInView(ref, { once: true, amount: 0.3 });
+    // Looping press work (an ongoing proof) pauses while the card is off-screen.
+    const onScreen = useInView(ref);
     const [settled, setSettled] = useState(false);
     const delay = (index % 2) * 0.14;
 
@@ -122,6 +132,7 @@ function ProjectItem({ project, index, open, onOpen }) {
                 ghost={open}
                 project={project}
                 state={state}
+                run={onScreen}
                 delay={delay}
                 onOpen={onOpen}
             />

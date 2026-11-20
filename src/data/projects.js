@@ -17,8 +17,11 @@ import optumLanding from '../assets/projects/optum-landing.jpg';
 //   images   [{ src, alt }]  first one is the cover; 16:9 crops best. Import
 //                            files from src/assets so Vite fingerprints them.
 //   github   'https://github.com/jsonJae/...'  or null while pending
-//   privateCode  true for client work whose code is never linked; shows no
-//                code link at all instead of the pending placeholder
+//   privateCode  true for client or org work whose code is never linked;
+//                shows no code link at all instead of the pending placeholder
+//   ongoing  true while the project is still being built: adds an "Ongoing"
+//            pill, presses the name only part way, and, until images arrive,
+//            shows a proof still on the press instead of the image placeholder
 //   live     'https://...'  optional; omit when there is no live build
 //   details  ['One highlight per line.', ...] or null while pending
 //
@@ -140,18 +143,6 @@ export const projects = [
         ],
     },
     {
-        id: 'yseis',
-        name: 'YSEIS',
-        org: 'YSES',
-        role: 'Frontend Lead',
-        summary:
-            "Leading the frontend team of YSES' Inventory System, a platform that digitizes how the organization tracks and manages its equipment and supplies.",
-        tags: ['Frontend Lead', 'Inventory System', 'YSES'],
-        images: [],
-        github: null,
-        details: null,
-    },
-    {
         id: 'sipat',
         name: 'SIPAT',
         subtitle: 'Ang Resibo ng Bayan',
@@ -163,5 +154,30 @@ export const projects = [
         images: [],
         github: null,
         details: null,
+    },
+    {
+        // Still being built, so it stays last and shows a proof still on the
+        // press instead of screenshots (see ProjectProof). The repo belongs to
+        // the YSES org and is private: never link it. Facts come from the
+        // YSEIS v2 repo; the proof prints its real tokens from frontend/src/app.css.
+        id: 'yseis',
+        name: 'YSEIS',
+        org: 'YSES',
+        role: 'Frontend Lead',
+        ongoing: true,
+        summary:
+            "Leading the frontend of YSES' new inventory system, still in development, which will run equipment lending, event assets, and borrowing approvals for the org's Executive and Visuals & Logistics departments.",
+        tags: ['SvelteKit', 'Tailwind CSS', 'TypeScript'],
+        images: [],
+        github: null,
+        privateCode: true,
+        details: [
+            'Leading the frontend team on YSEIS v2, a pnpm monorepo with a SvelteKit and Svelte 5 frontend, a SvelteKit API on Neon Postgres, and Zod contracts shared by both.',
+            'Set up Tailwind CSS 4 and turned the YSEIS design system into tokens: the brand blues, six item statuses from available to removed, a 4px spacing grid, radii, and a type scale.',
+            'Wrote the design rules every screen follows, for teammates and AI coding agents alike: 44px tap targets, one focus ring, Lucide icons, and short sentence-case copy.',
+            "Scaffolded the UI, layout, and feedback component folders, a token showcase page, and the frontend's Vitest suite with an 80% coverage gate.",
+            "Fixed a SvelteKit SSR error in the tests by giving each workspace its own test runner.",
+            'Next up: the member and admin screens, built on these tokens.',
+        ],
     },
 ];
