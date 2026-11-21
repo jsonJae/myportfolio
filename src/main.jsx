@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { flushSync } from 'react-dom'
+import { Analytics } from '@vercel/analytics/react'
 import './index.css'
 import App from './App.jsx'
 import { getSplash } from './utils/splash'
@@ -15,6 +16,7 @@ const mount = () =>
     root.render(
       <StrictMode>
         <App />
+        <Analytics />
       </StrictMode>,
     )
   })
