@@ -47,6 +47,10 @@ typography:
     fontSize: "10px"
     fontWeight: 500
     letterSpacing: "0.16em"
+  compose-tools:
+    fontFamily: "Geist, sans-serif"
+    fontSize: "12px - 17px"
+    fontWeight: "500 - 700"
 rounded:
   pill: "9999px"
   card: "24px"
@@ -94,6 +98,8 @@ A focused, restrained palette where Fog Paper carries the page and Ultramarine c
 ## Typography
 
 **Two-Typeface System**: Instrument Serif (SIL Open Font License, self-hosted as `InstrumentSerif-Regular.woff2` and `InstrumentSerif-Italic.woff2`) for all display headings and heroic scales; Geist Mono for body text, controls, and metadata. Instrument Serif has one weight, roman and italic, so display type never uses weight utilities (`font-semibold`, `font-black`): `.font-display` pins weight 400 and turns off `font-synthesis`, so a stray weight class can never fake a bold. Hierarchy comes from size and from pairing an italic word with a roman one. Because the face is narrow and light, display sizes run a step larger than a heavy didone would.
+
+**One scoped exception**: Geist (sans, the sibling of Geist Mono; self-hosted latin files `Geist-Variable.woff2` and `Geist-Italic-Variable.woff2`) sets the compose window's formatting tools only: the B / I / U glyphs, their tooltips and the link field. It appears nowhere else, so the browser fetches it only when that window opens.
 
 ### Hierarchy
 1. **Hero & Name Display** (Instrument Serif italic, `clamp(6rem, 27vw, 21rem)`, tracking `-0.02em`, leading 0.86):
@@ -198,6 +204,7 @@ The last screen closes the hero's ridgelines and the site's print theme in one s
 - **Arriving** (`p` ≥ 0.985, released below 0.9), in turn: the sorts press and leave their prints, the glyph the right way round in a 20% Fog Paper wash; the postmark (Fog Paper ink, a double ring reading "MUNTINLUPA · PH", the coordinates and today's date, wavy cancel lines drawn like the ridges and a rubber-stamp ink filter) slams down beside the copy, or at the bottom left below lg; a map pin drops onto the compass centre with a ripple over the contours; the plane loops once and settles; "Jason." fills with a 9% Fog Paper wash; a ring pings twice where the trail meets the button; and the envelope's two back-flap seams draw in behind the name.
 - **Pointer**: with a mouse, the sorts, contours, compass and name shift a few pixels against the pointer on a soft spring, nearer layers more, and the sorts tilt slightly.
 - **Controls on ink**: the compose pill is white with Ultramarine type, so it grows into the white compose window without a colour change. The email pill and link pills are outlined in Fog Paper at 15–30%; the links wipe to Fog Paper with Ultramarine type on hover, and focus rings are Fog Paper with an Ultramarine offset. Text selected on the ink highlights in Fog Paper.
+- **Compose window** (`src/components/ComposeWindow.jsx`): a white 24px-radius window (640px, or 5xl when expanded) under a 56px Ultramarine title bar reading "New message" with a dot and "Goes straight to my inbox" in white at 70% (it truncates on narrow phones). The envelope rows (To, From, Reply to, Subject) share a 4.5rem mono label column and 48px lines with hairlines between; a field's error sits under that field in red with a small alert icon, and only the message and send errors sit above the action bar. A hairline opens the action bar: from sm it is one row, with the formatting tools on the left and discard and Send on the right; phones stack the tools (spread across the width) over discard and Send, in the same focus order. The tools are 36px marks in a 44px hit area: B, I and U are drawn in Geist as the style itself, lists, link and clear formatting are Lucide icons. Hover is Fog Paper with ink, pressed is a 10% Ultramarine wash with Ultramarine ink. Each tool has an ink tooltip in Geist 12px with its shortcut at 55% white (Ctrl or ⌘ + B, I, U, K, \), shown after 300ms on hover and at once on keyboard focus; the first and last tooltips align to their edge so the window never clips them. The link field replaces the tools in place as a Fog Paper field in Geist with Cancel and a solid Apply. Send keeps the site's mono pill and carries its shortcut inside, after a hairline (sm and up). Inputs and the editor use an Ultramarine caret.
 - **Reduced motion**: the finished scene with nothing moving: flooded, in register, contours drawn, compass on north with the pin down, sorts placed with their prints, the plane parked, the postmark down, the seams drawn and the name filled. The airmail stripes stand still.
 
 ---
@@ -229,5 +236,5 @@ The last screen closes the hero's ridgelines and the site's print theme in one s
 ### Don't:
 - **Don't** use heavy neumorphic dual-shadows, sunken clay insets, or extruded mud effects.
 - **Don't** use hard sheet dividers that chop the scroll experience into disjointed cards.
-- **Don't** mix fonts outside the serif (display) + mono (utility) pairing.
+- **Don't** mix fonts outside the serif (display) + mono (utility) pairing. The one exception is Geist sans on the compose window's formatting tools; don't spread it further.
 - **Don't** clip text ascenders/descenders by applying tight `overflow-hidden` wrappers without generous padding.

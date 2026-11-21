@@ -1,9 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-    Bold,
     CircleAlert,
-    Italic,
+    CornerDownLeft,
     Link2,
     List,
     ListOrdered,
@@ -12,24 +11,44 @@ import {
     RemoveFormatting,
     Send,
     Trash2,
-    Underline,
     X,
 } from 'lucide-react';
 import { CONTACT_EMAIL, CONTACT_NAME, EMAIL_PATTERN, htmlToText, sendMessage } from '../utils/sendMessage';
 
 const morph = { type: 'spring', stiffness: 260, damping: 32, mass: 0.9 };
 
+const IS_MAC =
+    typeof navigator !== 'undefined' &&
+    /Mac|iPhone|iPad/.test(navigator.userAgentData?.platform || navigator.platform || '');
+const MOD_LABEL = IS_MAC ? '⌘' : 'Ctrl';
+const MOD_ARIA = IS_MAC ? 'Meta' : 'Control';
+
+// The styling tools are set in Geist, the sans sibling of the site's mono.
+// B, I and U show the style itself; the rest are drawn icons.
+const glyph = 'font-sans text-[17px] leading-none';
+
 const TOOLS = [
-    { id: 'bold', label: 'Bold (Ctrl+B)', Icon: Bold, command: 'bold' },
-    { id: 'italic', label: 'Italic (Ctrl+I)', Icon: Italic, command: 'italic' },
-    { id: 'underline', label: 'Underline (Ctrl+U)', Icon: Underline, command: 'underline' },
+    { id: 'bold', label: 'Bold', key: 'B', command: 'bold', mark: <span className={`${glyph} font-bold`}>B</span> },
+    { id: 'italic', label: 'Italic', key: 'I', command: 'italic', mark: <span className={`${glyph} font-medium italic`}>I</span> },
+    {
+        id: 'underline',
+        label: 'Underline',
+        key: 'U',
+        command: 'underline',
+        mark: (
+            <span className={`${glyph} font-medium underline decoration-[1.5px] underline-offset-[3px]`}>U</span>
+        ),
+    },
     null,
-    { id: 'ul', label: 'Bulleted list', Icon: List, command: 'insertUnorderedList' },
-    { id: 'ol', label: 'Numbered list', Icon: ListOrdered, command: 'insertOrderedList' },
+    { id: 'ul', label: 'Bulleted list', command: 'insertUnorderedList', Icon: List },
+    { id: 'ol', label: 'Numbered list', command: 'insertOrderedList', Icon: ListOrdered },
     null,
-    { id: 'link', label: 'Insert link', Icon: Link2, command: 'link' },
-    { id: 'clear', label: 'Clear formatting', Icon: RemoveFormatting, command: 'removeFormat' },
+    { id: 'link', label: 'Link', key: 'K', command: 'link', Icon: Link2 },
+    { id: 'clear', label: 'Clear formatting', key: '\\', command: 'removeFormat', Icon: RemoveFormatting },
 ];
+
+const FIRST_TOOL = TOOLS.findIndex(Boolean);
+const LAST_TOOL = TOOLS.findLastIndex(Boolean);
 
 const STATEFUL = ['bold', 'italic', 'underline', 'insertUnorderedList', 'insertOrderedList'];
 
@@ -47,26 +66,51 @@ function normalizeUrl(raw) {
     return `https://${url}`;
 }
 
-function Row({ label, htmlFor, invalid, children }) {
+// One envelope line: label, field, and the field's own error right under it.
+function Row({ label, htmlFor, error, children }) {
+    const invalid = Boolean(error);
     return (
         <div
-            className={`flex min-h-12 items-center gap-3 border-b px-5 transition-colors duration-300 ease-soft focus-within:bg-primary/[0.03] ${
+            className={`grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-3 border-b px-5 transition-colors duration-300 ease-soft focus-within:bg-primary/[0.03] ${
                 invalid ? 'border-[#B42318]/30 bg-[#B42318]/[0.03]' : 'border-black/[0.06]'
             }`}
         >
             <label
                 htmlFor={htmlFor}
-                className={`w-[4.5rem] shrink-0 whitespace-nowrap font-mono text-[12px] ${invalid ? 'text-[#B42318]' : 'text-muted'}`}
+                className={`flex h-12 items-center whitespace-nowrap font-mono text-[12px] ${invalid ? 'text-[#B42318]' : 'text-muted'}`}
             >
                 {label}
             </label>
             {children}
+            {invalid && (
+                <p
+                    id={`${htmlFor}-error`}
+                    className="col-start-2 -mt-2 flex items-start gap-1.5 pb-2.5 font-mono text-[12px] leading-[1.5] text-[#B42318]"
+                >
+                    <CircleAlert size={13} strokeWidth={2} aria-hidden="true" className="mt-[2px] shrink-0" />
+                    {error}
+                </p>
+            )}
         </div>
     );
 }
 
 const inputClass =
-    'h-11 min-w-0 flex-1 bg-transparent font-body text-[14px] text-ink placeholder:text-muted focus:outline-none';
+    'h-12 min-w-0 w-full bg-transparent font-body text-[14px] text-ink caret-primary placeholder:text-muted focus:outline-none';
+
+function ToolTip({ label, shortcut, align }) {
+    const place =
+        align === 'start' ? 'left-0' : align === 'end' ? 'right-0' : 'left-1/2 -translate-x-1/2';
+    return (
+        <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute bottom-[calc(100%+2px)] z-10 flex translate-y-1 items-center gap-2 whitespace-nowrap rounded-lg bg-ink px-2.5 py-1.5 font-sans text-[12px] font-medium leading-none text-white opacity-0 shadow-[0_8px_18px_-8px_rgba(0,0,0,0.45)] transition-[opacity,translate] duration-150 ease-soft group-hover/tool:translate-y-0 group-hover/tool:opacity-100 group-hover/tool:delay-300 group-focus-visible/tool:translate-y-0 group-focus-visible/tool:opacity-100 ${place}`}
+        >
+            {label}
+            {shortcut && <span className="text-white/55">{shortcut}</span>}
+        </span>
+    );
+}
 
 export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onSent }) {
     const [expanded, setExpanded] = useState(false);
@@ -225,6 +269,17 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
             send();
             return;
         }
+        // Link and clear formatting get the shortcuts mail apps use; bold,
+        // italic and underline are handled by the editor itself.
+        const mod = IS_MAC ? event.metaKey : event.ctrlKey;
+        if (mod && !event.altKey && editorRef.current?.contains(event.target)) {
+            const key = event.key.toLowerCase();
+            if (key === 'k' || key === '\\') {
+                event.preventDefault();
+                run(key === 'k' ? 'link' : 'removeFormat');
+                return;
+            }
+        }
         // Keep Tab inside the window while it is open.
         if (event.key === 'Tab') {
             const nodes = [...dialogRef.current.querySelectorAll(FOCUSABLE)].filter(
@@ -243,7 +298,8 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
         }
     };
 
-    const messages = [errors.name, errors.email, errors.message, errors.send].filter(Boolean);
+    // Field errors sit under their own fields; only these two live by the actions.
+    const messages = [errors.message, errors.send].filter(Boolean);
 
     return (
         <div className="fixed inset-0 z-[70] flex items-stretch justify-center p-2 sm:items-center sm:p-6">
@@ -262,6 +318,7 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="compose-title"
+                aria-describedby="compose-note"
                 layoutId="compose"
                 transition={{ layout: morph }}
                 style={{ borderRadius: 24 }}
@@ -278,11 +335,17 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                     animate={{ opacity: 1, transition: { delay: 0.16, duration: 0.25 } }}
                     exit={{ opacity: 0, transition: { duration: 0.08 } }}
                 >
-                    <div className="flex h-14 shrink-0 items-center justify-between bg-primary pl-5 pr-2 text-white">
-                        <h3 id="compose-title" className="font-mono text-[13px] font-bold tracking-[0.03em]">
-                            New message
-                        </h3>
-                        <div className="flex items-center">
+                    <div className="flex h-14 shrink-0 items-center justify-between gap-3 bg-primary pl-5 pr-2 text-white">
+                        <div className="flex min-w-0 items-center gap-2.5">
+                            <h3 id="compose-title" className="shrink-0 font-mono text-[13px] font-bold tracking-[0.03em]">
+                                New message
+                            </h3>
+                            <span aria-hidden="true" className="size-1 shrink-0 rounded-full bg-white/40" />
+                            <span id="compose-note" className="truncate font-mono text-[11px] text-white/70">
+                                Goes straight to my inbox
+                            </span>
+                        </div>
+                        <div className="flex shrink-0 items-center">
                             <button
                                 type="button"
                                 onClick={() => setExpanded((value) => !value)}
@@ -324,7 +387,7 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                         </span>
                     </div>
 
-                    <Row label="From" htmlFor="compose-name" invalid={Boolean(errors.name)}>
+                    <Row label="From" htmlFor="compose-name" error={errors.name}>
                         <input
                             ref={nameRef}
                             id="compose-name"
@@ -334,10 +397,11 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                             value={draft.name}
                             onChange={setField('name')}
                             aria-invalid={Boolean(errors.name)}
+                            aria-describedby={errors.name ? 'compose-name-error' : undefined}
                             className={inputClass}
                         />
                     </Row>
-                    <Row label="Reply to" htmlFor="compose-email" invalid={Boolean(errors.email)}>
+                    <Row label="Reply to" htmlFor="compose-email" error={errors.email}>
                         <input
                             ref={emailRef}
                             id="compose-email"
@@ -347,6 +411,7 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                             value={draft.email}
                             onChange={setField('email')}
                             aria-invalid={Boolean(errors.email)}
+                            aria-describedby={errors.email ? 'compose-email-error' : undefined}
                             className={inputClass}
                         />
                     </Row>
@@ -400,118 +465,153 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                                 event.preventDefault();
                                 document.execCommand('insertText', false, event.clipboardData.getData('text/plain'));
                             }}
-                            className="compose-editor min-h-full px-5 py-4 font-body text-[14px] leading-[1.75] text-ink focus:outline-none"
+                            className="compose-editor min-h-full px-5 py-4 font-body text-[14px] leading-[1.75] text-ink caret-primary focus:outline-none"
                         />
                     </div>
 
                     {messages.length > 0 && (
                         <div
                             role="alert"
-                            className="mx-5 mb-2 flex items-start gap-2 font-mono text-[12px] leading-[1.6] text-[#B42318]"
+                            className="mx-5 mb-3 flex items-start gap-2 font-mono text-[12px] leading-[1.6] text-[#B42318]"
                         >
                             <CircleAlert size={14} strokeWidth={2} aria-hidden="true" className="mt-[3px] shrink-0" />
                             <span>{messages.join(' ')}</span>
                         </div>
                     )}
 
-                    <div
-                        role="toolbar"
-                        aria-label="Formatting"
-                        className="mx-3 mb-2 flex h-11 shrink-0 items-center gap-0.5 overflow-x-auto rounded-2xl bg-surface px-1"
-                    >
-                        {linkOpen ? (
-                            <form
-                                className="flex w-full items-center gap-2 pl-2"
-                                onSubmit={(event) => {
-                                    event.preventDefault();
-                                    applyLink();
-                                }}
-                            >
-                                <Link2 size={15} strokeWidth={2} aria-hidden="true" className="shrink-0 text-primary" />
-                                <input
-                                    ref={linkInputRef}
-                                    type="text"
-                                    inputMode="url"
-                                    aria-label="Link address"
-                                    placeholder="Paste or type a link"
-                                    value={linkUrl}
-                                    onChange={(event) => setLinkUrl(event.target.value)}
-                                    className="h-9 min-w-0 flex-1 bg-transparent font-mono text-[12px] text-ink placeholder:text-muted focus:outline-none"
-                                />
-                                <button
-                                    type="submit"
-                                    className="h-9 shrink-0 rounded-xl bg-primary px-3 font-mono text-[12px] font-bold text-white transition-colors duration-300 ease-soft hover:bg-primary-hover"
-                                >
-                                    Apply
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setLinkOpen(false);
-                                        restoreSelection();
+                    {/* The action bar. One row from sm: styling tools on the left,
+                        discard and Send on the right. Phones stack the tools over
+                        the actions, in the same (DOM and focus) order. */}
+                    <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 border-t border-black/[0.06] px-3 pb-3 pt-2 sm:flex-nowrap sm:pt-3">
+                        <div
+                            role="toolbar"
+                            aria-label="Formatting"
+                            className={`flex h-11 w-full min-w-0 items-center ${
+                                linkOpen ? 'sm:flex-1' : 'justify-between sm:w-auto sm:justify-start'
+                            }`}
+                        >
+                            {linkOpen ? (
+                                <form
+                                    className="flex h-10 w-full items-center gap-1.5 rounded-xl bg-surface pl-3 pr-1"
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        applyLink();
                                     }}
-                                    className="h-9 shrink-0 rounded-xl px-3 font-mono text-[12px] font-bold text-muted transition-colors duration-300 ease-soft hover:bg-white hover:text-ink"
                                 >
-                                    Cancel
-                                </button>
-                            </form>
-                        ) : (
-                            TOOLS.map((tool, index) => {
-                                if (!tool) {
-                                    return <span key={`gap-${index}`} aria-hidden="true" className="mx-1 h-5 w-px shrink-0 bg-black/10" />;
-                                }
-                                const ToolIcon = tool.Icon;
-                                const pressed = STATEFUL.includes(tool.command) ? Boolean(active[tool.command]) : undefined;
-                                return (
+                                    <Link2 size={15} strokeWidth={2} aria-hidden="true" className="shrink-0 text-primary" />
+                                    <input
+                                        ref={linkInputRef}
+                                        type="text"
+                                        inputMode="url"
+                                        aria-label="Link address"
+                                        placeholder="Paste or type a link"
+                                        value={linkUrl}
+                                        onChange={(event) => setLinkUrl(event.target.value)}
+                                        className="h-full min-w-0 flex-1 bg-transparent pl-1 font-sans text-[14px] text-ink caret-primary placeholder:text-muted focus:outline-none"
+                                    />
                                     <button
-                                        key={tool.id}
                                         type="button"
-                                        title={tool.label}
-                                        aria-label={tool.label}
-                                        aria-pressed={pressed}
-                                        onMouseDown={(event) => event.preventDefault()}
-                                        onClick={() => run(tool.command)}
-                                        className={`grid size-9 shrink-0 place-items-center rounded-xl transition-[background-color,color,box-shadow] duration-200 ease-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                                            pressed
-                                                ? 'bg-white text-primary shadow-[0_1px_3px_rgba(15,23,42,0.12)]'
-                                                : 'text-ink-soft hover:bg-white hover:text-primary'
-                                        }`}
+                                        onClick={() => {
+                                            setLinkOpen(false);
+                                            restoreSelection();
+                                        }}
+                                        className="h-8 shrink-0 rounded-lg px-2.5 font-sans text-[13px] font-medium text-muted transition-colors duration-200 ease-soft hover:bg-white hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                     >
-                                        <ToolIcon size={16} strokeWidth={2} aria-hidden="true" />
+                                        Cancel
                                     </button>
-                                );
-                            })
-                        )}
-                    </div>
+                                    <button
+                                        type="submit"
+                                        className="h-8 shrink-0 rounded-lg bg-primary px-3 font-sans text-[13px] font-semibold text-white transition-colors duration-200 ease-soft hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
+                                    >
+                                        Apply
+                                    </button>
+                                </form>
+                            ) : (
+                                TOOLS.map((tool, index) => {
+                                    if (!tool) {
+                                        return (
+                                            <span
+                                                key={`gap-${index}`}
+                                                aria-hidden="true"
+                                                className="mx-1 h-5 w-px shrink-0 bg-black/10"
+                                            />
+                                        );
+                                    }
+                                    const ToolIcon = tool.Icon;
+                                    const pressed = STATEFUL.includes(tool.command)
+                                        ? Boolean(active[tool.command])
+                                        : undefined;
+                                    const align =
+                                        index === FIRST_TOOL ? 'start' : index === LAST_TOOL ? 'end' : 'center';
+                                    return (
+                                        <button
+                                            key={tool.id}
+                                            type="button"
+                                            aria-label={tool.label}
+                                            aria-pressed={pressed}
+                                            aria-keyshortcuts={tool.key ? `${MOD_ARIA}+${tool.key}` : undefined}
+                                            onMouseDown={(event) => event.preventDefault()}
+                                            onClick={() => run(tool.command)}
+                                            className="group/tool relative grid h-11 w-10 min-w-8 shrink place-items-center focus-visible:outline-none"
+                                        >
+                                            <span
+                                                className={`grid size-9 place-items-center rounded-[10px] transition-[background-color,color] duration-200 ease-soft group-focus-visible/tool:ring-2 group-focus-visible/tool:ring-primary ${
+                                                    pressed
+                                                        ? 'bg-primary/10 text-primary'
+                                                        : 'text-ink-soft group-hover/tool:bg-surface group-hover/tool:text-ink'
+                                                }`}
+                                            >
+                                                {ToolIcon ? (
+                                                    <ToolIcon size={17} strokeWidth={1.9} aria-hidden="true" />
+                                                ) : (
+                                                    <span aria-hidden="true">{tool.mark}</span>
+                                                )}
+                                            </span>
+                                            <ToolTip
+                                                label={tool.label}
+                                                shortcut={tool.key ? `${MOD_LABEL} ${tool.key}` : null}
+                                                align={align}
+                                            />
+                                        </button>
+                                    );
+                                })
+                            )}
+                        </div>
 
-                    <div className="flex shrink-0 items-center gap-3 px-3 pb-3">
-                        <button
-                            type="button"
-                            onClick={send}
-                            disabled={sending}
-                            className="group inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-primary px-6 font-mono text-[13px] font-bold tracking-[0.03em] text-white shadow-[0_12px_28px_-14px_rgba(8,36,169,0.7)] transition-[transform,background-color] duration-300 ease-soft hover:-translate-y-0.5 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:translate-y-0 active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
-                        >
-                            {sending ? 'Sending…' : 'Send'}
-                            <Send
-                                size={14}
-                                strokeWidth={2}
-                                aria-hidden="true"
-                                className="transition-transform duration-300 ease-soft group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                            />
-                        </button>
-                        <span className="hidden font-mono text-[11px] text-muted md:inline">Ctrl + Enter</span>
-                        <span className="ml-auto truncate text-right font-mono text-[11px] text-muted">
-                            Goes straight to my inbox
-                        </span>
-                        <button
-                            type="button"
-                            onClick={onDiscard}
-                            aria-label="Discard draft"
-                            title="Discard draft"
-                            className="grid size-10 shrink-0 place-items-center rounded-full text-muted transition-colors duration-300 ease-soft hover:bg-[#B42318]/10 hover:text-[#B42318] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                        >
-                            <Trash2 size={17} strokeWidth={1.8} aria-hidden="true" />
-                        </button>
+                        <div className="flex w-full items-center justify-between gap-3 sm:ml-auto sm:w-auto sm:justify-end">
+                            <button
+                                type="button"
+                                onClick={onDiscard}
+                                aria-label="Discard draft"
+                                title="Discard draft"
+                                className="grid size-11 shrink-0 place-items-center rounded-full text-muted transition-colors duration-300 ease-soft hover:bg-[#B42318]/10 hover:text-[#B42318] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                            >
+                                <Trash2 size={17} strokeWidth={1.8} aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={send}
+                                disabled={sending}
+                                aria-keyshortcuts={`${MOD_ARIA}+Enter`}
+                                className="group inline-flex h-11 shrink-0 items-center gap-2.5 rounded-full bg-primary pl-6 pr-5 font-mono text-[13px] font-bold tracking-[0.03em] text-white shadow-[0_12px_28px_-14px_rgba(8,36,169,0.7)] transition-[transform,background-color] duration-300 ease-soft hover:-translate-y-0.5 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:translate-y-0 active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
+                            >
+                                {sending ? 'Sending…' : 'Send'}
+                                <Send
+                                    size={14}
+                                    strokeWidth={2}
+                                    aria-hidden="true"
+                                    className="transition-transform duration-300 ease-soft group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                                />
+                                {/* The shortcut rides in the button, where it can't be misread. */}
+                                <span
+                                    aria-hidden="true"
+                                    className="ml-0.5 hidden items-center gap-1 border-l border-white/25 pl-3 text-[11px] font-medium tracking-normal text-white/65 sm:inline-flex"
+                                >
+                                    {MOD_LABEL}
+                                    <CornerDownLeft size={12} strokeWidth={2} />
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </motion.div>
             </motion.div>
