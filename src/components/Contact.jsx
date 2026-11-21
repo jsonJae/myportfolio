@@ -298,7 +298,7 @@ export default function Contact() {
                                             >
                                                 <Check size={14} strokeWidth={3} aria-hidden="true" />
                                             </motion.span>
-                                            <span className="whitespace-nowrap">Mail app opened.</span>
+                                            <span className="whitespace-nowrap">Message sent.</span>
                                             <button
                                                 ref={triggerRef}
                                                 type="button"

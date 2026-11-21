@@ -52,24 +52,31 @@ export function htmlToText(html) {
 }
 
 /**
- * The single place that knows how a message leaves the site.
+ * The single place that knows how a message leaves the site: it posts to
+ * /api/contact, which emails it to me through Resend (server/contactHandler.js).
+ * The rich text goes as plain text, so formatting survives but no HTML does.
  *
- * Today it hands the message to the visitor's own mail app (mailto), which
- * can only carry plain text. When a backend exists, replace the body with:
+ * `website` is the honeypot field; real visitors leave it empty.
  *
- *   const res = await fetch('/api/contact', {
- *       method: 'POST',
- *       headers: { 'Content-Type': 'application/json' },
- *       body: JSON.stringify({ name, email, subject, html, text }),
- *   });
- *   if (!res.ok) throw new Error('send failed');
- *
- * Throwing here makes the compose window show its error state.
+ * Throws on failure so the compose window shows its error state. When the
+ * server explains why (a rate limit, a bad field), that reason rides along
+ * as `error.userMessage`.
  */
-export async function sendMessage({ name, email, subject, html }) {
-    const text = htmlToText(html);
-    const finalSubject = subject.trim() || `Portfolio inquiry from ${name}`;
-    const body = `${text}\n\n— ${name}\n${email}`;
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(finalSubject)}&body=${encodeURIComponent(body)}`;
-    return { via: 'mailto' };
+export async function sendMessage({ name, email, subject, html, website = '' }) {
+    let res;
+    try {
+        res = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, subject, text: htmlToText(html), website }),
+        });
+    } catch {
+        throw new Error('network');
+    }
+    if (res.ok) return { via: 'resend' };
+
+    const data = await res.json().catch(() => null);
+    const error = new Error('send failed');
+    if (res.status === 400 || res.status === 429) error.userMessage = data?.error;
+    throw error;
 }

@@ -75,6 +75,7 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
     const [linkUrl, setLinkUrl] = useState('');
     const [errors, setErrors] = useState({});
     const [sending, setSending] = useState(false);
+    const [trap, setTrap] = useState('');
     const [empty, setEmpty] = useState(() => !htmlToText(draft.html));
     const [initialHtml] = useState(draft.html);
     const [startInBody] = useState(() => Boolean(draft.name && draft.email));
@@ -196,10 +197,14 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
         if (sending || !validate()) return;
         setSending(true);
         try {
-            await sendMessage({ ...draft, html: editorRef.current.innerHTML });
+            await sendMessage({ ...draft, html: editorRef.current.innerHTML, website: trap });
             onSent();
-        } catch {
-            setErrors({ send: `Couldn’t send that. Try again, or email me at ${CONTACT_EMAIL}.` });
+        } catch (err) {
+            setErrors({
+                send: err.userMessage
+                    ? `${err.userMessage} You can also email me at ${CONTACT_EMAIL}.`
+                    : `Couldn’t send that. Try again, or email me at ${CONTACT_EMAIL}.`,
+            });
             setSending(false);
         }
     };
@@ -356,6 +361,20 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                         />
                     </Row>
 
+                    {/* Honeypot: hidden from people and screen readers, tempting to bots. */}
+                    <div aria-hidden="true" className="hidden">
+                        <label htmlFor="compose-website">Website</label>
+                        <input
+                            id="compose-website"
+                            type="text"
+                            name="website"
+                            tabIndex={-1}
+                            autoComplete="off"
+                            value={trap}
+                            onChange={(event) => setTrap(event.target.value)}
+                        />
+                    </div>
+
                     <div className="relative min-h-0 flex-1 overflow-y-auto">
                         {empty && (
                             <span
@@ -482,7 +501,7 @@ export default function ComposeWindow({ draft, onChange, onClose, onDiscard, onS
                         </button>
                         <span className="hidden font-mono text-[11px] text-muted md:inline">Ctrl + Enter</span>
                         <span className="ml-auto truncate text-right font-mono text-[11px] text-muted">
-                            Opens your email app
+                            Goes straight to my inbox
                         </span>
                         <button
                             type="button"

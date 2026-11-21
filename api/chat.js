@@ -1,6 +1,7 @@
 /* global process */
 // Serverless endpoint (Vercel-style). Set GROQ_API_KEY in the host's env settings.
-import { clientIdFrom, handleChat, sendChatResult } from '../server/chatHandler.js';
+import { handleChat, sendChatResult } from '../server/chatHandler.js';
+import { clientIdFrom } from '../server/http.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

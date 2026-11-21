@@ -2,6 +2,7 @@
 // /api/chat serverless function), so GROQ_API_KEY never reaches the browser.
 import { SYSTEM_PROMPT } from './knowledge.js';
 import { checkRateLimit } from './rateLimit.js';
+import { json, sendJson } from './http.js';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MODEL = 'openai/gpt-oss-120b';
@@ -9,10 +10,6 @@ const MODEL = 'openai/gpt-oss-120b';
 const FALLBACK_MODEL = 'openai/gpt-oss-20b';
 const MAX_MESSAGES = 12;
 const MAX_CHARS = 1000;
-
-
-
-const json = (status, data, headers = {}) => ({ status, data, headers });
 
 /**
  * Validates and rate limits a chat request, then streams Groq's reply.
@@ -96,13 +93,7 @@ async function* textChunks(body) {
 
 /** Writes a handleChat result to a Node response (Vite dev server or Vercel). */
 export async function sendChatResult(result, res) {
-  if (!result.stream) {
-    res.statusCode = result.status;
-    res.setHeader('Content-Type', 'application/json');
-    for (const [k, v] of Object.entries(result.headers || {})) res.setHeader(k, v);
-    res.end(JSON.stringify(result.data));
-    return;
-  }
+  if (!result.stream) return sendJson(result, res);
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache, no-transform');
@@ -113,10 +104,4 @@ export async function sendChatResult(result, res) {
     console.error('Stream interrupted', err);
   }
   res.end();
-}
-
-/** Best-effort client id from proxy headers or the socket. */
-export function clientIdFrom(req) {
-  const fwd = req.headers['x-forwarded-for'];
-  return (typeof fwd === 'string' && fwd.split(',')[0].trim()) || req.headers['x-real-ip'] || req.socket?.remoteAddress;
 }

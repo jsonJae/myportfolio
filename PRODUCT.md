@@ -25,13 +25,13 @@ Focused on AI engineering, machine learning, and software development, as a CS s
 
 - Visitors arrive by link (LinkedIn, GitHub, resume, direct sharing) and evaluate a single scrolling page.
 - The resume PDF (`DURAN-RESUME.pdf`) is an available artifact and a likely evaluation path.
-- Contact happens through an in-page form that opens the visitor's email app with the message prefilled, plus direct email, GitHub, and LinkedIn links.
+- Contact happens through an in-page compose form that emails Jason directly (via `/api/contact` and Resend), plus direct email, GitHub, and LinkedIn links.
 - Evaluation happens on desktop and mobile; the mobile navbar is a first-class surface.
 
 ## Capabilities and Constraints
 
 - Single-page React 19 + Vite 7 + Tailwind CSS 4 app, built with Framer Motion; sections are anchor targets (Home, About, Experience, Stack, Projects, Beyond, Contact) with smooth scrolling.
-- No CMS or analytics. The only backend is `/api/chat` for the Kismet assistant (Groq, 30 requests/min per visitor, key server-side). Kismet's knowledge lives in `server/knowledge.js` and must only contain what the site or resume already makes public; keep it in sync when content changes. It deliberately omits the phone number and home address. The contact form is client-side and hands off to the visitor's email app via `mailto:`.
+- No CMS or analytics. The backend is two serverless functions: `/api/chat` for the Kismet assistant (Groq, 30 requests/min per visitor, key server-side) and `/api/contact` for the contact form. Kismet's knowledge lives in `server/knowledge.js` and must only contain what the site or resume already makes public; keep it in sync when content changes. It deliberately omits the phone number and home address. The contact form posts to `/api/contact`, which sends a plain-text email through Resend (`RESEND_API_KEY` server-side; optional `CONTACT_FROM` once a domain is verified) with Reply-To set to the visitor; it validates fields, has a honeypot, and allows 3 messages per 10 minutes per visitor and 30 per hour site-wide.
 - `Experiences` and `Skills` are populated from the resume PDF; `Beyond` uses confirmed facets of design, community, and AI curiosity; `Contact` replaces the former empty `Footer` shell.
 - The Projects section presents four real projects: SMS Guardian, SPACES, the QE 360 event platform for Optum, and YSEIS (ongoing, always last). SIPAT is left out until it has screens to show.
 - Not yet decided: which specific public GitHub repositories should be featured.
