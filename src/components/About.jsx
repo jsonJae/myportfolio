@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
@@ -6,6 +6,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 
 import aboutMePic from '../assets/AboutMePic.png';
+import FallingPapers from './about/FallingPapers';
 
 const ease = [0.16, 1, 0.3, 1]
 
@@ -62,6 +63,9 @@ export default function About() {
     const animate = reduced ? undefined : 'show';
     const initial = reduced ? false : 'hidden';
 
+    const sectionRef = useRef(null);
+    const photoRef = useRef(null);
+
     // Active tooltip state for social icon buttons
     const [activeTooltip, setActiveTooltip] = useState(null);
 
@@ -93,14 +97,20 @@ export default function About() {
     ];
 
     return (
-        <section aria-labelledby="about-title" className="flex min-h-screen items-center justify-center px-4 py-24 md:px-8">
+        <section
+            ref={sectionRef}
+            aria-labelledby="about-title"
+            className="relative isolate flex min-h-screen items-center justify-center px-4 py-24 md:px-8"
+        >
+            {/* The toss in the photo, continued: sheets flutter down behind the copy. */}
+            <FallingPapers sectionRef={sectionRef} sourceRef={photoRef} />
             <div className="grid w-full max-w-6xl grid-cols-1 items-center gap-14 md:grid-cols-[minmax(0,34rem)_minmax(0,1fr)] md:gap-16">
                 <motion.div
                     variants={reduced ? undefined : intro}
                     initial={initial}
                     whileInView={animate}
                     viewport={{ once: true, margin: '-100px' }}
-                    className="flex flex-col items-start text-left"
+                    className="relative z-10 flex flex-col items-start text-left"
                 >
                     <h2
                         id="about-title"
@@ -247,7 +257,10 @@ export default function About() {
                     viewport={{ once: true, margin: '-100px' }}
                     className="relative flex w-full justify-center md:justify-end"
                 >
-                    <div className="group relative w-full max-w-[32rem] transition-transform duration-500 ease-soft hover:-translate-y-1.5">
+                    <div
+                        ref={photoRef}
+                        className="group relative w-full max-w-[32rem] transition-transform duration-500 ease-soft hover:-translate-y-1.5"
+                    >
                         <motion.img
                             variants={reduced ? undefined : portrait}
                             src={aboutMePic}
