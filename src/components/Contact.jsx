@@ -28,7 +28,7 @@ const links = [
         external: true,
     },
     { icon: faGithub, label: 'GitHub', href: 'https://github.com/jsonJae', external: true },
-    { icon: faFilePdf, label: 'Resume', href: '/DURAN-RESUME.pdf', download: true },
+    { icon: faFilePdf, label: 'Resume', href: '/DURAN-RESUME.pdf', external: true },
 ];
 
 const EMPTY_DRAFT = { name: '', email: '', subject: '', html: '' };
@@ -321,7 +321,6 @@ export default function Contact() {
                                 <li key={link.label}>
                                     <a
                                         href={link.href}
-                                        {...(link.download ? { download: '' } : {})}
                                         {...(link.external ? { target: '_blank', rel: 'noreferrer' } : {})}
                                         className="group relative inline-flex h-11 items-center overflow-hidden rounded-full border border-surface/30 bg-white/[0.06] px-4 font-mono text-[12px] font-bold tracking-[0.03em] text-surface transition-[transform,box-shadow] duration-300 ease-soft hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-8px_rgba(2,8,40,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface focus-visible:ring-offset-2 focus-visible:ring-offset-primary active:translate-y-0 active:scale-[0.97]"
                                     >

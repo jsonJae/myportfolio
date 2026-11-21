@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { ArrowDownToLine } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { CONTACT_EMAIL } from '../utils/sendMessage';
 
 // Phones and small tablets (below md). The dock gives way to one button at the
@@ -292,7 +292,9 @@ export default function MobileMenu({ items, active, onNavigate }) {
                             <motion.div variants={reduced ? fade : rise(0.5)} className="flex flex-wrap items-center gap-3">
                                 <a
                                     href="/DURAN-RESUME.pdf"
-                                    download
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Resume (PDF, opens in a new tab)"
                                     className="group relative inline-flex h-11 items-center overflow-hidden rounded-full border border-primary/35 bg-white/60 px-5 font-mono text-[13px] font-bold tracking-[0.03em] text-primary shadow-[0_1px_3px_rgba(15,23,42,0.06)] transition-[transform,box-shadow] duration-300 ease-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.97]"
                                 >
                                     <span
@@ -300,7 +302,7 @@ export default function MobileMenu({ items, active, onNavigate }) {
                                         className="pointer-events-none absolute inset-0 origin-left scale-x-0 rounded-full bg-primary transition-transform duration-300 ease-soft group-hover:scale-x-100 group-active:scale-x-100"
                                     />
                                     <span className="relative inline-flex items-center gap-2 transition-colors duration-300 group-hover:text-white group-active:text-white">
-                                        <ArrowDownToLine size={15} strokeWidth={2} aria-hidden="true" />
+                                        <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />
                                         Resume
                                     </span>
                                 </a>

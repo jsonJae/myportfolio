@@ -1,6 +1,6 @@
 // Kismet's knowledge base and personality. Everything here is already public on
 // the portfolio (About, Experience, Projects, Beyond, Contact, Stack) or in the
-// downloadable resume. Keep it factual: Kismet must never know more than the
+// resume PDF. Keep it factual: Kismet must never know more than the
 // site says. Deliberately left out: phone number and home address.
 //
 // Update this file when the site's content changes.

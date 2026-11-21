@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
-import { ArrowDownToLine } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 
 import aboutMePic from '../assets/AboutMePic.png';
@@ -142,8 +142,7 @@ export default function About() {
                                 href="/DURAN-RESUME.pdf"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                download
-                                aria-label="Download resume"
+                                aria-label="Resume (PDF, opens in a new tab)"
                                 onMouseEnter={() => setActiveTooltip('resume')}
                                 onMouseLeave={() => setActiveTooltip(null)}
                                 onFocus={() => setActiveTooltip('resume')}
@@ -156,11 +155,11 @@ export default function About() {
                                     className="pointer-events-none absolute inset-0 origin-left scale-x-0 rounded-full bg-primary transition-transform duration-300 ease-soft group-hover:scale-x-100"
                                 />
                                 <span className="relative z-10 inline-flex items-center gap-2 transition-colors duration-300 group-hover:text-white">
-                                    <ArrowDownToLine
+                                    <ArrowUpRight
                                         size={15}
                                         strokeWidth={2}
                                         aria-hidden="true"
-                                        className="transition-transform duration-300 ease-soft group-hover:translate-y-0.5"
+                                        className="transition-transform duration-300 ease-soft group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                                     />
                                     <span>Resume</span>
                                 </span>
@@ -180,7 +179,7 @@ export default function About() {
                                         }}
                                         className="pointer-events-none absolute -top-8.5 z-30 whitespace-nowrap rounded-md border border-black/[0.08] bg-surface px-2 py-0.5 font-mono text-[10px] font-medium tracking-[0.04em] text-ink shadow-[0_4px_12px_rgba(15,23,42,0.12)]"
                                     >
-                                        Download Resume
+                                        Open Resume
                                     </motion.span>
                                 )}
                             </AnimatePresence>
